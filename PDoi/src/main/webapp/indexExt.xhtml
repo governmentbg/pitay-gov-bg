@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:c="http://java.sun.com/jstl/core"
+	  xmlns:jsf="http://xmlns.jcp.org/jsf"
+	  xmlns:p="http://primefaces.org/ui"
+	  xmlns:pe="http://primefaces.org/ui/extensions"
+	  xmlns:ibg="http://java.sun.com/jsf/composite/ibg">
+
+	<ui:composition template="/templateExt/mainExt.xhtml">
+		<ui:define name="title">#{labels['indexExt.title']}</ui:define>
+		
+		<ui:define name="menu-items">
+			<ui:include src="/include/menuExt.xhtml"/>
+		</ui:define>
+		
+		<ui:define name="content">
+		   <h:form>
+		   
+		    <div class="container container-services" style="font-size: 12pt !important;">
+            	<div class="ui-g">
+            
+	                <div class="ui-g-12 ui-md-4 ui-lg-4">
+	                    <div class="column-content">
+	                        <div class="title">
+	                            <i class="icon fas fa-file-alt"></i>
+	                            <h2>#{labels['general.titleApp']}</h2>
+	                        </div>
+	                        <div class="content">
+	                            <p>#{labels['indexExt.requestTitle']}</p>
+	                            <a href="applicationSubmission.jsf" class="btn-primary">#{labels['general.izbor']}</a>
+	                        </div>
+	                    </div>
+	                </div>
+	                <div class="ui-g-12 ui-md-4 ui-lg-4">
+	                    <div class="column-content">
+	                        <div class="title">
+	                            <i class="icon fas fa-search"></i>
+	                            <h2>#{labels['general.search']}</h2>
+	                        </div>
+	                        <div class="content">
+	                            <p>#{labels['indexExt.find']}</p>
+	                            <a href="searchApplications.jsf" class="btn-primary">#{labels['general.izbor']}</a>
+	                        </div>
+	                    </div>
+	                </div>
+	                <div class="ui-g-12 ui-md-4 ui-lg-4">
+	                    <div class="column-content">
+	                        <div class="title">
+	                            <i class="icon fas fa-layer-group"></i>
+	                            <h2>#{labels['menu.documents']}</h2>
+	                        </div>
+	                        <div class="content">
+	                            <p>#{labels['indexExt.documents']}</p>
+	                            <a href="sectStatView.jsf?codeSect=1" class="btn-primary">#{labels['general.izbor']}</a>
+	                        </div>
+	                    </div>
+	                </div>
+                
+            	</div>
+        	</div>
+		   
+			<div class="container welcome-section" style="font-size:14pt !important;">
+            
+	            <div class="ui-g cc-center">
+	                <div class="ui-g-12 ui-md-12 ui-lg-12">
+	                	<h:outputText id="idHomeDyn" value="#{sectHome.dynText.get(sectHome.currentLang)}" escape="false"/>
+	                </div>
+	            </div>
+	        
+	        </div>
+     
+		   </h:form>
+		</ui:define>
+	</ui:composition>
+	
+</html>	

@@ -1,0 +1,62 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf" 
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+<ui:composition template="/templates/main.xhtml">
+
+	<ui:define name="title"> TEST SOCAL </ui:define>
+
+	<ui:define name="systemLogo">
+		 <img src="resources/images/logo.png"/>
+	</ui:define>
+	
+	<ui:define name="menu-items">
+		<ui:include src="/include/menuItems.xhtml" />
+	</ui:define>
+
+	<ui:define name="content">	
+
+		<h:form id="formTestSocal">
+			
+			
+		
+			<p:tooltip />
+
+			<div class="container"> 
+
+				<p:outputPanel id="panelData">
+
+					<br />
+					
+					<p:panelGrid id="pnlSocial" columns="1" layout="grid" styleClass="ui-noborder">  
+					    <pe:social id="socialMedia"  
+					        shares="twitter,facebook,pinterest,googleplus,whatsapp,linkedin,email,viber,messenger,telegram"   
+					        url="https://www.primefaces.org/"   
+					        text="PrimeFaces"   
+					        theme="classic"  
+					        showLabel="true"  
+					        showCount="true"  
+					        style="font-size: #{socialMediaController.fontSize}px"  
+					        emailTo="primefaces@primefaces.org"  
+					        twitterUsername="primefaces"  
+					        twitterHashtags="jsf,components,ui"  
+					        onclick="console.log('share ' +this.share + ' url ' + this.url + ' at ' + e.timeStamp);"/>  
+					</p:panelGrid>
+					
+				</p:outputPanel>
+
+			</div>
+
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>
+
+</html>

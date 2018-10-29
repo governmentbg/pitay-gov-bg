@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:c="http://java.sun.com/jstl/core"
+	  xmlns:p="http://primefaces.org/ui"
+	  xmlns:pe="http://primefaces.org/ui/extensions"
+	  xmlns:jsf="http://xmlns.jcp.org/jsf">
+  
+	<ui:composition>  
+		  <li jsf:rendered="#{userData.hasAccess(7, 30)}"> 
+			  <a jsf:action="adminApplications.xhtml@clear@?faces-redirect=true">
+			  	<f:actionListener type="indexbg.pdoi.system.Locker"/>
+			  	#{labels['adminApp.title']} 
+			  </a>
+			  
+		  </li>
+		  
+	      
+	      <li jsf:rendered="#{userData.hasAccess(7,32)}">
+	      <a jsf:action="responseSubjectsList.xhtml@clear@?faces-redirect=true">
+	      	<f:actionListener type="indexbg.pdoi.system.Locker"/>
+	      	#{labels['menu.responseSubjects']}
+	      </a>
+	      </li>
+	     
+	      <!--Публикации/Секции -->
+
+		  <li jsf:rendered="#{userData.hasAccess(7,37)}">
+		  	<a jsf:action="infoDataListEdit.xhtml?par=1&amp;faces-redirect=true@clear@">
+		  		<f:actionListener type="indexbg.pdoi.system.Locker"/>
+		  		#{labels['menu.publInput']}
+		  	</a>
+		  	</li> 
+	      
+	      <ui:remove>
+	     	<!-- махнато е какво разглеждане от админи?
+	     	<li jsf:rendered="#{userData.hasAccess(7,38)}"><a jsf:action="infoDataListView.xhtml?par=2&amp;faces-redirect=true@clear@">#{labels['menu.publView']}</a></li>
+		  	 -->
+		  </ui:remove>
+		  
+		  <!-- Други -->
+		  <li jsf:rendered="#{userData.hasAccess(7,41)}">
+		  <a jsf:action="apiZaqvlenieDemo.xhtml@clear@?faces-redirect=true">
+		  	<f:actionListener type="indexbg.pdoi.system.Locker"/>
+		  	API Заявление
+		  </a>
+		  </li>
+			
+		  <!-- Отключване на Инф. обекти -->
+		  <li jsf:rendered="#{userData.hasAccess(7,46)}">
+		  	<a jsf:action="unlockObjects.xhtml@clear@?faces-redirect=true">
+		  		<f:actionListener type="indexbg.pdoi.system.Locker"/>
+		  		#{labels['menu.unlockObj']}
+		  	</a>
+		  	</li>
+			
+			
+		  <!-- Инструкции за потребители -->
+		  <li jsf:rendered="#{userData.hasAccess(7,33)}">
+			   <a title="#{labels['menu.instructions']}" jsf:action="sectInstrView.xhtml?codeSect=2&amp;faces-redirect=true@clear@">
+	                <f:actionListener type="indexbg.pdoi.system.Locker"/>
+	                <span class="fa fa-question-circle" style="font-size:18pt !important;"></span>
+	           </a>
+		  </li>	
+																	
+	</ui:composition>
+</html>

@@ -1,0 +1,266 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf" 
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+<ui:composition template="/templates/main.xhtml">
+
+	
+
+	<ui:define name="systemLogo">
+		<img src="resources/images/logo.png"/>
+	</ui:define>
+	
+	<ui:define name="menu-items">
+		<ui:include src="/include/menuItems.xhtml" />
+	</ui:define>
+
+	<ui:define name="content">
+	
+		<style>			
+			@media (min-width: 1024px) { 
+				  .igg-content { 
+				        width: 1024px; margin-right:auto; margin-left:auto
+				   } 
+			}				 
+			
+		</style>	
+	
+		<h:form id="appFilterForm">
+			
+			<p:importConstants type="indexbg.pdoi.system.Constants" var="IBConstants" className="indexbg.pdoi.system.Constants"/>
+			<p:importConstants type="com.indexbg.system.SysConstants" var="IBConstantsSys" className="com.indexbg.system.SysConstants" />
+
+			<div class="container">
+
+				<p:outputPanel id="panelData">	
+						
+					<br />
+					
+					<p:panel  >
+						<div class="ui-g">
+							
+							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
+								<h:outputText value="#{labels['general.period']}:"/>
+							</div>
+							<div class="ui-g-12 ui-md-2 ui-lg-2">
+								<p:selectOneMenu id="idPer" height="300px" value="#{applicationFilter.period}" style="width:250px;" >
+		                             <f:selectItem value="#{null}" itemValue="#{null}"/>          
+		                             <f:selectItems  value="#{systemData.getSysClassification(IBConstantsSys.CODE_CLASSIF_PERIOD_NOFUTURE, applicationFilter.today, applicationFilter.currentLang, applicationFilter.userId)}"  
+		                                    var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
+		                             <p:ajax event="change" update="idPer dateOt dateDo"  listener="#{applicationFilter.changePeriod()}"   />   
+		                        </p:selectOneMenu>
+	                        </div>
+	                                
+	                        <div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
+								<h:outputText value="#{labels['general.dataOt']}:"/>
+							</div>
+							<div class="ui-g-12 ui-md-3 ui-lg-3">
+									 <p:calendar id="dateOt" pattern="dd.MM.yyyy" mask="true"  showOn="button" 
+											timeZone="#{applicationFilter.timeZone}" size="10" locale="bg" 
+								         	style="font-size:12px;"   value="#{applicationFilter.dateFrom}" label="#{labels['publ.dateFrom']}"
+								          	styleClass="form-control #{applicationFilter.hasMessages('appFilterForm:dateOt') ? 'cc-red ': '' }" >
+								          	
+								      </p:calendar>
+								      <p:message for="dateOt" showDetail="true" showSummary="true" display="tooltip"/>
+							</div>
+							
+							<div class="ui-g-12 ui-md-1 ui-lg-1 cc-right" >
+										<h:outputText value="#{labels['general.dataDo']}:"/>
+							</div>
+							<div class="ui-g-12 ui-md-2 ui-lg-2">
+								<p:calendar id="dateDo" pattern="dd.MM.yyyy" mask="true" showOn="button" 
+									timeZone="#{applicationFilter.timeZone}" size="10" locale="bg" 
+						         	style="font-size:12px;"  value="#{applicationFilter.dateTo}" label="#{labels['publ.dateTo']}"   
+						          	styleClass="form-control #{applicationFilter.hasMessages('appFilterForm:dateDo') ? 'cc-red' : '' }" >
+						          	
+							     </p:calendar>  	
+							     <p:message for="dateDo" showDetail="true" showSummary="true" display="tooltip"/> 
+							</div> 
+							
+							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
+								<h:outputText value="#{labels['general.status']}: " />
+							</div>
+							<div class="ui-g-12 ui-md-2 ui-lg-2">
+								<p:selectOneMenu value="#{applicationFilter.status}" height="300px" id="status" autoWidth="false" style="width:250px;">                                     
+                               		<f:selectItem itemLabel="" itemValue="" />
+                                    <f:selectItems value="#{systemData.getSysClassification(IBConstants.CODE_SYSCLASS_STATUS_APPLICATION, applicationFilter.today, applicationFilter.currentLang, applicationFilter.userId)}" 
+                                    			   var="evR" itemLabel="#{evR.tekst}" itemValue="#{evR.code}" />			                                    
+                                </p:selectOneMenu>											                        
+							</div>
+							
+							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
+							
+								<h:outputText value="#{labels['publ.tematika']}: " />
+							
+							</div>
+							<div class="ui-g-12 ui-md-6 ui-lg-6">
+							
+								<p:inputText value="#{applicationFilter.tematika}"  id="tematika" readonly="true" style="width:90%" />
+							
+								<ibg:selectManyModal  
+											header="#{labels['publ.izbThemas']}"   
+											userId="#{applicationFilter.userId}"  
+											lang="#{applicationFilter.currentLang}"   
+							 	            saveStateTree="true"  
+							 	            withBtnClear="false"
+							 		        codeClassif="#{IBConstants.CODE_SYSCLASS_THEMAS}"     
+							 		        update="appFilterForm:tematika"  
+							 		        selectedCodes="#{applicationFilter.selectedThemas}" 
+							 		        selectedText="#{applicationFilter.tematika}"
+							 		        modal="true"
+							 		        id="idManyMT"
+							 		        expanded="false"
+							 		        sortByName="true"
+							 		        isSelectNode="false"
+							 		        showRadioBtn="true" />										                        
+							</div>
+							
+							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right">
+								<h:outputText value="#{labels['responseSubjects.title']}: "/>
+							</div>
+	
+							<div class="ui-g-12 ui-md-10 ui-lg-10">							
+							<p:inputText value="#{applicationFilter.zadaljenSubText}" id="respSubj" readonly="true" style="width:94%;"/>   
+		                	<ibg:selectOneModal rendered="#{applicationFilter.typeUser==IBConstantsSys.CODE_ZNACHENIE_TIP_POTR_VATR}" header="#{labels['responseSubjects.title']}" userId="#{applicationFilter.userId}" lang="#{applicationFilter.currentLang}" 
+					 	 			saveStateTree="true" isSelectNode="true" withBtnClear="true" codeClassif="#{IBConstants.CODE_SYSCLASS_ADM_REGISTRY}"     
+					 				update="appFilterForm:respSubj" selectedCode="#{applicationFilter.responseSubj}" selectedText="#{applicationFilter.zadaljenSubText}"  />	    							
+							
+							</div>
+								
+							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
+								<h:outputText value="#{labels['app.nomerZaiavlenie']}: "/>
+							</div>
+
+							<div class="ui-g-12 ui-md-2 ui-lg-2">											
+    							<p:inputText id="nomer" value="#{applicationFilter.nomer}" style="width:250px"/>                         
+							</div>
+						
+							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right">
+								<h:outputText value="#{labels['general.text']}: " />
+							</div>
+
+							<div class="ui-g-12 ui-md-6 ui-lg-6">											
+    							<p:inputText value="#{applicationFilter.text}" id="name" style="width:95%"/>                         
+							</div>
+									
+							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right">
+				 				<p:commandButton action="#{applicationFilter.actionClear()}" value="#{labels['general.clear']}" update="appFilterForm:panelData" id="btnClear" /> 
+						 	</div>
+	 
+						    <div class="ui-g-12 ui-md-10 ui-lg-10 cc-right" style="width:82%">
+						        <p:commandButton action="#{applicationFilter.actionFullTextSearch()}" value="#{labels['general.search']}" icon="fa fa-search" update="appFilterForm:panelData" id="btnSearch" />
+						    </div>
+						
+						</div>
+					
+					</p:panel>	
+					 
+					<br />
+					
+					<p:panel  header="#{labels['adminApp.title']}: #{applicationFilter.appList.getRowCount()}" id="panelTable" >
+			 						 	
+					 	 <p:dataTable id="tbl" var="row" rendered="#{applicationFilter.appList!=null}" 
+							value="#{applicationFilter.appList}" lazy="true" rows="15"
+							rowIndexVar="idx" sortMode="single" reflow="true"
+							emptyMessage=""
+							paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+							rowsPerPageTemplate="15,20,25" paginatorPosition="bottom"
+							paginator="true" style="margin-bottom:20px">
+
+                             <f:facet name="{Exporters}">
+                                 <h:commandLink >
+                                     <p:graphicImage library="images" name="excel.png" width="24"/>
+                                     <p:dataExporter type="xls" target="tbl" fileName="app" encoding="utf-8"/>
+                                 </h:commandLink>
+
+                                 <h:commandLink>
+                                     <p:graphicImage library="images" name="csv.png" width="24"/>
+                                     <p:dataExporter type="csv" target="tbl" fileName="app"  encoding="utf-8"/>
+                                 </h:commandLink>
+
+                                 <h:commandLink>
+                                     <p:graphicImage library="images" name="xml.png" width="24"/>
+                                     <p:dataExporter type="xml" target="tbl" fileName="app"  encoding="utf-8"/>
+                                 </h:commandLink>
+
+                             </f:facet>
+
+
+                             <p:column style="text-align: center" width="5">
+								<f:facet name="header">
+					                 No
+					            </f:facet>
+								<h:outputText value="#{idx + 1}" />
+							</p:column>
+
+							<p:column width="15%" sortBy="#{row[0].applicationUri}">
+								<f:facet name="header">
+									<h:outputText value="#{labels['app.nomerZaiavlenie']}" />
+								</f:facet>
+								<h:outputText value="#{row[0].applicationUri}" />
+							</p:column>
+							<p:column width="50" sortBy="#{row[0].registrationDate}">
+								<f:facet name="header">
+									 <h:outputText value="#{labels['general.dataReg']}"  />
+									  
+								</f:facet>
+								<h:outputText value="#{row[0].registrationDate}" >
+								     <f:convertDateTime type="date" pattern="dd.MM.yyyy" timeZone="#{applicationFilter.timeZone}"/>
+								</h:outputText>
+							</p:column>
+		
+							<p:column width="25%" ><!--sortBy="#{row[0].responseSubjectId}"-->
+								<f:facet name="header">
+									<h:outputText value="#{labels['responseSubjects.title']}" />
+								</f:facet>
+								<h:outputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_ADM_REGISTRY, row[0].responseSubjectId, applicationFilter.currentLang, applicationFilter.today, applicationFilter.userId)}" />
+							</p:column>
+							
+							<p:column width="25%">
+								<f:facet name="header">
+									<h:outputText value="#{labels['app.iskane']}" />
+								</f:facet>
+								<h:outputText value="#{row[0].request150}" />
+							</p:column>
+							 <p:column width="10%" sortBy="#{row[0].status}">
+								<f:facet name="header">
+									<h:outputText value="#{labels['general.status']}" />
+								</f:facet>
+								<h:outputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_STATUS_APPLICATION, row[0].status, applicationFilter.currentLang, applicationFilter.today, applicationFilter.userId)}" />
+							</p:column>
+							 <p:column width="3%" >
+								 <f:facet name="header">
+									 <h:outputText value="score" />
+								 </f:facet>
+								 <h:outputText value="#{row[1]}" />
+							 </p:column>
+
+							 <p:column style="text-align: center" width="25" exportable="false">
+
+								 <p:commandButton  icon="fa fa-fw fa-edit" action="applicationForm.jsf" ajax="false" title="#{labels['general.izbor']}"   >
+								 	<f:param name="idObj" value="#{row[0].id}" />
+								 </p:commandButton>
+
+					        </p:column>
+
+
+						</p:dataTable>
+
+			         </p:panel>
+				</p:outputPanel>
+
+			</div>
+			
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>
+
+</html>

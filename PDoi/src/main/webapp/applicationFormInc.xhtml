@@ -1,0 +1,519 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:c="http://java.sun.com/jstl/core"
+	  xmlns:jsf="http://xmlns.jcp.org/jsf"
+	  xmlns:p="http://primefaces.org/ui"
+	  xmlns:pe="http://primefaces.org/ui/extensions"
+	  xmlns:ibg="http://java.sun.com/jsf/composite/components">
+		
+			<style>
+				.ui-fileupload-buttonbar {
+				    margin: 0px 0px 0px 0px !important;
+				    padding: 0px 0px 0px 0px !important;
+				    border: none;
+				}
+				.ui-fileupload {
+				    margin: 0px 0px 0px 0px !important;
+				    padding: 0px 0px 0px 0px !important;
+				    display: inline-block;
+				    border: none;
+				}
+				.ui-fileupload-content {
+				    display: none;  
+				}
+				.ui-fileupload-buttonbar .ui-button {
+				    top: -1px;
+				}
+				span.ui-fileupload-choose > span.ui-icon-plusthick  {
+				    display: none !important;
+				}
+				span.ui-fileupload-choose > span.ui-button-text{
+				    padding-left: 1em !important;
+				}
+				
+				.ui-selectonemenu-filter-container {
+				    width: 98% !important;
+				}
+				
+				
+				.ui-steps .ui-steps-item {
+				    width: 33%;
+				}
+				 
+				.ui-state-highlight {
+				    text-shadow: none !important;
+				}
+				 
+				.ui-steps.custom {
+				    margin-bottom: 30px;
+				}
+				 
+				.ui-steps.custom .ui-steps-item .ui-menuitem-link {
+				    height: 10px;
+				    padding: 0 1em;
+				}
+				 
+				.ui-steps.custom .ui-steps-item .ui-steps-number {
+				    background-color: #0081c2;
+				    color: #FFFFFF;
+				    display: inline-block;
+				    width: 30px;
+				    border-radius: 10px;
+				    margin-top: -10px;
+				    margin-bottom: 10px;
+				}
+				 
+				.ui-steps.custom .ui-steps-item.ui-state-highlight .ui-steps-title {
+				    color: #555;
+				}
+				
+				
+				.ui-treetable td {
+				   white-space:normal !important;
+				}
+				
+				.ui-outputlabel{
+					color:#039be5;					
+				}
+				
+				.ui-state-disabled {
+					opacity:0.7 !important;
+				}
+				 
+				.ui-menu {
+				    width: auto ;
+				} 
+			</style>
+			
+		   <p:tooltip/>
+		
+		   <h:form id="formApplicEdit">
+		   
+		   	  <p:importConstants type="indexbg.pdoi.system.Constants" var="IBConstants" className="indexbg.pdoi.system.Constants"/>			 
+			  			  
+			  <div class="container">
+			  
+			  <p:outputPanel id="panelData" >
+			  		
+			  		<br/>
+			  		
+			  		<p:toolbar id="tb">
+				        <f:facet name="left">
+				        	<p:commandButton value="#{labels['general.print']}" icon="fa fa-print" ajax="false" 
+				            	action="#{applicationForm.generateFile}"/>
+				            <span class="ui-separator">  </span>
+				            <p:menuButton value="Нова дейност" model="#{applicationForm.menuButton}" rendered="#{applicationForm.adminMod}"/>
+				            <span class="ui-separator">  </span> 
+				            <p:commandButton value="#{labels['general.moreInfo']}" icon="fa fa-info"  style="color:#d60000;"
+				            	action="eventsExt.jsf" update="formApplicEdit message" ajax="false" rendered="#{applicationForm.showBntMoreInfo}">
+				            	<f:param name="eventCode" value="#{IBConstants.CODE_ZNACHENIE_TYPE_EVENT_PROVID_ADD_INFORMATION}"/>
+				            	<f:param name="applicId" value="#{applicationForm.applic.id}"/>
+				            </p:commandButton>	
+				            
+				 		</f:facet>
+				    </p:toolbar>
+			  		
+			  		<p:tabView id="tabsAppl">
+       				
+       				<p:tab title="#{labels['general.titleApp']}">			  		
+			  		
+			  		<p:outputPanel id="panelApplic">			  		
+			  		
+			  		<p:panel style="margin-bottom:10px">
+			  			<div class="ui-g"> 
+			  				<div class="ui-g-12 ui-md-1 ui-lg-1 cc-right">
+			  				</div>
+			  				<div class="ui-g-12 ui-md-11 ui-lg-11">
+			  					<p:outputLabel value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_ADM_REGISTRY, applicationForm.applic.responseSubjectId, applicationForm.currentLang, null, applicationForm.userId)}" />
+			  				</div>
+			  			</div>
+			  			<div class="ui-g">
+			  				<div class="ui-g-12 ui-md-1 ui-lg-1 cc-right">
+			  					<h:outputText value="#{labels['app.nomerZaiavlenie']}: " style="font-weight: bold;"/>
+							</div>
+							<div class="ui-g-12 ui-md-3 ui-lg-2">
+								<p:outputLabel value="#{applicationForm.applic.applicationUri}"/>
+							</div>								
+							<div class="ui-g-12 ui-md-1 ui-lg-1 cc-right">
+								<h:outputText value="#{labels['general.status']}: " style="font-weight: bold;"/>
+							</div>
+							<div class="ui-g-12 ui-md-7 ui-lg-2">
+								<p:outputLabel value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_STATUS_APPLICATION, applicationForm.applic.status, applicationForm.currentLang, null, applicationForm.userId)}"/>								
+							</div>
+							<div class="ui-g-12 ui-md-1 ui-lg-1 cc-right">
+								<h:outputText value="#{labels['general.dataReg']}: " style="font-weight: bold;"/>
+							</div>
+							<div class="ui-g-12 ui-md-3 ui-lg-1">
+								<p:outputLabel value="#{applicationForm.applic.registrationDate}">
+									<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{applicationForm.timeZone}"/>
+								</p:outputLabel>
+							</div>
+							<div class="ui-g-12 ui-md-1 ui-lg-1 cc-right">
+								<h:outputText value="#{labels['application.srok']}: " style="font-weight: bold;"/>
+							</div>
+							<div class="ui-g-12 ui-md-7 ui-lg-3">
+								<p:outputLabel value="#{applicationForm.responseEndTime}"/>
+							<ui:remove>
+								<!-- <p:outputLabel value="#{applicationForm.applic.responseEndTime}">
+									<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{applicationForm.timeZone}"/>
+								</p:outputLabel>
+								 -->
+							</ui:remove>
+							</div>	
+			  			</div>
+			  		</p:panel>
+			  		
+			  		<p:panel style="margin-bottom:10px">
+			  			
+			  			<ui:remove>
+			  			<!-- iskane na KK da ne se vijda
+			  			<div class="ui-g">
+			  				<div class="ui-g-12 ui-md-6 ui-lg-4">
+			  				<p:selectOneRadio id="applicant_type" value="#{applicationForm.applic.applicantType}" layout="responsive" columns="2" disabled="true">
+						        <f:selectItems value="#{systemData.getSysClassification(IBConstants.CODE_SYSCLASS_TYPE_APPLICANT, null, applicationForm.currentLang, applicationForm.userId)}" 
+                                    		   var="itema" itemLabel="#{itema.tekst}" itemValue="#{itema.code}"/>	
+					        </p:selectOneRadio>
+						    </div>
+						</div>
+						 -->
+						</ui:remove>
+			  			<div class="ui-g">
+			  			   
+						    <div class="ui-g-12 ui-md-1 ui-lg-1 cc-right">
+									<h:outputText value="#{labels['general.names']}: " styleClass="req" style="white-space: pre;" rendered="#{applicationForm.applic.applicantType == IBConstants.CODE_ZNACHENIE_TYPE_APPLICANT_FIZ_LICE}"/>
+									<h:outputText value="#{labels['general.name']}: " styleClass="req" style="white-space: pre;" rendered="#{applicationForm.applic.applicantType == IBConstants.CODE_ZNACHENIE_TYPE_APPLICANT_URID_LICE}"/>									
+							</div>
+							
+						    <div class="ui-g-12 ui-md-9 ui-lg-9">
+									<p:inputText value="#{applicationForm.applic.fullNames}" id="fullNames" style="width:100%" readonly="true"/>
+									<p:message for="fullNames"  showDetail="true" showSummary="true" display="tooltip"/>
+							</div>
+							<div  class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
+								<p:selectBooleanCheckbox  id="publicName"  value="#{applicationForm.applic.namesPublication}" disabled="true"/>
+        						<p:outputLabel for="publicName" value=" #{labels['general.publikuvane']} " />
+							</div>
+						    <div class="ui-g-12 ui-md-1 ui-lg-1 cc-right" style="#{(applicationForm.applic.applicantType == IBConstants.CODE_ZNACHENIE_TYPE_APPLICANT_URID_LICE)?'':'display:none'}">
+									<h:outputText value="#{labels['general.sedalishte']}: " styleClass="req" style="white-space: pre;"/>
+							</div>
+						    <div class="ui-g-12 ui-md-9 ui-lg-9" style="#{(applicationForm.applic.applicantType == IBConstants.CODE_ZNACHENIE_TYPE_APPLICANT_URID_LICE)?'':'display:none'}">
+									<p:inputText id="headoffice" value="#{applicationForm.applic.headoffice}" style="width:100%" readonly="true"/>
+									<p:message for="headoffice"  showDetail="true" showSummary="true" display="tooltip"/>
+							</div>
+							<div  class="ui-g-12 ui-md-2 ui-lg-2 cc-right" style="#{(applicationForm.applic.applicantType == IBConstants.CODE_ZNACHENIE_TYPE_APPLICANT_URID_LICE)?'':'display:none'}">
+								<p:selectBooleanCheckbox  id="publicSedalishte" value="#{applicationForm.applic.headofficePublication}" disabled="true"/>
+        						<p:outputLabel for="publicSedalishte" value=" #{labels['general.publikuvane']} " />
+							</div>
+						</div>
+						
+						<div class="ui-g">
+						    <div class="ui-g-12 ui-md-1 ui-lg-1 cc-right">
+									<h:outputText value="#{labels['general.telefon']}: " style="white-space: pre;"/>
+							</div>
+						    <div class="ui-g-12 ui-md-9 ui-lg-3">
+									<p:inputText value="#{applicationForm.applic.phone}" style="width:100%" readonly="true"/>
+							</div>
+							<div  class="ui-g-12 ui-md-2 ui-lg-2  cc-right" >
+								<p:selectBooleanCheckbox  id="publicPhone" value="#{applicationForm.applic.phonePpublication}" disabled="true"/>
+        						<p:outputLabel for="publicPhone" value=" #{labels['general.publikuvane']} " />
+							</div>
+						
+						    <div class="ui-g-12 ui-md-1 ui-lg-1 cc-right">
+									<h:outputText value="#{labels['general.email']}: " style="white-space: pre;"/>
+							</div>
+						    <div class="ui-g-12 ui-md-9 ui-lg-3">
+									<p:inputText value="#{applicationForm.applic.email}" style="width:100%" readonly="true"/>
+							</div>
+							<div  class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
+								<p:selectBooleanCheckbox  id="publicMail" value="#{applicationForm.applic.emailPublication}" disabled="true"/>
+        						<p:outputLabel for="publicMail" value=" #{labels['general.publikuvane']} " />
+							</div>
+						</div>
+			  		
+			  		</p:panel>
+			  		
+			  		<p:panel header="#{labels['app.adresZaCoresp']}" style="margin-bottom:10px">
+			  			
+			  			<div class="ui-g"> 
+			  				<div class="ui-g-12 ui-md-12 ui-lg-12 cc-right">
+								<p:selectBooleanCheckbox  id="publicAddress" value="#{applicationForm.applic.addressPublication}" disabled="true"/>
+		        				<p:outputLabel for="publicAddress" value=" #{labels['general.publikuvane']} " />
+					  			</div>
+			  			</div>
+			  			<div class="ui-g">
+			  				<div class="ui-g-12 ui-md-1 ui-lg-1 cc-right">
+			  					<h:outputText value="#{labels['general.country']}: " styleClass="req"/>
+			  				</div>
+			  				<div class="ui-g-12 ui-md-3 ui-lg-3">
+			  					<p:inputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_COUNTRIES, applicationForm.applic.country, applicationForm.currentLang, applicationForm.applic.dateLastMod, applicationForm.userId)}" 
+					            	style="width:98%" readonly="true"/>
+					            
+			  				</div>
+			  				
+			  			</div>
+			  			<div class="ui-g" style="#{(applicationForm.applic.country == IBConstants.CODE_ZNACHENIE_BG)?'':'display:none'}">
+			  				<div class="ui-g-12 ui-md-1 ui-lg-1 cc-right">
+			  					<h:outputText value="#{labels['general.oblast']}: " styleClass="req"/>
+			  				</div>
+			  				<div class="ui-g-12 ui-md-3 ui-lg-3">
+			  					<p:inputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_EKATTE, applicationForm.applic.region, applicationForm.currentLang, applicationForm.applic.dateLastMod, applicationForm.userId)}" 
+					            	style="width:98%" readonly="true"/>
+			  				</div>
+			  				<div class="ui-g-12 ui-md-1 ui-lg-1 cc-right">
+			  					<h:outputText value="#{labels['general.obshtina']}: " styleClass="req"/>
+			  				</div>
+			  				<div class="ui-g-12 ui-md-3 ui-lg-3">
+			  					<p:inputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_EKATTE, applicationForm.applic.municipality, applicationForm.currentLang, applicationForm.applic.dateLastMod, applicationForm.userId)}" 
+					            	style="width:98%" readonly="true"/>
+			  				</div>
+			  				<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right">
+			  					<h:outputText value="#{labels['general.nasMiasto']}: " styleClass="req"/>
+			  				</div>
+			  				<div class="ui-g-12 ui-md-2 ui-lg-2">
+			  					<p:inputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_EKATTE, applicationForm.applic.town, applicationForm.currentLang, applicationForm.applic.dateLastMod, applicationForm.userId)}" 
+					            	style="width:98%" readonly="true"/>
+			  				</div>
+			  			</div>
+			  			<div class="ui-g">
+			  				<div class="ui-g-12 ui-md-1 ui-lg-1 cc-right">
+			  					<h:outputText value="#{labels['general.adress']}: " styleClass="req"/>
+			  				</div>
+			  				<div class="ui-g-12 ui-md-8 ui-lg-8">
+									<p:inputText id="address" value="#{applicationForm.applic.address}" style="width:95%" readonly="true"/>
+									<p:message for="address"  showDetail="true" showSummary="true" display="tooltip"/>
+							</div>
+							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right">
+			  					<h:outputText value="#{labels['general.pk']}:  "/>
+			  				</div>
+			  				<div class="ui-g-12 ui-md-1 ui-lg-1">
+									<p:inputText id="postCode" value="#{applicationForm.applic.postCode}" style="width:95%" readonly="true"/>
+									<p:message for="postCode"  showDetail="true" showSummary="true" display="tooltip"/>
+							</div>
+			  			</div>
+			  			
+			  		</p:panel>
+			  		
+			  		<p:panel header="#{labels['application.requestTitle']}: " style="margin-bottom:10px">
+			  			<p:inputTextarea id="requestInfo" value="#{applicationForm.applic.request}"   rows="6" style="width:99%" readonly="true"/>	
+						<p:message for="requestInfo"  display="tooltip"/>
+			  		</p:panel>
+			  		
+			  		
+			  		<p:panel header="#{labels['general.attachedDoc']}" style="margin-bottom:10px">
+					
+						<div class="ui-g">
+
+						<div class="ui-g-12 ui-md-12 ui-lg-12">	
+							
+							 <p:dataTable id="fileList" var="row" value="#{applicationForm.filesList}"
+							 			  rowIndexVar="rkv" emptyMessage="" rows="10" style="margin-bottom:20px" paginator="true" reflow="true" 
+							 			  paginatorPosition="bottom" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">
+							      
+							       <p:column headerText="#{labels['general.No-symbol']}" width="20" priority="4">
+										<h:outputText value="#{rkv + 1}" />
+									</p:column>
+									
+									 <p:column headerText="" width="32" exportable="false">
+							       		<p:commandButton  id="download" ajax="false" actionListener="#{applicationForm.download(row)}" icon="fa fa-fw fa-download" title="#{labels['file.download']}"/>
+							       	</p:column>
+							       	
+							       <p:column headerText="#{labels['file.description']}" width="90%">									   
+							            <h:outputText value="#{row.description}" rendered="#{row.description != null}"/>
+							            <h:outputText value="#{row.filename}" rendered="#{row.description == null or row.description == ''}"/>
+							       </p:column>
+							  
+							   </p:dataTable>
+							   
+							</div>
+						</div>
+					</p:panel>	
+					
+					<p:panel header="#{labels['app.tematiki']}" style="margin-bottom:20px" id="panelTemi" rendered="#{applicationForm.adminMod}">
+					
+						<f:facet name="actions">
+							
+							<ibg:selectManyModal header="#{labels['publ.izbThemas']}"  
+									userId="#{applicationForm.userId}"  
+									lang="#{applicationForm.currentLang}" 
+									saveStateTree="false"  
+					 		        codeClassif="#{IBConstants.CODE_SYSCLASS_THEMAS}"     
+					 		        update="formApplicEdit:tabsAppl:themesList"  
+					 		        selectedCodes="#{applicationForm.idThemes}" 
+					 		        selectedText="#{applicationForm.themesText}"
+					 		        modal="true" 
+					 		        withBtnClear="true" 
+					 		        expanded="false"
+					 		        sortByName="true" 
+					 		        isSelectNode="false" 
+					 		        showRadioBtn="true" />		
+					 		        
+					 		<p:commandButton id="bntSaveThemes" update="formApplicEdit:panelData message" action="#{applicationForm.actionSaveThemas()}" icon="fa fa-save" title="#{labels['general.save']}"/>	
+					 					 		        					 		        
+						</f:facet>			
+					
+						<div class="ui-g">
+
+						<div class="ui-g-12 ui-md-12 ui-lg-12">	
+							
+							 <p:dataTable id="themesList" var="row" value="#{applicationForm.themesList}"
+							 			  rowIndexVar="rkv" emptyMessage="" rows="10" style="margin-bottom:20px" paginator="true" reflow="true" 
+							 			  paginatorPosition="bottom" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">
+							      
+							       <p:column headerText="#{labels['general.No-symbol']}" width="20" priority="4">
+										<h:outputText value="#{rkv + 1}" />
+									</p:column>
+									
+									<p:column headerText="#{labels['publ.tematika']}" width="90%">
+							             <h:outputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_THEMAS, row.themeValue, applicationForm.currentLang, null, applicationForm.userId)}" />									             
+							         </p:column>
+							       
+							       <p:column headerText="" width="30" exportable="false">					       		
+							       		
+										<p:commandButton action="#{applicationForm.deleteThema(row)}" update="themesList" icon="fa fa-fw fa-trash" style="color: #d90000;" title="#{labels['general.delete']}"
+											onclick="if(!confirm('#{labels['app.confirmDeleteTheme']}'))return false;">											
+											
+										</p:commandButton>
+									</p:column>
+							  
+							   </p:dataTable>							   
+							  <ui:remove> <!-- mahnato ot butona za sabitiqta versiq 6.2 na pf ima bug vuv 6.2.2 e opraveno -->
+							  	<p:confirm header="#{labels['general.delete']}" message="#{labels['app.confirmDeleteTheme']}" icon="ui-icon-alert" />
+							  </ui:remove>
+							</div>
+						</div>
+					</p:panel>
+					
+					</p:outputPanel>
+					
+					</p:tab>
+					<p:tab title="#{labels['general.history']}">
+						<p:outputPanel id="panelEvents" >
+							
+							<div class="ui-g">
+
+								<div class="ui-g-12 ui-md-12 ui-lg-12">	
+									
+									 <p:dataTable id="eventsList" var="rowEvent" value="#{applicationForm.eventsList}"
+									 			  rowIndexVar="rkv" emptyMessage="" rows="10" style="margin-bottom:20px" paginator="true" reflow="true" 
+									 			  paginatorPosition="bottom" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">
+									      
+									       <p:column headerText="#{labels['general.No-symbol']}" width="20" priority="4">
+												<h:outputText value="#{rkv + 1}" />
+											</p:column>
+											
+											<p:column headerText="#{labels['general.date']}" width="100">									   
+									            <h:outputText  value="#{rowEvent.eventDate}" >
+									            	<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{applicationForm.timeZone}"/>
+									            </h:outputText>
+									       </p:column>
+											
+											<p:column headerText="#{labels['events.event']}" width="*">
+									             <h:outputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_TYPE_EVENT, rowEvent.eventType, applicationForm.currentLang, rowEvent.eventDate, applicationForm.userId)}" />							             
+									         </p:column>
+									       	
+									       <p:column headerText="" width="70" exportable="false">
+									       		
+									       		<p:commandButton action="eventsView.jsf"  ajax="false"   icon="fa fa-fw fa-search" title="#{labels['general.view']}" rendered="#{appParam==1}">
+													<f:param name="idObj" value="#{rowEvent.id}"/>
+													<f:param name="isView" value="1"/>
+												</p:commandButton>
+												
+												<p:commandButton action="eventsViewExt.jsf"  ajax="false"   icon="fa fa-fw fa-search" title="#{labels['general.view']}" rendered="#{appParam==2}">
+													<f:param name="idObj" value="#{rowEvent.id}"/>
+													<f:param name="isView" value="1"/>
+												</p:commandButton>
+												
+												
+												<span jsf:rendered="#{applicationForm.adminMod}">
+										       		<p:commandButton action="#{applicationForm.actionDeleteEvent}" update="eventsList" icon="fa fa-fw fa-trash" style="color: #d90000;" title="#{labels['general.delete']}"
+										       			rendered="#{( rkv+1 ) eq applicationForm.eventsList.size()? applicationForm.eventsControl[rowEvent.eventType][11] :false}"
+										       			onclick="if(!confirm('#{labels['app.confirmDeleteEvent']}'))return false;"  >
+														<f:param name="idEvent" value="#{rowEvent.id}"/>
+														<f:param name="codeEvent" value="#{rowEvent.eventType}"/>
+													</p:commandButton>
+									       		</span>	
+									       </p:column>
+									  
+									   </p:dataTable>
+									  
+									  <ui:remove> <!-- mahnato ot butona za sabitiqta versiq 6.2 na pf ima bug vuv 6.2.2 e opraveno -->
+										<p:confirm header="#{labels['general.delete']}" message="#{labels['app.confirmDeleteEvent']}" icon="ui-icon-alert" />
+									  </ui:remove>
+									  
+									</div>
+							</div>
+							
+						</p:outputPanel>
+					</p:tab>
+					<p:tab title="#{labels['general.answer']}">
+						<p:outputPanel id="panelDes" >
+						
+						<p:panel header="#{labels['events.endSolution']}: " style="margin-bottom:10px">
+							<p:outputLabel value="#{applicationForm.applic.responseDate}">
+								<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{applicationForm.timeZone}"/>
+							</p:outputLabel>
+				  			<p:inputTextarea value="#{applicationForm.applic.response}"   rows="6" style="width:99%" readonly="true"/>	
+				  			
+				  			<h:panelGroup rendered="#{applicationForm.applic.appIdForView != null}" id="linkToView">
+								<div class="ui-g">
+									<div class="ui-g-12 ui-md-12 ui-lg-12">
+										<h:outputText value="#{labels['events.answerToApp']} " styleClass="txt"/> 
+										<p:link outcome="applicationView.jsf" target="_blank" >
+											<p:outputLabel  value="#{labels['events.here']}" style="color:#039be5;font-size:large"/>
+											<f:param name="idObj" value="#{applicationForm.applic.appIdForView}" />	
+										</p:link>									
+									</div>
+								</div>
+							</h:panelGroup>				
+						</p:panel>
+						
+				  		<p:panel header="#{labels['general.attachedDoc']}" style="margin-bottom:10px" rendered="#{applicationForm.filesResponseList != null }">
+						
+							<div class="ui-g">
+	
+							<div class="ui-g-12 ui-md-12 ui-lg-12">	
+								
+								 <p:dataTable id="fileResponseList" var="rowr" value="#{applicationForm.filesResponseList}"
+								 			  rowIndexVar="rkv" emptyMessage="" rows="10" style="margin-bottom:20px" paginator="true" reflow="true" 
+								 			  paginatorPosition="bottom" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">
+								      
+								       <p:column headerText="#{labels['general.No-symbol']}" width="20" priority="4">
+											<h:outputText value="#{rkv + 1}" />
+										</p:column>
+										
+										 <p:column headerText="" width="32" exportable="false">
+								       		<p:commandButton  id="download" ajax="false" actionListener="#{applicationForm.download(rowr)}" icon="fa fa-fw fa-download" title="#{labels['file.download']}"  />
+								       	</p:column>
+								       	
+								       <p:column headerText="#{labels['file.description']}" width="90%">									   
+								            <h:outputText value="#{rowr.description}" rendered="#{rowr.description != null}"/>
+								            <h:outputText value="#{rowr.filename}" rendered="#{rowr.description == null or rowr.description == ''}"/>
+								       </p:column>
+								  
+								   </p:dataTable>
+								   
+								</div>
+							</div>
+						</p:panel>	
+					
+						
+							
+						</p:outputPanel>
+					</p:tab>
+					</p:tabView>
+				  	
+				  		
+			 	</p:outputPanel>
+		  		</div>
+		  	 
+		  	 <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+			      <p:commandButton value="#{labels['general.yes']}" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+			      <p:commandButton value="#{labels['general.no']}" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			 </p:confirmDialog>
+		  	 
+		   </h:form>
+		
+	
+</html>	

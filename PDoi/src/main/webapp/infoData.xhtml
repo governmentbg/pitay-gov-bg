@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html  xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:c="http://java.sun.com/jstl/core"
+	  xmlns:jsf="http://xmlns.jcp.org/jsf"
+	  xmlns:p="http://primefaces.org/ui"
+	  xmlns:pe="http://primefaces.org/ui/extensions"
+	  xmlns:ibg="http://java.sun.com/jsf/composite/components">
+	
+	<ui:composition template="/templates/main.xhtml">
+
+	<ui:define name="title">#{labels['publ.lable']}</ui:define>
+	<ui:define name="footer"></ui:define>
+	<ui:define name="systemLogo">
+	  <img src="images/cadmin_logo.png"/>
+	</ui:define>
+	<ui:define name="menu-items">
+		<ui:include src="/include/menuItems.xhtml" />
+	</ui:define>
+
+	<ui:define name="content">
+		<style type="text/css">
+			.ui-fileupload-buttonbar {
+			    margin: 0px 0px 0px 0px !important;
+			    padding: 0px 0px 0px 0px !important;
+			    border: none;
+			}
+			.ui-fileupload {
+			    margin: 0px 0px 0px 0px !important;
+			    padding: 0px 0px 0px 0px !important;
+			    display: inline-block;
+			    border: none;
+			}
+			
+		 	/*     .ui-fileupload-content {
+			    display: none;  
+			}    */
+			
+			.ui-fileupload-buttonbar .ui-button {
+			    top: -1px;
+			}
+			span.ui-fileupload-choose > span.ui-icon-plusthick  {
+			    display: none !important;
+			}
+			
+			span.ui-fileupload-choose > span.ui-button-text{
+			    padding-left: 1em !important;
+			}
+		</style>
+		
+		<script type="text/javascript">
+
+			PrimeFaces.locales ['en_US'] = {
+			    closeText: 'Close',
+			    prevText: 'Previous',
+			    nextText: 'Next',
+			    monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December' ],
+			    monthNamesShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec' ],
+			    dayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+			    dayNamesShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Tue', 'Fri', 'Sat'],
+			    dayNamesMin: ['S', 'M', 'T', 'W ', 'T', 'F ', 'S'],
+			    weekHeader: 'Week',
+			    weekNumberTitle: 'W',
+			    firstDay: 1,
+			    isRTL: false,
+			    showMonthAfterYear: false,
+			    yearSuffix:'',
+			    timeOnlyTitle: 'Only Time',
+			    timeText: 'Time',
+			    hourText: 'Time',
+			    minuteText: 'Minute',
+			    secondText: 'Second',
+			    currentText: 'Current Date',
+			    ampm: false,
+			    month: 'Month',
+			    week: 'week',
+			    day: 'Day',
+			    allDayText: 'All Day'
+			};
+
+
+
+		function KeyDownHandler(evt,btn) {
+	        	if (evt.keyCode==13) {evt.keyCode=9;document.getElementById(btn).focus();}
+	        }
+			function confirmAction(message){
+				if(confirm(message)){
+					return true;
+				}else{
+					return false;
+				}
+			}
+
+			function changeLangCalendar(loc){
+				if (loc==1){
+					document.getElementById('formInfoData:dateOt').setAttribute('locale','bg');
+				}
+				if (loc==2){
+					document.getElementById('formInfoData:dateOt').setAttribute('locale','en_US');
+				}
+			}
+
+
+			
+			
+        </script>
+        
+		<body onload="changeLangCalendar(#{infoData.currentLang});">
+		<h:form id="formInfoData" onkeypress="if(event.keyCode == 13 &amp;&amp; event.target.tagName!='TEXTAREA') {return false;}" >
+			<p:growl id="message" showDetail="true" showSummary="true"/>
+			<p:importConstants type="indexbg.pdoi.system.Constants" var="IBConstants" className="indexbg.pdoi.system.Constants" />
+			<p:tooltip/>
+			<div class="container"> 
+			<p:outputPanel id="panelEdit">
+
+					<p:toolbar rendered="#{infoData.param==1}">
+						<f:facet name="left">
+							<p:commandButton id="idNew" value="#{labels['publ.newData']}" action="#{infoData.actionClear}" icon="ui-icon-document" 
+									update="formInfoData message" />
+								
+						     <span class="ui-separator"/>
+						     <p:commandButton id="idSa" value="#{labels['general.save']}" action="#{infoData.actionSave}"  update="formInfoData message" 
+						     		icon="fa fa-fw fa-save"/>
+								
+						</f:facet>
+					</p:toolbar>
+					
+					<div class="ui-g">
+						<div class="ui-g-7 ui-md-3 ui-lg-2 cc-right">
+							<h:outputText value="#{labels['publ.title']}:" styleClass="req" rendered="#{infoData.param==1}"/>
+							<h:outputText value="#{labels['publ.title']}:" rendered="#{infoData.param==2}"/>
+						</div>
+						<div class="ui-g-12  ui-md-10 ui-lg-10">
+							<p:inputText id="idTitle" value="#{infoData.publication.title}" rendered="#{infoData.param==1}" style="width:99%" tabindex="1" />
+							<h:outputText id="idTitleO" value="#{infoData.publication.title}" escape="false" rendered="#{infoData.param==2}" />
+						</div>
+					</div>
+					
+					<div class="ui-g">
+						<div class="ui-g-7 ui-md-3 ui-lg-2 cc-right">
+							<h:outputText value="#{labels['general.section']}:" styleClass="req" rendered="#{infoData.param==1}"/>
+							<h:outputText value="#{labels['general.section']}:" rendered="#{infoData.param==2}"/>
+						</div>
+						<div class="ui-g-12 ui-md-10 ui-lg-10">
+							<p:inputText value="#{infoData.sectionText}"  id="idSectionText" readonly="true" style="width:60%" rendered="#{infoData.param==1}" tabindex="2"/>
+								<ibg:selectOneModal  
+									header="#{labels['publ.izbSection']}"   
+									userId="#{infoData.idUser}"  
+									lang="#{infoData.currentLang}"   
+									rendered="#{infoData.param==1}"
+					 	            saveStateTree="true"  
+					 	            isSelectNode="true"  
+					 	            withBtnClear="true" 
+					 	            id="idOneMS"
+					 		        codeClassif="#{IBConstants.CODE_SYSCLASS_SECTION}"     
+					 		        update="formInfoData:idSectionText formInfoData:idOtherLang"  
+					 		        selectedCode="#{infoData.codeSection}" 
+					 		        selectedText="#{infoData.sectionText}"/>
+					 		
+					 		<h:outputText id="idSectionTextO" value="#{infoData.sectionText}" escape="false" rendered="#{infoData.param==2}" />	        
+						</div>
+						
+					</div>
+		
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-3 ui-lg-2 cc-right" >
+							<h:outputText id="datFromL" value="#{labels['publ.dateFrom']}:" styleClass="req" rendered="#{infoData.param==1}"/>
+							<h:outputText value="#{labels['publ.dateFrom']}:" rendered="#{infoData.param==2}"/>
+						</div>
+						<div class="ui-g-12 ui-md-9 ui-lg-10">
+							
+								<p:calendar id="dateOt" pattern="dd.MM.yyyy" mask="true"  showOn="button" timeZone="#{infoData.timeZone}" tabindex="3" 
+						         	style="font-size:12px; width:40px;" size="10" value="#{infoData.dateFrom}" label="#{labels['publ.dateFrom']}" lang="bg"
+						          	locale="bg" styleClass="form-control #{infoData.hasMessages('formInfoData:dateOt') ? 'cc-red ': '' }" rendered="#{infoData.param==1}">
+						          	<p:ajax event="dateSelect"  listener="#{infoData.checkDates(1)}" update="formInfoData:dateOt formInfoData:dateDo message" />
+						          	<p:ajax event="change" listener="#{infoData.checkDates(1)}" update="formInfoData:dateOt formInfoData:dateDo message" />
+						        </p:calendar>
+						        <p:message for="dateOt" showDetail="true" showSummary="true" display="tooltip"/>
+						        
+						        <h:outputText id="dateOtO" value="#{infoData.dateFrom}" rendered="#{infoData.param==2}">
+						        	<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{infoData.timeZone}"/>
+						        </h:outputText>
+								<span class="ui-separator"/>
+								
+								<h:outputText value="#{labels['publ.dateTo']}:" style="margin-left:30px;"/>
+								<p:calendar id="dateDo" pattern="dd.MM.yyyy" mask="true"  showOn="button" timeZone="#{infoData.timeZone}" tabindex="4" 
+						         	style="font-size:12px; width:40px;" size="10" value="#{infoData.dateTo}" label="#{labels['publ.dateTo']}" 
+						          	locale="bg" styleClass="form-control #{infoData.hasMessages('formInfoData:dateDo') ? 'cc-red' : '' }" rendered="#{infoData.param==1}">
+						          	<p:ajax event="dateSelect" listener="#{infoData.checkDates(2)}" update="formInfoData:dateOt formInfoData:dateDo message" />
+						          	<p:ajax event="change" listener="#{infoData.checkDates(2)}" update="formInfoData:dateOt formInfoData:dateDo message" />
+							     </p:calendar>  	
+							     <p:message for="dateDo" showDetail="true" showSummary="true" display="tooltip"/> 
+							    
+							    <h:outputText id="dateDoO" value="#{infoData.dateTo}" rendered="#{infoData.param==2}">
+						        	<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{infoData.timeZone}"/>
+						        </h:outputText>
+					    	
+						</div> 
+				
+					</div>
+					
+					<div class="ui-g">
+						<div class="ui-g-7 ui-md-3 ui-lg-2 cc-right">
+							<h:outputText value="#{labels['general.anotation']}:" rendered="#{infoData.param==1}"/>
+							<h:outputText value="#{labels['general.anotation']}:" rendered="#{infoData.param==2}"/>
+						</div>
+						<div class="ui-g-12 ui-md-10 ui-lg-10">
+							<p:inputTextarea id="idAnot" value="#{infoData.publication.annotation}"  tabindex="5" 
+											rendered="#{infoData.param==1}" rows="4" style="width:99%;" />
+						
+							
+							<h:outputText id="idAnotO" value="#{infoData.publication.annotation}" escape="false" rendered="#{infoData.param==2}" />
+							
+							
+							<p:message for="idAnot" display="tooltip"/>
+						</div>
+						
+					</div>
+					
+					<div class="ui-g">
+						<div class="ui-g-7 ui-md-3 ui-lg-2 cc-right">
+							<h:outputText value="#{labels['publ.tematika']}:" />
+						</div>
+						<div class="ui-g-12 ui-md-10 ui-lg-10">
+							<p:inputText value="#{infoData.temaText}"  id="idTemaText" readonly="true" style="width:95%" rendered="#{infoData.param==1}" tabindex="6"/>
+								<ibg:selectManyModal  
+									header="#{labels['publ.izbThemas']}"   
+									userId="#{infoData.idUser}"  
+									lang="#{infoData.currentLang}"   
+									rendered="#{infoData.param==1}"
+					 	            saveStateTree="true"  
+					 		        codeClassif="#{IBConstants.CODE_SYSCLASS_THEMAS}"     
+					 		        update="formInfoData:idTemaText"  
+					 		        selectedCodes="#{infoData.selIdThemas}" 
+					 		        selectedText="#{infoData.temaText}"
+					 		        modal="true"
+					 		        id="idManyMT"
+					 		        withBtnClear="true"
+					 		        expanded="false"
+					 		        sortByName="true"
+					 		        isSelectNode="false"
+					 		        showRadioBtn="true" />
+					 		        
+					 		<h:outputText id="idTemaTextO" value="#{infoData.temaText}" escape="false" rendered="#{infoData.param==2}" />        
+						</div>
+						
+					</div>
+					
+					<div class="ui-g">
+						<div class="ui-g-7 ui-md-3 ui-lg-2 cc-right">
+							<h:outputText value="#{labels['general.fullText']}:"  rendered="#{infoData.param==1}"/>
+							<h:outputText value="#{labels['general.fullText']}:"  rendered="#{infoData.param==2}"/>
+						</div>
+						<div class="ui-g-12 ui-md-10 ui-lg-10">
+							<p:textEditor id="idFullText" value="#{infoData.publication.fullText}" height="150" widgetVar="idFtext" 
+								style="margin-bottom:10px" placeholder="Въведете текст" rendered="#{infoData.param==1}">
+						        <f:facet name="toolbar">
+						            <span class="ql-formats">
+						                <button class="ql-bold"></button>
+						                <button class="ql-italic"></button>
+						                <button class="ql-underline"></button>
+						                <button class="ql-strike"></button>
+						            </span>
+						             <span class="ql-formats">
+							            <button class="ql-list" value="ordered" />
+							            <button class="ql-list" value="bullet" />
+							            <button class="ql-indent" value="-1" />
+							            <button class="ql-indent" value="+1" />
+							        </span>
+							        <span class="ql-formats">
+							            <select class="ql-align" />
+							        </span>
+						        </f:facet>
+						    </p:textEditor>	
+							<h:outputText id="idFullTextO" value="#{infoData.publication.fullText}" escape="false" rendered="#{infoData.param==2}" />	
+							
+							<p:message for="idFullText"  display="tooltip"/>
+						</div>
+						
+						
+					</div>
+					
+					<div class="ui-g">
+						<div class="ui-g-7 ui-md-3 ui-lg-2 cc-right">
+							<h:outputText value="#{labels['general.dopInfo']}:" />
+						</div>
+						<div class="ui-g-12 ui-md-10 ui-lg-10">
+							<p:inputText id="idOther" value="#{infoData.publication.other}" rendered="#{infoData.param==1 and infoData.codeSection != IBConstants.CODE_ZNACHENIE_SECT_HOME}" style="width:99%" tabindex="7"/>
+							<h:outputText id="idOtherO" value="#{infoData.publication.other}" escape="false" rendered="#{infoData.param==2 and infoData.codeSection != IBConstants.CODE_ZNACHENIE_SECT_HOME}" />	
+							<p:inputTextarea id="idOtherLang" value="#{infoData.publication.other}"  
+								rendered="#{infoData.param==1 and infoData.codeSection == IBConstants.CODE_ZNACHENIE_SECT_HOME}" 
+								rows="1" style="width:99%;" placeholder="Въведете само езиковата версия: 'bg' или 'en'"/>
+							<p:message for="idOther" display="tooltip"/>
+						</div>
+						
+					</div>
+					
+					<div class="ui-g">
+						<div class="ui-g-7 ui-md-3 ui-lg-2 cc-right">
+							<h:outputText value="#{labels['publ.Image']}:" style="width:10%" for="filesUpload" />
+						</div>
+						<div class="ui-g-12 ui-md-10 ui-lg-10">
+							<p:graphicImage id="idImage" value="#{infoData.imageCont}" stream="false" height="130px" />
+							<p:fileUpload fileUploadListener="#{infoData.handleFileUpload}" 
+								skinSimple="true" 
+								rendered="#{infoData.param==1}"
+						    	update="formInfoData:idImage message" 
+						    	mode="advanced"
+						    	id="filesUpload" 
+						    	multiple="false" 
+						    	sizeLimit="12000000" 
+						    	auto="true" 
+						    	widgetVar="filesUpload" 
+						    	invalidSizeMessage="#{labels['general.invalidFileSize']}" 
+						    	invalidFileMessage="#{labels['general.invalidTypeFile']}"
+						    	label="" allowTypes="/(\.|\/)(gif|jpe?g|png|bmp)$/">
+						    	</p:fileUpload>
+						    	<p:tooltip for="filesUpload" id="idImTt" value="#{labels['file.upload']}"/>
+						</div>
+					</div>
+	
+					<p:panel style="margin-bottom:20px">
+						<p:toolbar >
+							<f:facet name="left">
+								<h:outputText value="#{labels['general.attachedDoc']}: " />
+							     <span class="ui-separator"/>
+							     <p:fileUpload id="filesUploadA" 
+							     	fileUploadListener="#{infoData.uploadFileListener}"  
+							     	invalidSizeMessage="#{labels['general.invalidFileSize']}" 
+						    		invalidFileMessage="#{labels['general.invalidFileTypeAt']}"
+							     	label="" skinSimple="true" allowTypes="/(\.|\/)(pdf|doc?x|xls?x|xml|txt|csv|html|odf)$/" 
+									update="fileList" auto="true" rendered="#{infoData.param==1}"/>
+								 <p:tooltip for="filesUploadA" value="#{labels['file.upload']}" />
+							</f:facet>
+							
+						</p:toolbar>
+					
+						<div class="ui-g">
+	
+						<div class="ui-g-12 ui-md-12 ui-lg-12">	
+							
+							 <p:dataTable id="fileList" var="row" value="#{infoData.filesList}" editable="true" editMode="cell" widgetVar="cellAtt" 
+							 			  rowIndexVar="rkv" emptyMessage="#{labels['general.norows']}" rows="10" style="margin-bottom:20px" paginator="true" 
+							 			  paginatorPosition="bottom" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">
+							      
+							       <p:column headerText="#{labels['general.No-symbol']}" width="3%" >
+										<h:outputText value="#{rkv + 1}" />
+									</p:column>
+									
+									 <p:column headerText="" width="9%" style="text-align:center;">									           	
+							           	 <p:commandButton  id="download" ajax="false" actionListener="#{infoData.download(row)}" icon="fa fa-fw fa-download" title="#{labels['file.download']}" />
+							       	</p:column>
+							 
+							       	<p:column headerText="#{labels['file.filename']}" width="30%">
+							             <h:outputText value="#{row.filename}" escape="false"/>									             
+							         </p:column>
+							       	
+							       <p:column headerText="#{labels['file.description']}" width="50%" >									   
+							            <p:inputText value="#{row.description}" rendered="#{infoData.param==1}" style="width:99%;"/>
+							       </p:column>
+							       
+							       <p:column headerText="" width="3%" exportable="false" style="text-align:center;" rendered="#{infoData.param==1}">
+							       		<p:commandButton action="#{infoData.actionChangeFileNonVis(row)}" update="fileList" icon="fa fa-fw fa-check" title="#{labels['file.visible']}" style="color: green;" rendered="#{row.visibleOnSite}"/>
+										<p:commandButton action="#{infoData.actionChangeFileVis(row)}" update="fileList" icon="fa fa-fw fa-times-circle" title="#{labels['file.nonVisible']}" style="color: #d90000;" rendered="#{!row.visibleOnSite}"/>													
+									</p:column>
+					
+									<p:column headerText="" width="3%" exportable="false" style="text-align:center;" rendered="#{infoData.param==1}">
+										
+										<p:commandButton action="#{infoData.remove(row)}" style="color: #d90000;" icon="fa fa-fw fa-trash" update="fileList" title="#{labels['general.delete']}"
+											 onclick="return confirmAction('#{beanMessages['general.confirmDeleteMsg']}')">
+										</p:commandButton>
+									</p:column>
+							  
+							   </p:dataTable>
+							   
+						</div>
+					</div>
+	
+				</p:panel>	
+		
+				<p:toolbar>
+					<f:facet name="left">
+					     <p:commandButton  value="#{labels['general.save']}" action="#{infoData.actionSave}"  update="formInfoData:panelEdit message"
+					     			icon="fa fa-fw fa-save" rendered="#{infoData.param==1}" />
+					</f:facet>
+					<f:facet name="right">
+						
+						<p:commandButton id="btnDel" action="#{infoData.actionDelete}" style="color: #d90000;" icon="fa fa-fw fa-trash"  update="formInfoData:message" 
+							value="#{labels['general.delete']}" rendered="#{infoData.publication.id != null and infoData.param==1}" onclick="return confirmAction('#{beanMessages['general.confirmDeleteMsg']}')">
+						</p:commandButton>
+					</f:facet>
+				</p:toolbar>
+			
+
+		</p:outputPanel>
+		
+		</div>
+		
+		<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" rendered="#{infoData.param==1}">
+	        <p:commandButton value="#{labels['general.yes']}" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+	        <p:commandButton value="#{labels['general.no']}" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+	   </p:confirmDialog>
+		
+		<script type="text/javascript"> $('#formInfoData\\:filesUpload_label').addClass('fa fa-fw fa-paperclip');</script>
+		<script type="text/javascript"> $('#formInfoData\\:filesUploadA_label').addClass('fa fa-fw fa-paperclip');</script>
+		
+		<ui:remove><p:link d="idviewOtpHelp" value="Инструкция" href="#{'help/User_Guide_admin.doc'}" target="_blank" title="Инструкция">
+			<span class="icon fas fa-question-circle"></span>
+		</p:link></ui:remove>
+			
+	</h:form>
+	</body>
+
+	</ui:define>
+	
+	</ui:composition>
+	
+</html>	 

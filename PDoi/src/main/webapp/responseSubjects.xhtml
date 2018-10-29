@@ -1,0 +1,242 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf" 
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+<ui:composition template="/templates/main.xhtml">
+
+	<ui:define name="title"> #{labels['responseSubjects.title']} </ui:define>
+
+	<ui:define name="systemLogo">
+		<img src="images/cadmin_logo.png" />
+	</ui:define>
+	
+	<ui:define name="menu-items">
+		<ui:include src="/include/menuItems.xhtml" />
+	</ui:define>
+
+	<ui:define name="content">
+	
+		<style>			
+			@media (min-width: 1024px) { 
+				  .igg-content { 
+				        width: 1024px; margin-right:auto; margin-left:auto
+				   }		   
+			}				 
+			
+		</style>	
+	
+		<h:form id="respSubForm">
+			
+			<p:importConstants type="indexbg.pdoi.system.Constants" var="IBConstants" className="indexbg.pdoi.system.Constants"/>
+			
+			<p:tooltip />
+
+			<div class="container">
+
+				<p:outputPanel id="panelData">
+				
+					<br />
+					<p:toolbar>
+						<f:facet name="left">
+							<p:commandButton id="bntSave" rendered="#{!responseSubjects.rs.admRegister}" update="respSubForm:panelData message" action="#{responseSubjects.actionSave}" icon="ui-icon-disk" value="#{labels['general.save']}" />
+						</f:facet>
+					</p:toolbar>					
+					<br />
+					
+					<p:panel>
+
+						<div class="ui-g">							
+	
+							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
+								<h:outputText value="#{labels['responseSubjects.eik']}: " styleClass="req"/>
+							</div>
+
+							<div class="ui-g-12 ui-md-2 ui-lg-2">											
+    							<p:inputText id="eik" value="#{responseSubjects.rs.eik}" >  
+    							 	<p:ajax event="change"  listener="#{responseSubjects.checkValidEik}"  update="message respSubForm" />
+    							</p:inputText>                       
+							</div>
+							
+							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
+								<h:outputText value="#{labels['responseSubjects.nivo']}: " styleClass="req"/>
+							</div>
+
+							<div class="ui-g-12 ui-md-6 ui-lg-6">
+								<p:selectOneMenu value="#{responseSubjects.rs.admLevel}" height="400px" id="admLevel" autoWidth="false" style="width:95%;">
+                                    <f:selectItem value="#{null}" itemValue="#{null}"/>  
+                                		<f:selectItem itemLabel="" itemValue="" />
+	                                    <f:selectItems value="#{systemData.getSysClassification(IBConstants.CODE_SYSCLASS_VID_SUBJECT, responseSubjects.today, responseSubjects.currentLang, responseSubjects.userId)}" 
+	                                    			   var="evR" itemLabel="#{evR.tekst}" itemValue="#{evR.code}" />			                                    
+                                </p:selectOneMenu>											                        
+							</div>
+							
+							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
+								<h:outputText value="#{labels['general.name']}: " styleClass="req"/>
+							</div>
+
+							<div class="ui-g-12 ui-md-10 ui-lg-10">											
+    							<p:inputText value="#{responseSubjects.rs.subjectName}" id="name" style="width:99%"/>                         
+							</div>
+							
+							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right">
+								<h:outputText value="#{labels['general.dataOt']}: " styleClass="req" />
+							</div>
+
+							<div class="ui-g-12 ui-md-3 ui-lg-3">											
+    							<p:calendar id="dateFrom" locale="bg" value="#{responseSubjects.rs.dateFrom}" showOn="button" mask="true" pattern="dd.MM.yyyy"/>
+							</div>
+							
+							<div class="ui-g-12 ui-md-1 ui-lg-1 cc-right">
+								<h:outputText value="#{labels['general.dataDo']}: " />
+							</div>
+
+							<div class="ui-g-12 ui-md-6 ui-lg-6">											
+    							<p:calendar id="dateTo" locale="bg" value="#{responseSubjects.rs.dateTo}" showOn="button" mask="true" pattern="dd.MM.yyyy"/>
+							</div>
+								
+						</div>
+							
+					</p:panel>	 
+					
+					<br/>
+					
+					<p:panel header="#{labels['app.adresZaCoresp']}" >
+
+						<div class="ui-g">							
+	
+							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
+								<h:outputText value="#{labels['general.oblast']}: " styleClass="req"/>
+							</div>
+
+							<div class="ui-g-12 ui-md-2 ui-lg-2">							
+								<p:selectOneMenu value="#{responseSubjects.rs.region}" id="oblast" autoWidth="false" style="width:90%;">
+                                    <f:selectItem itemLabel=" " itemValue="" />
+						            <f:selectItems value="#{responseSubjects.oblastList}" 
+                                    		   var="item" itemLabel="#{item.tekst}" itemValue="#{item.code}"/>
+                                    <p:ajax event="change" update="obshtina nasMiasto" listener="#{responseSubjects.actionChangeOblast}" />			                                    
+                                </p:selectOneMenu>									   						                        
+							</div>
+							
+							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
+								<h:outputText value="#{labels['general.obshtina']}: " styleClass="req"/>
+							</div>
+
+							<div class="ui-g-12 ui-md-2 ui-lg-2">	
+								<p:selectOneMenu value="#{responseSubjects.rs.municipality}" id="obshtina" autoWidth="false" style="width:90%;">
+                                    	<f:selectItem itemLabel=" " itemValue="" />
+						            	<f:selectItems value="#{responseSubjects.obshtiniList}" 
+                                    		   var="item" itemLabel="#{item.tekst}" itemValue="#{item.code}"/>
+                                   		<p:ajax event="change" update="nasMiasto" listener="#{responseSubjects.actionChangeObshtina}" />		                                    
+                                </p:selectOneMenu>										
+    							                      
+							</div>
+							
+							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
+								<h:outputText value="#{labels['general.nasMiasto']}: " styleClass="req"/>
+							</div>
+
+							<div class="ui-g-12 ui-md-2 ui-lg-2">
+								<p:selectOneMenu value="#{responseSubjects.rs.town}" id="nasMiasto" autoWidth="false" style="width:90%;">
+                                   <f:selectItem itemLabel=" " itemValue="" />
+						            	<f:selectItems value="#{responseSubjects.nasMestoList}" 
+                                    		   var="item" itemLabel="#{item.tekst}" itemValue="#{item.code}"/>			                                    
+                                </p:selectOneMenu>											                        
+							</div>
+							
+							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
+								<h:outputText value="#{labels['general.adress']}: " styleClass="req"/>
+							</div>
+
+							<div class="ui-g-12 ui-md-6 ui-lg-6">											
+    							<p:inputText value="#{responseSubjects.rs.address}" id="address" style="width:100%"/>                         
+							</div>
+							
+							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
+								<h:outputText value="#{labels['general.pk']}: " />
+							</div>
+
+							<div class="ui-g-12 ui-md-2 ui-lg-2">											
+    							<p:inputText value="#{responseSubjects.rs.zipCode}" maxlength="4" label="#{labels['general.pk']}" style="width:100%"/>                         
+							</div>
+							
+							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
+								<h:outputText value="#{labels['general.telefon']}: " />
+							</div>
+
+							<div class="ui-g-12 ui-md-2 ui-lg-2">											
+    							<p:inputText value="#{responseSubjects.rs.phone}" style="width:100%"/>                         
+							</div>
+							
+							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
+								<h:outputText value="#{labels['general.fax']}: " />
+							</div>
+
+							<div class="ui-g-12 ui-md-2 ui-lg-2">											
+    							<p:inputText value="#{responseSubjects.rs.fax}" style="width:100%"/>                         
+							</div>
+							
+							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
+								<h:outputText value="#{labels['general.email']}: " />
+							</div>
+
+							<div class="ui-g-12 ui-md-2 ui-lg-2">											
+    							<p:inputText value="#{responseSubjects.rs.email}" id="email" style="width:100%">    
+    								<p:ajax event="change"  listener="#{responseSubjects.checkValidMail}"  update="message" />
+    							</p:inputText>                     
+							</div>
+								
+						</div>
+							
+					</p:panel>
+					
+					<br/>
+					
+					<p:panel header="#{labels['general.dopInfo']}" style="margin-bottom:20px">
+
+						<div class="ui-g">							
+	
+							<div class="ui-g-12 ui-md-12 ui-lg-12">											
+		    						<p:inputTextarea rows="10" value="#{responseSubjects.rs.addInfo}" autoResize="false" />
+							</div>	
+								
+						</div>
+							
+					</p:panel>
+								
+					<br/>
+					
+					<p:toolbar>
+					
+						<f:facet name="left">
+							<p:commandButton id="bntSaveDown" rendered="#{!responseSubjects.rs.admRegister}" update="respSubForm:panelData message" action="#{responseSubjects.actionSave}" icon="ui-icon-disk" value="#{labels['general.save']}" />
+						</f:facet>
+						
+						<f:facet name="right">
+							<p:commandButton id="bntDelete" rendered="#{responseSubjects.rs.id!=null and !responseSubjects.rs.admRegister}" update="respSubForm:panelData message" action="#{responseSubjects.actionDelete}" style="color: #d90000;" icon="fa fa-fw fa-trash"  value="#{labels['general.delete']}" >
+								<p:confirm header="#{labels['general.delete']}" message="#{labels['general.confirm']}" icon="ui-icon-alert" />
+							</p:commandButton>
+						</f:facet>
+						
+						
+					</p:toolbar>
+					<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+				        <p:commandButton value="#{labels['general.yes']}" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				        <p:commandButton value="#{labels['general.no']}" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				    </p:confirmDialog>
+				</p:outputPanel>
+
+			</div>
+			
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>
+
+</html>

@@ -1,0 +1,118 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf" 
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+<ui:composition template="/templateExt/mainExt.xhtml">
+
+	
+
+	<ui:define name="menu-items">
+		<ui:include src="/include/menuExt.xhtml" />
+	</ui:define>
+
+	<ui:define name="content">
+	
+		<style>			
+			.ui-link {
+				  color:#039be5;				
+				}			 
+			
+			.ui-link:hover {text-decoration:underline !important; color:#039be5; cursor: pointer;}
+			.ui-datagrid-content {
+				border: none;
+			}
+		</style>	
+	
+		<h:form id="appFilterForm">
+			<p:defaultCommand target="btnSearch"/>
+			<p:focus id="focusID" for="text" />
+			
+			<p:importConstants type="indexbg.pdoi.system.Constants" var="IBConstants" className="indexbg.pdoi.system.Constants"/>
+			<p:importConstants type="com.indexbg.system.SysConstants" var="IBConstantsSys" className="com.indexbg.system.SysConstants" />
+
+			<div class="container">
+
+				<p:outputPanel id="panelData">	
+						
+					<br />
+					
+					<p:panel  >
+						<div class="ui-g">
+							
+			
+							
+							<div class="ui-g-12 ui-md-10 ui-lg-11">											
+    							<p:inputText value="#{applicationFilter.text}" id="text" style="width:100%;"/>                         
+							</div>
+													 
+						    <div class="ui-g-12 ui-md-2 ui-lg-1" >
+						        <p:commandButton action="#{applicationFilter.actionSearch()}" value="#{labels['general.search']}" icon="fa fa-search" update="appFilterForm:panelData" id="btnSearch" >
+						       		<f:param name="param" value="#{param}" />	
+						        </p:commandButton>
+						    </div>
+						    		
+						</div>
+					
+					</p:panel>	
+					 
+					<br />
+					
+					
+					<ui:decorate template="/templates/panel.xhtml">
+						<ui:define name="panel-header">
+							<h:outputText value="Намерени резултати: #{applicationFilter.appList.getRowCount()}" />
+						</ui:define>
+						<ui:define name="panel-content">
+					
+					
+			 						 	
+					 	 <p:dataGrid id="tbl" var="row" rendered="#{applicationFilter.appList!=null}" columns="1" layout="grid" 
+							value="#{applicationFilter.appList}" lazy="true" rows="10"
+							rowIndexVar="idx" sortMode="single" reflow="true"
+							emptyMessage="#{labels['general.norows']}"
+							paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+							rowsPerPageTemplate="15,20,25" paginatorPosition="bottom"
+							paginator="true" style="margin-bottom:20px; border:0px" >
+							
+							  <p:panel >
+						            <h:panelGrid columns="1" style="width:100%">
+						               <p:link outcome="applicationView.jsf" >
+											<p:outputLabel  value="#{row[4]}" style="color:#039be5;font-size:large"/>
+											<f:param name="idObj" value="#{row[0]}" />	
+										</p:link>
+						 
+						                <h:outputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_ADM_REGISTRY, row[3], applicationFilter.currentLang, applicationFilter.today, applicationFilter.userId)}" />
+						 	            <h:panelGroup>
+						 	                <h:outputText value="#{labels['general.date']}: " />
+						 	                <h:outputText   value="#{row[2]}" >
+						 	                	<f:convertDateTime type="date" pattern="dd.MM.yyyy" timeZone="#{applicationFilter.timeZone}"/>
+						 	                </h:outputText>
+						 	                <p:spacer width="10" />
+											<h:outputText styleClass="fa fa-eye"   />
+											<p:spacer width="5" />
+											<h:outputText   value="#{row[6]}" />
+						                </h:panelGroup>
+						            </h:panelGrid>
+						      </p:panel>
+
+						</p:dataGrid>
+
+			        	</ui:define>
+			        </ui:decorate>
+				</p:outputPanel>
+
+			</div>
+			
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>
+
+</html>

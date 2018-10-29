@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"  
+    xmlns:h="http://java.sun.com/jsf/html"  
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{environment.language}">    
+   <h:head> 
+   		  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    	  
+	      <meta charset="UTF-8"/>
+	      <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	      <!--Let browser know website is optimized for mobile-->
+    	  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	      
+	      <!-- meta -->
+	      <ui:insert name="metatags"></ui:insert>
+	      
+	      <title><ui:insert name="title">Main</ui:insert></title>
+		  <!--Import materialize.css-->
+		  <h:outputStylesheet library="css" name="materialize.css"/>
+		  <h:outputStylesheet library="cssExt" name="main.css"/>
+		  <h:outputStylesheet library="cssExt" name="styles.css"/>
+		 
+		  
+		  <!-- THEME -->  
+		  <link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700,900|Quicksand:400,700|Questrial" rel="stylesheet" />
+	      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous"/>
+		  
+			
+   </h:head>
+   
+   <h:body>
+      
+     <!-- AJAX STATUS AND JSF MESSAGE INCLUDE -->
+     <p:ajaxStatus onstart="ajaxStatus(true)" oncomplete="ajaxStatus(false)"/>
+     <p:growl id="message" showDetail="false" sticky="false" life="5000"/>
+         
+     <!-- SESSION EXPIRED MONITOR -->
+    <p:idleMonitor timeout="#{session.maxInactiveInterval * 1000 - 125000}" onidle="$('#sessionExpModal').modal('open');" />
+     
+     
+     <ui:include src="/fragments/ajaxStatus.xhtml"/> 
+	  
+	 
+		 <!-- HEADER -->
+		<div class="header-wrapper">
+	        <div class="header">
+	        	<h:form>
+	            <div class="login">
+	                <a jsf:action="entryPage.xhtml@clear@?faces-redirect=true" title="#{labels['mainExt.input']}"  jsf:rendered="#{userData.userId ==null or userData.userId ==-1}">
+	                    <span class="icon fas fa-sign-in-alt"></span>
+	                </a>
+	                  <!--  Trigger for dropdown for changing language -->
+	      
+		                        <a class="dropdown-button" href="#!" data-activates="selectLangDropdown" style="text-transform: uppercase;">
+		                        #{environment.language}
+		                        </a>
+	                       
+	                <div class="menu-dropdown">
+	                    <a jsf:action="#" title="#{labels['mainExt.user']}" jsf:rendered="#{userData.hasAccess(7,45)}">
+	                        <span class="icon fas fa-user"></span>
+	                    </a>
+	                    <ul class="menu-dropdown-content">
+	                        <li><a href="#" title="#{labels['mainExt.cert']}">#{labels['mainExt.cert']}</a></li>
+	                        <li><a href="api/auth/logout" >#{labels['mainExt.out']}</a></li>
+	                    </ul>
+	                </div>
+	                
+	                <a title="#{labels['menu.instructions']}" href="resources/docs/User_Guide v3.pdf" target="_blank">
+	                    <span class="icon fas fa-question-circle"></span>
+	                </a>
+	
+	                <div class="menu-dropdown">
+	                    <a href="#" title="#{labels['mainExt.optic']}">
+	                        <span class="icon fas fa-eye-slash"></span>
+	                    </a>
+	                    <ul class="menu-dropdown-content">
+	                        <li>
+	                            <a href="#" title="#{labels['mainExt.letterSizePlus']}" onclick="font(true)">
+	                                +<span class="icon fas fa-font"></span>
+	                            </a>                        
+	                            
+	                            <a href="#" title="100%" onclick="resetFont()">
+	                                100%<span class="icon fas fa-font"></span>
+	                            </a>
+	                            
+	                           	<a href="#" title="#{labels['mainExt.letterSizeMin']}" onclick="font(false)">
+	                                -<span class="icon fas fa-font"></span>
+	                            </a>
+	                        </li>
+	                        <li>
+	                            <a href="#" title="#{labels['mainExt.changeColor']}" onclick="colorBlind()">
+	                                <span class="icon fas fa-palette"></span>
+	                            </a>
+	                        </li>
+	                       
+	                    </ul>
+	                </div>
+	            </div>
+	            <!--  Dropdown for changing language -->
+                <ul id="selectLangDropdown" class="dropdown-content">
+				  <li><a href="#!" jsf:action="#{environment.changeLanguage('bg')}">BG</a></li>
+				  <li><a href="#!" jsf:action="#{environment.changeLanguage('en')}">EN</a></li>
+				</ul>
+	            
+	            <div class="container logo-container">
+	               
+                        <div class="logo">
+                            <img src="images/gerb.png" alt="#{labels['mainExt.gerbBG']}"/>
+                            <div class="logo-text">
+	                            <h1>#{labels['mainExt.mins']}</h1>
+	                            <h4>#{labels['indexExt.title']}</h4>
+                        	</div>
+                        </div>
+	            </div>
+	            <!-- MENU -->
+	            <ui:insert name="menu-items"></ui:insert>
+	            
+	            </h:form>
+	        </div>
+		</div>
+
+	
+		<!-- CONTENT -->
+		<div class="wrapper">
+
+		<!-- INSERT CONTENT HERE -->
+	  		<p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" rendered="false"/>
+			<ui:insert name="content"></ui:insert>
+	  	
+	  	</div>
+	  	
+	  	<!-- FOOTER -->
+		<div class="footer">
+	        <div class="footer-content">
+	            <div class="container-fluid">
+	                <div class="ui-g">
+	                    <div class="ui-md-12">
+	                        <div class="info">
+	                            <p>
+	                                #{labels['mainExt.footer']}
+	                            </p>
+	                        </div>
+	                        <p class="copyrights"> Untitled. All rights reserved. | Design by <a href="#" rel="nofollow">Index Bulgaria Ltd</a>.</p>
+	                         <ul class="social-contacts">
+	                        <!--    <li><a href="#" target="_blank"><span class="icon icon-twitter">Twitter</span></a></li>
+	                            <li><a href="#" target="_blank"><span class="icon icon-facebook">Facebook</span></a></li>
+	                            <li><a href="#" target="_blank"><span class="icon icon-tumblr">Google+</span></a></li>-->
+	                        </ul> 
+	                    </div>
+	                </div>
+	            </div>
+	            <div class="img-left-wrap">
+	                <img src="images/eu.png" alt="EU" class="left"/>
+	            </div>
+	            <div class="img-right-wrap">
+	                <img src="images/op.png" alt="OP" class="right"/>
+	            </div>
+	        </div>
+		</div>
+	 
+		
+	  
+	    
+	    
+	   <!-- SESSION EXPIRED DIALOG -->
+	   <div id="sessionExpModal" class="modal" style="width: 400px !important;">
+		    <div class="modal-content">
+		      <h4>Session expired</h4>
+		      <p>Session timeout, go to login</p>
+		    </div>
+		    <div class="modal-footer" style="width: auto;">
+		      <a href="api/auth/logout" class="modal-action modal-close waves-effect waves-green btn-flat">OK</a>
+		    </div>
+	   </div>
+	   
+	   <!-- CERT REG DIALOG -->
+	   <div id="regCertModal" class="modal">
+		    <div class="modal-content">
+		      <h4>#{labels['mainExt.certRegistr']}</h4>
+		      <a onclick="addCert();" class="waves-effect waves-light btn" style="float:right;"><i class="material-icons left">add</i>#{labels['mainExt.add']}</a>
+		      <table class="highlight bordered cert_table" style="width: 100%;">
+		        <thead>
+		          <tr>
+		              <th>Issuer</th>
+		              <th>Expire Date</th>
+		              <th>Active</th>
+		              <th></th>
+		          </tr>
+		        </thead>
+		        <tbody></tbody> 
+		      </table>
+		    </div>
+		    <div class="modal-footer" style="width: auto;">
+		      <a class="modal-action modal-close waves-effect waves-green btn-flat">ClOSE</a>
+		    </div>
+	   </div>
+
+	   <h:outputScript library="primefaces" name="jquery/jquery.js" target="head" />
+	   <h:outputScript library="primefaces" name="jquery/jquery-plugins.js" target="head" />
+	   <h:outputScript library="js" name="jquery.hotkeys.js"/>
+	   <h:outputScript library="js" name="materialize.js"/>
+	   <h:outputScript library="js" name="jquery.webui-popover.min.js"/>
+	   <h:outputScript library="js" name="prism.js"/>
+	   <h:outputScript library="js" name="scripts.js"/>
+	   <h:outputScript library="js" name="html2canvas.js"/>
+	   <h:outputScript library="js" name="main.js"/>
+	   <h:outputScript library="js" name="validation.js"/>
+
+	   <h:outputScript library="jsExt" name="mainExt.js"/>
+
+
+	   <ui:insert name="cc-script"></ui:insert> 
+ 	</h:body>
+</f:view> 	
+</html> 	    

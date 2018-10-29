@@ -1,0 +1,98 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf" 
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+
+<ui:composition template="/templateExt/mainExt.xhtml">
+		
+	<ui:define name="title">  #{labels['publ.sectInfUser']} </ui:define> 
+	
+	<ui:define name="systemLogo">
+		  <img src="resources/images/logo.png"/>
+	</ui:define>
+	
+	
+	<ui:define name="menu-items">
+		<ui:include src="/include/menuExt.xhtml"/>
+	</ui:define>
+	
+		
+	<ui:define name="content">		
+	
+		<style>
+			.ui-commandlink {
+				  color:#039be5;				
+				}			 
+			
+			.ui-commandlink:hover {text-decoration:underline !important;  cursor: pointer;}
+			
+			.ui-datagrid-content {
+				border: none;
+			}
+		</style>
+		
+		<h:form id="formSectList">
+			<p:importConstants type="indexbg.pdoi.system.Constants" var="IBConstants" className="indexbg.pdoi.system.Constants" />
+			<p:tooltip/>
+			<div class="container">
+				<p:outputPanel id="panelData">
+
+					<p:outputPanel id="panelTableP">
+						<p:dataGrid var="row" value="#{sectList.sectListT}" columns="2" layout="grid"  
+					        rows="12" paginator="true" id="tableSect" paginatorPosition="bottom" 
+					        paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					        rendered="#{sectList.sectListT.rowCount > 0}" lazy="true" emptyMessage="#{labels['general.norows']}" 
+					        rowsPerPageTemplate="6,12,16" >
+					        
+					        <p:panel style="text-align:center">
+       							<h:panelGrid columns="1" style="width:100%;border:0px">
+       								<p:link outcome="sectionDetailsView.jsf">
+       									<h:outputText value="#{row[2]}" escape="false" style="font-weight:bold;font-size:16px; " />
+       									<f:param name="idPubl" value="#{row[0]}"/>
+									<f:param name="codeSect" value="#{sectList.codeSection}"/>
+       								</p:link>
+       							
+       								
+       								<br />
+       								<h:outputText value="#{row[3]}" escape="false"/>
+									
+								</h:panelGrid>
+							</p:panel>
+						
+						</p:dataGrid>
+					
+					</p:outputPanel>
+
+				</p:outputPanel>
+			
+			</div>
+
+		</h:form>
+		
+		<style type="text/css">
+			.singleLine
+			{
+			    text-wrap:none;
+			    white-space:nowrap;
+			    overflow:hidden;
+			    text-overflow:ellipsis;
+			}
+			.wrapLine
+			{
+			    text-wrap:true;
+			    white-space:wrap;
+			
+			}
+		</style>
+	
+	</ui:define>
+
+</ui:composition>
+
+</html>

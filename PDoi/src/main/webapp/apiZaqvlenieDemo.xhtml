@@ -1,0 +1,91 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf" 
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+<ui:composition template="/templates/main.xhtml">
+
+	<ui:define name="title">#{labels['apiZaqvlenie.title']}</ui:define>
+
+	<ui:define name="systemLogo">
+		<img src="images/cadmin_logo.png" />
+	</ui:define>
+	
+	<ui:define name="menu-items">
+		<ui:include src="/include/menuItems.xhtml" />
+	</ui:define>
+
+	<ui:define name="content">
+	
+		<style>			
+			@media (min-width: 1024px) { 
+				  .igg-content { 
+				        width: 1024px; margin-right:auto; margin-left:auto
+				   } 
+			}				 
+			
+		</style>	
+	
+		<h:form id="respSubForm">
+			
+			<p:importConstants type="indexbg.pdoi.system.Constants" var="IBConstants" className="indexbg.pdoi.system.Constants"/>
+			
+			<p:tooltip />
+
+			<div class="container">
+
+				<p:outputPanel id="panelData">
+				
+					 
+					
+					<p:panel>
+
+						<div class="ui-g">							
+	
+							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
+								<h:outputText value="#{labels['apiZaqvlenie.searchByUri']}: " styleClass="req"/>
+							</div>
+
+							<div class="ui-g-12 ui-md-2 ui-lg-2">											
+    							<p:inputText id="uri" value="#{apiZaqvlenieBean.uri}" styleClass="form-control"> 
+    							 	
+    							</p:inputText>                       
+							</div>
+							
+							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
+								<p:commandButton value="#{labels['general.search']}" action="#{apiZaqvlenieBean.actionSerch}" update="resultat" ></p:commandButton>
+							</div>
+
+						</div> 
+						<div class="ui-g">							
+	
+							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
+								<h:outputText value="#{labels['general.result']}: " />
+							</div>
+
+							<div class="ui-g-12 ui-md-2 ui-lg-2">											
+    							<h:outputText value="#{apiZaqvlenieBean.result}" id="resultat"/>                       
+							</div>
+							
+							
+
+						</div> 
+							
+					</p:panel>	 
+					
+					  </p:outputPanel>
+
+			</div>
+			
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>
+
+</html>

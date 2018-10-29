@@ -1,0 +1,171 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf" 
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+<ui:composition template="/templates/main.xhtml">
+
+	<ui:define name="title"> #{labels['responseSubjectsList.title']} </ui:define>
+
+	<ui:define name="systemLogo">
+		<img src="images/cadmin_logo.png" />
+	</ui:define>
+	
+	<ui:define name="menu-items">
+		<ui:include src="/include/menuItems.xhtml" />
+	</ui:define>
+
+	<ui:define name="content">
+	
+		<style>			
+			@media (min-width: 1024px) { 
+				  .igg-content { 
+				        width: 1024px; margin-right:auto; margin-left:auto
+				   } 
+			}				 
+			
+		</style>	
+	
+		<h:form id="respSubForm">
+			<p:defaultCommand target="btnSearch"/>
+			<p:focus id="focusID" for="eik" />
+	
+			<p:tooltip />
+
+			<div class="container">
+
+				<p:outputPanel id="panelData">
+				
+					<br />
+					<p:toolbar>
+						<f:facet name="left">
+							
+							<p:commandButton id="bntNew"  action="responseSubjects.jsf" icon="ui-icon-disk" value="#{labels['general.new']}" />
+				
+						</f:facet>
+					</p:toolbar>					
+					<br />
+					
+					<p:panel  >
+
+						<div class="ui-g">							
+	
+							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
+								<h:outputText value="#{labels['responseSubjects.eik']}: "/>
+							</div>
+
+							<div class="ui-g-12 ui-md-10 ui-lg-10">											
+    							<p:inputText id="eik" value="#{responseSubjectsList.eik}" style="width:20%"/>                         
+							</div>
+						
+							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
+								<h:outputText value="#{labels['general.name']}: " />
+							</div>
+
+							<div class="ui-g-12 ui-md-10 ui-lg-10">											
+    							<p:inputText value="#{responseSubjectsList.name}" id="name" style="width:99%"/>                         
+							</div>
+							
+			 				<div class="ui-g-12 ui-md-6 ui-lg-6" >
+			 					<p:commandButton action="#{responseSubjectsList.actionClear()}" 
+					 		 	value="#{labels['general.clear']}" update="respSubForm:panelData" id="btnClear" /> 
+					 		</div>
+
+					        <div class="ui-g-12 ui-md-6 ui-lg-6 cc-right">
+					        	<p:commandButton action="#{responseSubjectsList.actionSearch()}"  
+					         			 value="#{labels['general.search']}" update="respSubForm:panelData" id="btnSearch"  icon="fa fa-search"/>
+					        </div>
+						</div>
+							
+					</p:panel>	 
+					<br />
+					<p:panel  header="#{labels['general.result']}: #{responseSubjectsList.rsList.getRowCount()}" id="panelTable">
+			 						 	
+					 	 <p:dataTable id="tbl" var="row"  rendered="#{responseSubjectsList.rsList!=null}" reflow="true" 
+							value="#{responseSubjectsList.rsList}" lazy="true" rows="15"
+							rowIndexVar="idx" sortMode="single" emptyMessage=""
+							paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+							rowsPerPageTemplate="15,20,25,30" paginatorPosition="bottom"
+							paginator="true" style="margin-bottom:20px">
+							
+							 <f:facet name="{Exporters}">
+					            <h:commandLink >
+					                <p:graphicImage library="images" name="excel.png" width="24"/>
+					                <p:dataExporter type="xls" target="tbl" fileName="responseSubjects" encoding="utf-8"/>
+					            </h:commandLink>
+				 
+					            <h:commandLink>
+					                <p:graphicImage library="images" name="csv.png" width="24"/>
+					                <p:dataExporter type="csv" target="tbl" fileName="responseSubjects"  encoding="utf-8"/>
+					            </h:commandLink>
+					 
+					            <h:commandLink>
+					                <p:graphicImage library="images" name="xml.png" width="24"/>
+					                <p:dataExporter type="xml" target="tbl" fileName="responseSubjects"  encoding="utf-8"/>
+					            </h:commandLink>		
+					            	            				            					 
+					        </f:facet>
+        
+							<p:column style="width:5px;text-align: center" exportable="true">
+								<f:facet name="header">
+					                 No
+					            </f:facet>
+								<h:outputText value="#{idx + 1}" />
+							</p:column>
+			
+							<p:column width="55" sortBy="#{row.A1}" exportable="true" >
+								<f:facet name="header">
+									<h:outputText value="#{labels['responseSubjects.eik']}" />
+								</f:facet>
+								<h:outputText value="#{row[1]}" />
+							</p:column>
+							
+							<p:column width="40%" sortBy="#{row.A2}" exportable="true">
+								<f:facet name="header">
+									 <h:outputText value="#{labels['general.name']}" />
+								</f:facet>
+								<h:outputText value="#{row[2]}" />
+							</p:column>
+		
+							<p:column width="37%" sortBy="#{row.A3}" exportable="true">
+								<f:facet name="header">
+									<h:outputText value="#{labels['general.adress']}" />
+								</f:facet>
+								<h:outputText value="#{row[3]}" />
+							</p:column>
+							
+							<p:column width="25" exportable="false">
+								<p:commandButton rendered="#{!row[4]}" actionListener="#{responseSubjectsList.actionDelete(row[0])}" update="respSubForm:panelTable message"  icon="fa fa-fw fa-remove" style="color: #d90000;" title="#{labels['general.delete']}">		
+							   		<p:confirm header="#{labels['general.delete']}" message="#{labels['general.confirm']}" icon="ui-icon-alert" />
+							    </p:commandButton>
+							</p:column>
+							
+							<p:column width="25" exportable="false">
+								 <p:commandButton icon="fa fa-fw fa-edit" action="responseSubjects.jsf"  ajax="false" title="#{labels['general.izbor']}"   >
+								 	<f:param name="idObj" value="#{row[0]}" />							   
+								 </p:commandButton>  
+					        </p:column>
+						</p:dataTable>
+						
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+					        <p:commandButton value="#{labels['general.yes']}" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					        <p:commandButton value="#{labels['general.no']}" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+					    </p:confirmDialog>
+    
+			         </p:panel>
+				</p:outputPanel>
+
+			</div>
+			
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>
+
+</html>

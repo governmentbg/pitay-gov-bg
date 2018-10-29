@@ -1,0 +1,171 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf" 
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+<ui:composition template="/templateExt/mainExt.xhtml">
+
+	
+	<ui:define name="menu-items">
+		<ui:include src="/include/menuExt.xhtml" />
+	</ui:define>
+
+	<ui:define name="content">
+	
+		<style>			
+			
+			.ui-link {
+				  color:#039be5;				
+				}			 
+			
+			.ui-link:hover {text-decoration:underline !important; color:#039be5; cursor: pointer;}
+			.ui-datagrid-content {
+				border: none;
+			}
+		</style>	
+	
+		<h:form id="appFilterForm">
+				
+			<p:importConstants type="indexbg.pdoi.system.Constants" var="IBConstants" className="indexbg.pdoi.system.Constants"/>
+			<p:importConstants type="com.indexbg.system.SysConstants" var="IBConstantsSys" className="com.indexbg.system.SysConstants" />
+
+			<div class="container">
+
+				<p:outputPanel id="panelData">	
+						
+					<br />
+					
+					<div class="ui-g-12 ui-md-12 ui-lg-12 cc-right" style="padding: 0;">
+						<p:menuButton value="#{labels['general.sort']}" >
+					        <p:menuitem value="#{labels['responseSubjects.title']}" actionListener="#{myApplications.actionSort('A3')}" update="tbl" />		
+					        <p:menuitem value="#{labels['general.dataPodavane']}" actionListener="#{myApplications.actionSort('A7')}" update="tbl" />				     		     
+					    </p:menuButton>
+				    </div>
+									
+					<ui:decorate template="/templates/panel.xhtml">
+						<ui:define name="panel-header">
+							<h:outputText value="#{labels['adminApp.title']}: #{myApplications.appList.getRowCount()}" />
+							
+						</ui:define>
+						<ui:define name="panel-content">
+			 						 	
+					 	 <p:dataGrid id="tbl" var="row" rendered="#{myApplications.appList!=null}" columns="1" layout="grid" 
+							value="#{myApplications.appList}" lazy="true" rows="2"
+							rowIndexVar="idx" sortMode="single" reflow="true"
+							emptyMessage="#{labels['general.norows']}"
+							paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+							rowsPerPageTemplate="2,5,10,15" paginatorPosition="bottom"
+							paginator="true" style="margin-bottom:20px; border:0px" >
+							
+							  <p:panel >
+						            <h:panelGrid columns="1" style="width:100%">
+						               <p:link outcome="applicationFormExt.jsf" >
+											<p:outputLabel  value="#{row[4]}" style="color:#039be5;font-size:large"/>
+											<f:param name="idObj" value="#{row[0]}" />	
+										</p:link>
+									 	<h:panelGroup>
+									 	 	<h:outputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_ADM_REGISTRY, row[3], myApplications.currentLang, myApplications.today, myApplications.userID)}" />
+									 	 	|
+										   	<h:outputText value="#{labels['app.nomerZaiavlenie']}: "/>
+										   	<h:outputText   value="#{row[1]}" />
+									 	</h:panelGroup>
+						               
+						 	            <h:panelGroup>
+						 	                <h:outputText value="#{labels['general.dataPodavane']}: " />
+						 	                <h:outputText   value="#{row[7]}" >
+						 	                	<f:convertDateTime type="date" pattern="dd.MM.yyyy" timeZone="#{myApplications.timeZone}"/>
+						 	                </h:outputText>
+						 	                <p:spacer width="10" />
+											<h:outputText styleClass="fa fa-eye"   />
+											<p:spacer width="5" />
+											<h:outputText   value="#{row[6]}" />
+											  	
+										    |
+										    <h:outputText value="#{labels['general.status']}: " />
+										   <h:outputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_STATUS_APPLICATION, row[5], searchApplications.currentLang, searchApplications.today, searchApplications.userID)}" />
+						                
+						                </h:panelGroup>
+						            </h:panelGrid>
+						      </p:panel>
+
+						</p:dataGrid>
+
+			        	</ui:define>
+			        </ui:decorate>
+			        
+			        
+			        <div class="ui-g-12 ui-md-12 ui-lg-12 cc-right" style="padding: 0;">
+						<p:menuButton value="#{labels['general.sort']}" >
+					        <p:menuitem value="#{labels['responseSubjects.title']}" actionListener="#{myApplications.actionSortSubs('A3')}" update="tbl1" />		
+					        <p:menuitem value="#{labels['general.dataPodavane']}" actionListener="#{myApplications.actionSortSubs('A7')}" update="tbl1" />				     		     
+					    </p:menuButton>
+					 </div>
+						 
+			        <ui:decorate template="/templates/panel.xhtml">
+						
+						<ui:define name="panel-header">
+							<h:outputText value="#{labels['general.mySubscriptions']}: #{myApplications.subsList.getRowCount()}" />
+						</ui:define> 
+						
+						<ui:define name="panel-content">
+			 						 	
+					 	 <p:dataGrid id="tbl1" var="row" rendered="#{myApplications.subsList!=null}" columns="1" layout="grid" 
+							value="#{myApplications.subsList}" lazy="true" rows="2"
+							rowIndexVar="idx" sortMode="single" reflow="true"
+							emptyMessage=""
+							paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+							rowsPerPageTemplate="2,5,10,15" paginatorPosition="bottom"
+							paginator="true" style="margin-bottom:20px; border:0px" >
+							
+							  <p:panel >
+						            <h:panelGrid columns="1" style="width:100%">
+						               <p:link outcome="applicationView.jsf" >
+											<p:outputLabel  value="#{row[4]}" style="color:#039be5;font-size:large"/>
+											<f:param name="idObj" value="#{row[0]}" />	
+										</p:link>
+						 				<h:panelGroup>
+						                	<h:outputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_ADM_REGISTRY, row[3], myApplications.currentLang, myApplications.today, myApplications.userID)}" />
+										 	
+										    |
+										   	<h:outputText value="#{labels['app.nomerZaiavlenie']}: "/>
+										   	<h:outputText   value="#{row[1]}" />
+										</h:panelGroup>	            
+						 	             <h:panelGroup>
+						 	                <h:outputText value="#{labels['general.dataPodavane']}: " />
+						 	                <h:outputText   value="#{row[7]}" >
+						 	                	<f:convertDateTime type="date" pattern="dd.MM.yyyy" timeZone="#{myApplications.timeZone}"/>
+						 	                </h:outputText>
+						 	                <p:spacer width="10" />
+											<h:outputText styleClass="fa fa-eye"   />
+											<p:spacer width="5" />
+											<h:outputText   value="#{row[6]}" />
+											  	
+										    |
+										    <h:outputText value="#{labels['general.status']}: " />
+										   <h:outputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_STATUS_APPLICATION, row[5], searchApplications.currentLang, searchApplications.today, searchApplications.userID)}" />
+						                
+						                </h:panelGroup>
+						            </h:panelGrid>
+						      </p:panel>
+
+						</p:dataGrid>
+
+			        	</ui:define>
+			        </ui:decorate>
+			        
+				</p:outputPanel>
+
+			</div>
+			
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>
+
+</html>

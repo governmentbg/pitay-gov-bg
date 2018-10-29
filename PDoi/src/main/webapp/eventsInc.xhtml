@@ -1,0 +1,318 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf" 
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+	
+		<style>
+			.ui-fileupload-buttonbar {
+			    margin: 0px 0px 0px 0px !important;
+			    padding: 0px 0px 0px 0px !important;
+			    border: none;
+			}
+			.ui-fileupload {
+			    margin: 0px 0px 0px 0px !important;
+			    padding: 0px 0px 0px 0px !important;
+			    display: inline-block;
+			    border: none;
+			}
+			.ui-fileupload-content {
+			    display: none;  
+			}
+			.ui-fileupload-buttonbar .ui-button {
+			    top: -1px;
+			}
+			span.ui-fileupload-choose > span.ui-icon-plusthick  {
+			    display: none !important;
+			}
+			span.ui-fileupload-choose > span.ui-button-text{
+			    padding-left: 1em !important;
+			}
+			
+			.ui-selectonemenu-filter-container {
+			    width: 98% !important;
+			}
+			
+			@media (min-width: 1024px) { 
+				  .igg-content { 
+				        width: 1024px; margin-right:auto; margin-left:auto
+				   } 
+			}				 
+			
+		</style>	
+
+		<h:form id="formEvents">
+			
+			<p:importConstants type="com.indexbg.system.SysConstants" var="IBConstantsSys" className="com.indexbg.system.SysConstants"/>				
+			<p:importConstants type="indexbg.pdoi.system.Constants" var="IBConstants" className="indexbg.pdoi.system.Constants"/>
+		
+			<p:tooltip />
+
+			<div class="container"> 
+
+				<p:outputPanel id="panelData">
+
+					<br />
+
+					<p:toolbar rendered="#{isView != 1}">
+						<f:facet name="left">							
+							<p:commandButton id="bntSaveUp" update="formEvents:panelData message" action="#{events.actionSave}" icon="fa fa-save" value="#{labels['general.save']}"/>							
+						</f:facet>
+					</p:toolbar>
+					
+					<br />
+
+					<p:panel header="#{labels['events.dataForEvent']}: #{systemData.decodeItem(IBConstants.CODE_SYSCLASS_TYPE_EVENT, events.event.eventType, events.currentLang, events.today, events.userId)}" style="margin-bottom:10px" id="dataEvent"> 
+										
+						<div class="ui-g">
+							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right">
+								<h:outputText value="#{labels['events.fromDate']}: " styleClass="#{(isView != 1)?'txt req':'txt '}"/>
+							</div>
+							 
+							<div class="ui-g-12 ui-md-10 ui-lg-10">											
+    							<p:calendar id="fromDate" value="#{events.event.eventDate}" showOn="button" mask="true" pattern="dd.MM.yyyy" locale="bg" disabled="true" rendered="#{isView != 1}"/>
+    							<h:outputText  value="#{events.event.eventDate}" rendered="#{isView == 1}">
+					            	<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{events.timeZone}"/>
+					            </h:outputText>
+							</div>							
+						</div>	
+							
+						<h:panelGroup rendered="#{events.showAttr.containsKey(events.daysCode) and (events.event.eventType.equals(IBConstants.CODE_ZNACHENIE_TYPE_EVENT_REQ_ADD_INFORMATION) or events.event.eventType.equals(IBConstants.CODE_ZNACHENIE_TYPE_EVENT_EXTEND_TERM)) and events.event.eventEndDate != null}">
+							<div class="ui-g">
+								<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right">
+									<h:outputText value="#{labels['events.srokIzpal']}: "/>
+								</div>
+	
+								<div class="ui-g-12 ui-md-10 ui-lg-10">
+	    							<h:outputText  value="#{events.event.eventEndDate}">
+					            		<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{events.timeZone}"/>
+					            	</h:outputText>
+								</div>
+							</div>
+						</h:panelGroup>
+							
+						<h:panelGroup rendered="#{events.showAttr.containsKey(events.reason)}">
+							<div class="ui-g">
+								<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right">
+									<h:outputText value="#{labels['events.reason']}: " styleClass="#{(isView != 1)?'txt req':'txt '}" />
+								</div>
+	
+								<div class="ui-g-12 ui-md-10 ui-lg-10">											
+	    							<p:selectOneMenu value="#{events.event.eventReason}" id="reason" style="width:50%;" autoWidth="false" rendered="#{isView != 1}">
+	    								<f:selectItem itemLabel="" itemValue="" />
+	                                    <f:selectItems value="#{systemData.getSysClassification(IBConstants.CODE_SYSCLASS_REASON_EXTENSION, events.today, events.currentLang, events.userId)}" 
+	                                    			   var="evR" itemLabel="#{evR.tekst}" itemValue="#{evR.code}" />	
+	                                    <p:ajax event="change" listener="#{events.selectReasonForExtend}" update="formEvents:dataEvent" />						                                    
+	                                </p:selectOneMenu>
+	                                <h:outputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_REASON_EXTENSION, events.event.eventReason, events.currentLang, events.today, events.userId)}" rendered="#{isView == 1}"/>	                                
+								</div>
+							</div>
+						</h:panelGroup>
+							
+						<h:panelGroup rendered="#{events.event.eventType.equals(IBConstants.CODE_ZNACHENIE_TYPE_EVENT_FINAL_SOLUTION)}">
+							<div class="ui-g">
+								<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right">
+									<h:outputText value="#{labels['events.endSolution']}: " styleClass="#{(isView != 1)?'txt req':'txt '}"/>
+								</div>
+	
+								<div class="ui-g-12 ui-md-10 ui-lg-10">											
+	    							<p:selectOneMenu value="#{events.endSolution}" id="endSolution" style="width:50%" autoWidth="false" rendered="#{isView != 1}">
+	    								<f:selectItem itemLabel="" itemValue="" />
+	                                    <f:selectItems value="#{events.endSolutionList}"/>
+	                                    <p:ajax event="change" update="formEvents:dataEvent" />	                                   					                                    
+	                                </p:selectOneMenu> 
+	                                <h:outputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_FINAL_DECISION, events.endSolution, events.currentLang, events.today, events.userId)}" rendered="#{isView == 1}"/>	                                                              
+								</div>	
+							</div>
+						</h:panelGroup>	
+							
+						<h:panelGroup rendered="#{events.showAttr.containsKey(events.notApproved) and events.endSolution.equals(IBConstants.CODE_ZNACHENIE_STATUS_APP_NON_APPROVED)}" id="notApp">
+							<div class="ui-g">
+								<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right">
+									<h:outputText value="#{labels['events.reason']}: " styleClass="#{(isView != 1)?'txt req':'txt '}"/>
+								</div>
+	
+								<div class="ui-g-12 ui-md-10 ui-lg-10">											
+	    							<p:selectOneMenu value="#{events.event.reasonNotApproved}" id="reasonNotApproved" style="width:50%;" autoWidth="false" rendered="#{isView != 1}">	    							
+	    							 	<f:selectItem itemLabel="" itemValue="" />
+	                                    <f:selectItems value="#{systemData.getSysClassification(IBConstants.CODE_SYSCLASS_REASON_DENY_DOI, events.today, events.currentLang, events.userId)}" 
+	                                    			   var="notApp" itemLabel="#{notApp.tekst}" itemValue="#{notApp.code}" />	                                     					                                    
+	                                </p:selectOneMenu>
+	                                <h:outputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_REASON_DENY_DOI, events.event.reasonNotApproved, events.currentLang, events.today, events.userId)}" rendered="#{isView == 1}"/>
+								</div>
+							</div>
+						</h:panelGroup>	
+						
+						<h:panelGroup rendered="#{events.event.eventType.equals(IBConstants.CODE_ZNACHENIE_TYPE_EVENT_FINAL_SOLUTION) and isView != 1}">
+							<div class="ui-g">
+								<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right">
+									<h:outputText value="#{labels['events.inputUri']}: " styleClass="txt"/>
+								</div>
+	
+								<div class="ui-g-12 ui-md-8 ui-lg-8">											
+	    							 <p:inputText value="#{events.uriForSearch}" id="uri" style="width:99%;" />
+	    							 <p:message for="uri" showDetail="true" showSummary="true" display="tooltip"/>                                                                
+								</div>	
+								<div class="ui-g-12 ui-md-2 ui-lg-2 cc-left">											
+	    							  <p:commandButton action="#{events.actionSearchApp}" value="#{labels['general.search']}" icon="fa fa-search" id="btnSearch" update="formEvents message"/>                                                         
+								</div>	
+							</div>
+						</h:panelGroup>	
+						
+						<h:panelGroup rendered="#{events.event.eventType.equals(IBConstants.CODE_ZNACHENIE_TYPE_EVENT_FINAL_SOLUTION) and events.event.appIdForView != null}" id="linkToView">
+							<div class="ui-g">
+								<div class="ui-g-12 ui-md-12 ui-lg-12">
+									<h:outputText value="#{labels['events.answerToApp']} " styleClass="txt"/> 
+									<p:link outcome="applicationView.jsf" target="_blank">
+										<p:outputLabel  value="#{labels['events.here']}" style="color:#039be5;font-size:large"/>
+										<f:param name="idObj" value="#{events.event.appIdForView}" />	
+									</p:link>									
+								</div>
+							</div>
+						</h:panelGroup>				
+							
+						<h:panelGroup rendered="#{events.showAttr.containsKey(events.oldRespSubject)}">
+							<div class="ui-g">
+								<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right">
+									<h:outputText value="#{labels['events.oldZadSub']}: "/>
+								</div>
+	
+								<div class="ui-g-12 ui-md-10 ui-lg-10">											
+	    							<h:outputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_ADM_REGISTRY, events.event.oldRespSubjectId, events.currentLang, events.today, events.userId)}" id="oldZadSub" />                         
+								</div>
+							</div>
+						</h:panelGroup>
+							
+						<h:panelGroup rendered="#{events.showAttr.containsKey(events.newRespSubject)}">
+							<div class="ui-g">
+								<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right">
+									<h:outputText value="#{labels['events.newZadSub']}: " styleClass="#{(isView != 1)?'txt req':'txt '}"/>
+								</div>
+	
+								<div class="ui-g-12 ui-md-10 ui-lg-10">							
+								<p:inputText value="#{events.zadaljenSubText}" id="zadSubTxt" readonly="true" style="width:94%;" rendered="#{isView != 1}"/>   
+			                	<ibg:selectOneModal header="#{labels['events.newZadSub']}" userId="#{events.userId}" lang="#{events.currentLang}"
+						 	 			saveStateTree="true" isSelectNode="true" withBtnClear="true" codeClassif="#{IBConstants.CODE_SYSCLASS_ADM_REGISTRY}"     
+						 				update="formEvents:zadSubTxt" selectedCode="#{events.zadaljenSub}" selectedText="#{events.zadaljenSubText}" rendered="#{isView != 1}" />
+						 		<h:outputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_ADM_REGISTRY, events.event.newRespSubjectId, events.currentLang, events.today, events.userId)}" rendered="#{isView == 1}"/>	    							
+								</div>
+							</div>
+						</h:panelGroup>
+							
+					</p:panel>
+							
+					<h:panelGroup rendered="#{events.showAttr.containsKey(events.addText)}">
+						<p:panel header="#{labels['general.dopInfo']}" style="margin-bottom:10px">
+
+							<div class="ui-g">							
+
+								<div class="ui-g-12 ui-md-12 ui-lg-12">											
+	    							 <p:inputTextarea rows="10" value="#{events.event.addText}" autoResize="false" id="addTxt" readonly="#{isView == 1}"/>
+								</div>	
+							
+							</div>
+						
+						</p:panel>
+					</h:panelGroup>
+							
+						<h:panelGroup rendered="#{events.showAttr.containsKey(events.filesCode)}">
+							<p:panel header="#{labels['general.attachedDoc']}" style="margin-bottom:10px">
+							
+								<f:facet name="actions">
+								
+									<p:fileUpload id="filesUpload" fileUploadListener="#{events.uploadFileListener}"  label="" skinSimple="true" update="fileList" auto="true" 
+												  rendered="#{isView != 1}" allowTypes="#{systemData.getSettingsValue('fileExtensionsForAttaching')}"/>
+												  							
+									<p:tooltip for="filesUpload" value="#{labels['file.upload']}" />									
+								
+								</f:facet>			
+							
+							<div class="ui-g">
+
+								<div class="ui-g-12 ui-md-12 ui-lg-12">	
+									
+									 <p:dataTable id="fileList" var="row" value="#{events.filesList}" reflow="true" 
+									 			  rowIndexVar="rkv" emptyMessage="" rows="10" style="margin-bottom:10px" paginator="true" 
+									 			  paginatorPosition="bottom" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">
+									      
+									        <p:column headerText="#{labels['general.No-symbol']}" width="20">
+												<h:outputText value="#{rkv + 1}" />
+											</p:column>
+											
+											 <p:column headerText="" width="32" rendered="#{isView == 1}">									           	
+										        <p:commandButton  ajax="false" actionListener="#{events.download(row)}" icon="fa fa-fw fa-download" title="#{labels['file.download']}" />
+										     </p:column>
+											
+									       	<p:column headerText="#{labels['file.filename']}" width="30%" rendered="#{isView != 1}">
+									       		 <h:outputText value="#{row.filename}" />     
+									         </p:column>
+									       	
+									       <p:column headerText="#{labels['file.description']}" width="60%" rendered="#{isView != 1}">									   
+									            <p:inputText value="#{row.description}" style="width:99%" />									            								           
+									       </p:column>
+									       
+									       <p:column headerText="#{labels['file.description']}" width="90%" rendered="#{isView == 1}">
+									            <h:outputText value="#{row.description}" rendered="#{row.description != null}"/>	
+									            <h:outputText value="#{row.filename}" rendered="#{row.description == null or row.description == ''}"/>									            								           
+									       </p:column>									       
+													
+											<p:column headerText="" width="100" exportable="false" rendered="#{isView != 1}">
+											
+												<p:commandButton  ajax="false" actionListener="#{events.download(row)}" icon="fa fa-fw fa-download" title="#{labels['file.download']}" />
+											
+												<p:commandButton id="visible" action="#{events.actionChangeFileNonVis(row)}" update="fileList" icon="fa fa-fw fa-check" title="#{labels['file.visible']}" style="color: green;" rendered="#{row.visibleOnSite}" />
+												
+												<p:commandButton id="nonVisible" action="#{events.actionChangeFileVis(row)}" update="fileList" icon="fa fa-fw fa-times-circle" title="#{labels['file.nonVisible']}" style="color: #d90000;" rendered="#{!row.visibleOnSite}" />
+												
+												<p:commandButton action="#{events.remove(row)}" update="fileList" icon="fa fa-fw fa-trash" style="color: #d90000;" title="#{labels['general.delete']}"
+													onclick="if(!confirm('#{labels['file.confirmDeleteFile']}'))return false;">
+													<f:param name="idObjDel" value="#{row.id}" />													
+												</p:commandButton>
+											
+											</p:column>
+									  
+									   </p:dataTable>
+									   
+									    <ui:remove> <!-- махнато от бутона за изтриване на файлове версия 6.2 на pf има бъг във 6.2.2 е оправено -->
+							  				<p:confirm header="#{labels['general.delete']}" message="#{labels['file.confirmDeleteFile']}" icon="ui-icon-alert" />
+							  			</ui:remove>							  
+									   
+									   <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+									        <p:commandButton value="#{labels['general.yes']}" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+									        <p:commandButton value="#{labels['general.no']}" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+										</p:confirmDialog>
+										
+								</div>
+								
+							</div>
+							
+						</p:panel>
+					
+					</h:panelGroup>				
+						
+					<p:toolbar rendered="#{isView != 1}">
+						<f:facet name="left">
+							<p:commandButton id="bntSaveDown" update="formEvents:panelData message" action="#{events.actionSave}" icon="fa fa-save" value="#{labels['general.save']}" />
+						</f:facet>
+						
+						<ui:remove>
+						<f:facet name="right">
+							<p:commandButton id="bntDelete" update="formEvents:panelData formEvents:fileList message" action="#{events.actionDelete}" style="color: #d90000;" icon="fa fa-fw fa-trash"  value="#{labels['general.delete']}" rendered="#{events.event.id != null}"/>
+						</f:facet>
+						</ui:remove>
+					
+					</p:toolbar>
+
+				</p:outputPanel>
+
+			</div>
+			
+			<script type="text/javascript"> $('#formEvents\\:filesUpload_label').addClass('fa fa-fw fa-paperclip');</script>
+
+		</h:form>
+	
+</html>

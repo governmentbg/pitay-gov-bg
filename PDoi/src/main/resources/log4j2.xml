@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+		</Console>
+		 <File name="MyFile" fileName="./logs/System3.log" immediateFlush="false"
+			append="false">
+			<PatternLayout
+				pattern="%d{yyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+		</File> 
+		
+	</Appenders>
+	<Loggers>
+		<Root level="info">
+			<!-- <AppenderRef ref="Console" /> -->
+		</Root>
+		
+	    <Logger name="com.indexbg.system.db.AbstractDAO" level="debug">
+	       <AppenderRef ref="Console"/> 
+	    </Logger>
+	    <Logger name="com.indexbg.system.BaseSystemData" level="debug">
+	       <AppenderRef ref="Console"/> 
+	    </Logger>
+	    <Logger name="com.indexbg.system.TestSystemData" level="debug">
+	       <AppenderRef ref="Console"/> 
+	    </Logger>
+	    <Logger name="org.hibernate.search.backend.lucene.infostream" level="trace">
+	       <AppenderRef ref="Console"/> 
+	    </Logger>
+	    
+	    
+	    
+	     <Logger name="org.hibernate.SQL" level="debug">
+	    	<!-- <AppenderRef ref="Console"/> -->
+	    </Logger>
+	    <!-- set to "trace" to view parameters -->
+	    <Logger name="org.hibernate.type" level="info">
+	    	<!-- <AppenderRef ref="Console"/> -->
+	    </Logger>
+	    <Logger name="org.hibernate" level="info">
+	    	<AppenderRef ref="Console"/> 
+	    </Logger>  
+	</Loggers>
+</Configuration>

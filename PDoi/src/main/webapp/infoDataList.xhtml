@@ -1,0 +1,244 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf" 
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+
+	<ui:composition template="/templates/main.xhtml">
+		
+	<ui:define name="title">  #{labels['publ.lable']} </ui:define> 
+	<ui:define name="systemLogo">
+		  <img src="images/cadmin_logo.png"/>
+	</ui:define>
+	
+	<ui:define name="menu-items">
+		<ui:include src="/include/menuItems.xhtml"/>
+	</ui:define>
+	
+	
+	<ui:define name="content">
+		<h:form id="formInfList" onkeypress="if(event.keyCode == 13 &amp;&amp; event.target.tagName!='TEXTAREA') {return false;}">
+			<p:importConstants type="indexbg.pdoi.system.Constants" var="IBConstants" className="indexbg.pdoi.system.Constants" />
+			<p:importConstants type="com.indexbg.system.SysConstants" var="IBConstantsSys" className="com.indexbg.system.SysConstants" />
+			<p:tooltip/>
+			<div class="container"> 
+			
+			<p:outputPanel id="panelData">
+					<br/>
+					<p:panel>
+					<ui:decorate template="/templates/panel.xhtml">
+						<ui:define name="panel-header">
+							<h:outputText styleClass="fa fa-fw fa-search" title="Критерии за търсене"/>
+						</ui:define>
+						<ui:define name="panel-content">
+							<p:outputPanel id="panelFilter" >
+								<div class="ui-g">
+									<div class="ui-g-7 ui-md-2 ui-lg-2 cc-right">
+										<h:outputText value="#{labels['general.section']}:" />
+									</div>
+									<div class="ui-g-12 ui-md-10 ui-lg-10">
+										<p:inputText value="#{pubList.sectionText}"  id="idSectionText" readonly="true" style="width:83%" tabindex="1"/>
+										<ibg:selectOneModal  
+											header="#{labels['publ.izbSection']}"   
+											userId="#{pubList.idUser}"  
+											lang="#{pubList.currentLang}"   
+							 	            saveStateTree="true"  
+							 	            isSelectNode="true"  
+							 	            withBtnClear="true"
+							 	            id="idOneMS"
+							 		        codeClassif="#{IBConstants.CODE_SYSCLASS_SECTION}"     
+							 		        update="formInfList:idSectionText"  
+							 		        selectedCode="#{pubList.codeSection}" 
+							 		        selectedText="#{pubList.sectionText}"/>
+									</div>
+								</div>
+								<div class="ui-g">
+									<div class="ui-g-7 ui-md-2 ui-lg-2 cc-right">
+										<h:outputText value="#{labels['publ.tematika']}:"/>
+									</div>
+									<div class="ui-g-12 ui-md-10 ui-lg-10">
+										<p:inputText value="#{pubList.temaText}"  id="idTemaText" readonly="true" style="width:83%" tabindex="2"/>
+										<ibg:selectManyModal  
+											header="#{labels['publ.izbThemas']}"   
+											userId="#{pubList.idUser}"  
+											lang="#{pubList.currentLang}"   
+							 	            saveStateTree="true"  
+							 	            withBtnClear="false"
+							 		        codeClassif="#{IBConstants.CODE_SYSCLASS_THEMAS}"     
+							 		        update="formInfList:idTemaText"  
+							 		        selectedCodes="#{pubList.selIdThemas}" 
+							 		        selectedText="#{pubList.temaText}"
+							 		        modal="true"
+							 		        id="idManyMT"
+							 		        expanded="false"
+							 		        sortByName="true"
+							 		        isSelectNode="false"
+							 		        showRadioBtn="true" />
+									</div>
+					
+								</div>
+								<div class="ui-g">
+									<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
+										<h:outputText value="#{labels['publ.period']}:"/>
+									</div>
+									<div class="ui-g-12 ui-md-4 ui-lg-2">
+										<p:selectOneMenu id="idPer" value="#{pubList.period}" style="width:180px;" tabindex="3">
+		                                    <f:selectItem value="#{null}" itemValue="#{null}"/>          
+		                                    <f:selectItems value="#{systemData.getSysClassification(IBConstantsSys.CODE_CLASSIF_PERIOD_NOFUTURE, pubList.currentDate, pubList.currentLang, pubList.idUser)}"  
+		                                    		var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
+		                                      <p:ajax event="change" update="idPer dateOt dateDo"  listener="#{pubList.changePeriod()}"   />   
+		                                </p:selectOneMenu>
+	                                </div>
+	                               
+	                               
+	                                <div class="ui-g-12 ui-md-1 ui-lg-1 cc-right" >
+										<h:outputText value="#{labels['general.dataOt']}:"/>
+									</div>
+									<div class="ui-g-12 ui-md-2 ui-lg-2">
+										<p:calendar id="dateOt" pattern="dd.MM.yyyy" mask="true"  showOn="button" 
+											timeZone="#{pubList.timeZone}" size="10" locale="bg" tabindex="4"
+								         	style="font-size:12px;"   value="#{pubList.dateFrom}" label="#{labels['publ.dateFrom']}"
+								          	styleClass="form-control #{pubList.hasMessages('formInfList:dateOt') ? 'cc-red ': '' }" >
+								          	<p:ajax event="dateSelect" listener="#{pubList.checkDates(1)}"  update="formInfList:dateOt formInfList:dateDo formInfList:idPer message" />
+								          	<p:ajax event="change" listener="#{pubList.checkDates(1)}" update="formInfList:dateOt formInfList:dateDo formInfList:idPer message" />
+								        </p:calendar>
+								        <p:message for="dateOt" showDetail="true" showSummary="true" display="tooltip"/>
+									</div>
+									<div class="ui-g-12 ui-md-1 ui-lg-1 cc-right" >
+										<h:outputText value="#{labels['general.dataDo']}:"/>
+									</div>
+									<div class="ui-g-12 ui-md-2 ui-lg-4">
+										<p:calendar id="dateDo" pattern="dd.MM.yyyy" mask="true" showOn="button" 
+											timeZone="#{pubList.timeZone}" size="10" locale="bg" tabindex="5"
+								         	style="font-size:12px;"  value="#{pubList.dateTo}" label="#{labels['publ.dateTo']}"   
+								          	styleClass="form-control #{pubList.hasMessages('formInfList:dateDo') ? 'cc-red' : '' }" >
+								          	<p:ajax event="dateSelect" listener="#{pubList.checkDates(2)}" update="formInfList:dateOt formInfList:dateDo formInfList:idPer message" />
+								          	<p:ajax event="change" listener="#{pubList.checkDates(2)}" update="formInfList:dateOt formInfList:dateDo formInfList:idPer message" />
+									     </p:calendar>  	
+									     <p:message for="dateDo" showDetail="true" showSummary="true" display="tooltip"/> 
+									</div> 
+									
+							
+								</div>
+															
+							</p:outputPanel>
+							<br/><br/>
+							
+							<p:outputPanel id="panelMenuBarDown">
+								<div class="ui-g">
+									<div class="ui-g-12 ui-md-3 ui-lg-2 cc-right">
+										<p:commandButton id="bnt_clear" update="formInfList message" action="#{pubList.initData}" 
+											icon="fa fa-fw fa-file-o" value="#{labels['general.clear']}" style="align:right;"/>
+									</div>
+									<div class="ui-g-12 ui-md-9 ui-lg-10 cc-right">
+										<p:commandButton id="bnt_search" update="formInfList:panelData message" action="#{pubList.actionFind}" 
+											icon="fa fa-fw fa-search" value="#{labels['general.search']}" style="align:right;margin-right:15px;" />
+									</div>
+									
+								</div>
+							</p:outputPanel>
+
+						</ui:define>
+					</ui:decorate>
+					</p:panel>
+					<br/><br/>
+
+					<ui:decorate template="/templates/panel.xhtml">
+
+						<ui:define name="panel-header">
+							<h:outputText value="#{labels['menu.publ']}" />
+							<h:outputText value="(#{pubList.pubListT.rowCount})"/>
+						</ui:define>
+						<ui:define name="panel-buttons">
+						    <p:commandButton id="btnNewPubl" action="infoDataEdit.jsf" value="#{labels['publ.newData']}" ajax="false" 
+						    	icon="ui-icon-document" rendered="#{pubList.param==1}"  >
+						    	<f:param name="par" value="#{pubList.param}"/>
+						    </p:commandButton>
+					    </ui:define>
+
+						<ui:define name="panel-content">
+							<p:outputPanel id="panelTableP">
+								<p:dataTable var="row" value="#{pubList.pubListT}" id="tablePubl" reflow="true" 
+									rendered="#{pubList.pubListT.rowCount > 0}" lazy="true" 
+									rowIndexVar="rkv" emptyMessage="#{labels['general.norows']}" 
+									rows="10" paginator="true" paginatorPosition="bottom" 
+									paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+									style="margin-bottom:20px">
+		
+									<p:column headerText="" width="7%" style="text-align:center;">												
+										<p:graphicImage value="#{pubList.createImageCont(row[5],30)}" stream="false" height="60px"/>
+									</p:column>
+									
+									<p:column headerText="#{labels['general.section']}" width="17%" sortBy="#{row.A1}" >
+										<h:outputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_SECTION, row[1], pubList.currentLang, pubList.currentDate, pubList.idUser)}" />
+									</p:column>
+	
+									<p:column headerText="#{labels['publ.title']}" width="28%" sortBy="#{row.A2}">
+										<h:outputText value="#{row[2]}" escape="false"/>
+									</p:column>
+	
+									<p:column  headerText="#{labels['events.fromDate']}" width="8%" sortBy="#{row.A3}" style="text-align:center;">												
+										<h:outputText value="#{row[3]}">	
+											<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{pubList.timeZone}"/>
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="#{labels['general.anotation']}" width="37%" sortBy="#{row.A4}" >												
+										<h:outputText value="#{row[4]}" escape="false"/>	
+									</p:column>
+				
+									<p:column style="text-align:center;" width="3%">
+										<f:facet name="header"/>
+										<p:link outcome="infoDataEdit.jsf" rendered="#{pubList.param==1}" title="#{labels['general.izbor']}">   
+											<span class="fa fa-fw fa-edit"/>
+											<f:param name="idPubl" value="#{row[0]}"/>
+										 	<f:param name="par" value="#{pubList.param}"/>
+										</p:link>
+										
+										<p:link outcome="infoDataView.jsf" rendered="#{pubList.param==2}" >
+											<span class="fa fa-fw fa-search"/>
+											<f:param name="idPubl" value="#{row[0]}"/>
+											<f:param name="par" value="#{pubList.param}"/>
+										</p:link>
+										
+									</p:column>
+	
+								</p:dataTable>
+							</p:outputPanel>
+						</ui:define>
+					</ui:decorate>
+
+	
+
+			</p:outputPanel>
+			
+			</div>
+
+		</h:form>
+		
+		<style type="text/css">
+			.singleLine
+			{
+			    text-wrap:none;
+			    white-space:nowrap;
+			    overflow:hidden;
+			    text-overflow:ellipsis;
+			}
+			.wrapLine
+			{
+			    text-wrap:true;
+			    white-space:wrap;
+			
+			}
+		</style>
+	
+	</ui:define>
+
+</ui:composition>
+
+</html>

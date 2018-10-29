@@ -1,0 +1,84 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf" 
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+
+<ui:composition template="/templateExt/mainExt.xhtml">
+		
+	<ui:define name="title">  #{labels['publ.sectInfUser']} </ui:define> 
+	 
+	
+	<ui:define name="menu-items">
+		<ui:include src="/include/menuExt.xhtml"/>
+	</ui:define>
+	
+		
+	<ui:define name="content">		
+	
+		<style>
+			a:hover {text-decoration:underline !important;}
+			
+			
+		</style>
+		
+		<h:form id="formSectD">
+			<p:importConstants type="indexbg.pdoi.system.Constants" var="IBConstants" className="indexbg.pdoi.system.Constants" />
+			<p:tooltip/>
+			<div class="container">		
+					<div class="ui-g">
+						<div class="ui-g-12  ui-md-12 ui-lg-10">
+							<h:outputText id="idTitleD" value="#{sectDetails.publ.title}" escape="false" style="font-weight:bold; font-size:18px;" />
+						</div>
+					</div>	
+					<div class="ui-g">
+						<div class="ui-g-12  ui-md-12 ui-lg-10">	
+							<h:outputText id="idFullTextD" value="#{sectDetails.publ.fullText}" escape="false"  style="text-align:justify;"/> 
+
+						</div>
+					</div>
+						
+					<br /><br />
+					
+					<p:outputPanel id="panelFiles" rendered="#{null!=sectDetails.filesList}">
+		        	<p:repeat value="#{sectDetails.filesList}" var="fil" >
+		            	<p:panelGrid>
+		              		<h:commandLink id="download"  ajax="false" actionListener="#{sectDetails.download(fil.id)}" >
+		                    		<p:commandButton icon="#{sectDetails.iconTypFil.get(fil.id)}"/>
+		                    		<h:outputText class="documentTitle" escape="false" value="#{fil.description}" style="font-weight:bold;font-size:12px; color:black;" />
+	                    	</h:commandLink>
+						</p:panelGrid>
+				    </p:repeat>
+				    </p:outputPanel>	
+			
+			</div>
+	
+
+		</h:form>
+		
+		<style type="text/css">
+			.singleLine
+			{
+			    text-wrap:none;
+			    white-space:nowrap;
+			    overflow:hidden;
+			    text-overflow:ellipsis;
+			}
+			.wrapLine
+			{
+			    text-wrap:true;
+			    white-space:wrap;
+			
+			}
+		</style>
+	
+	</ui:define>
+
+</ui:composition>
+
+</html>

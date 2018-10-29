@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1"
+	xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+	<persistence-unit name="hibernate" transaction-type="RESOURCE_LOCAL">
+
+		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+  <!--  <non-jta-data-source>java:/PDoiPostgresDS</non-jta-data-source> -->
+  		<class>com.indexbg.system.db.dto.SystemJournal</class>
+  		<class>com.indexbg.system.db.dto.SystemOption</class> 
+		<class>com.indexbg.system.db.dto.SystemClassifOpis</class>
+		<class>com.indexbg.system.db.dto.SystemClassif</class>	
+		<class>com.indexbg.system.db.dto.SyslogicListOpisEntity</class>			
+		<class>com.indexbg.system.db.dto.JobHistory</class>
+		
+		<class>indexbg.pdoi.db.Application</class>
+		<class>indexbg.pdoi.db.AppThemes</class>
+		
+		<class>indexbg.pdoi.db.Event</class>
+		
+		<class>indexbg.pdoi.db.Files</class>
+		
+		<class>indexbg.pdoi.db.Publication</class>
+		<class>indexbg.pdoi.db.PubThemes</class>
+		
+		<class>indexbg.pdoi.db.ResponseSubject</class>
+		
+		<class>indexbg.pdoi.db.EgovMessages</class>
+		<class>indexbg.pdoi.db.EgovMessagesCoresp</class>
+		<class>indexbg.pdoi.db.EgovMessagesFiles</class>
+		<class>indexbg.pdoi.db.EgovMessagesOther</class>
+		<class>indexbg.pdoi.db.EgovOrganisations</class>
+		
+		<class>indexbg.pdoi.db.Subscription</class>
+
+		<class>com.indexbg.ocr.dao.ApplicationTree</class>
+		<class>com.indexbg.ocr.dao.AppThemesNode</class>
+		<class>com.indexbg.ocr.dao.EventNode</class>
+		<class>com.indexbg.ocr.dao.FilesNode</class>
+		<class>com.indexbg.ocr.dao.FilesTextNode</class>
+		<class>com.indexbg.ocr.dao.SubscriptionNode</class>
+
+
+		<properties>
+			
+		  	
+		  	<!-- POSTGRE (Indexbg) -->
+			<property name="db.vendor.name" value="postgresql" /> 
+			<property name="hibernate.connection.driver_class" value="org.postgresql.Driver" />
+			<property name="hibernate.connection.url" value="jdbc:postgresql://10.29.1.166:5432/msomdb" />
+			<property name="hibernate.connection.username" value="msomu" />
+			<property name="hibernate.connection.password" value="msomp" />
+			<property name="hibernate.connection.isolation" value="2" />
+			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
+			<property name="hibernate.current_session_context_class" value="thread" />
+			<property name="hibernate.show_sql" value="false" />
+			
+			
+			<!-- POSTGRE (MS Test) 
+			<property name="db.vendor.name" value="postgresql" /> 
+			<property name="hibernate.connection.driver_class" value="org.postgresql.Driver" />
+			<property name="hibernate.connection.url" value="jdbc:postgresql://172.23.117.73:5432/msomdb" />
+			<property name="hibernate.connection.username" value="msomu" />
+			<property name="hibernate.connection.password" value="msomp" />
+			<property name="hibernate.connection.isolation" value="2" />
+			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL94Dialect" />
+			<property name="hibernate.current_session_context_class" value="thread" />
+			<property name="hibernate.show_sql" value="false" />
+			-->
+			<!-- POSTGRE (MS - Production) 
+			<property name="db.vendor.name" value="postgresql" /> 
+			<property name="hibernate.connection.driver_class" value="org.postgresql.Driver" />
+			<property name="hibernate.connection.url" value="jdbc:postgresql://172.23.117.142:5432/msomdb" />
+			<property name="hibernate.connection.username" value="msomu" />
+			<property name="hibernate.connection.password" value="msomp" />
+			<property name="hibernate.connection.isolation" value="2" />
+			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL94Dialect" />
+			<property name="hibernate.current_session_context_class" value="thread" />
+			<property name="hibernate.show_sql" value="false" />
+			-->
+			
+			
+			
+			<property name="hibernate.generate_statistics" value="false"/>
+			<property name="hibernate.cache.infinispan.statistics" value="false"/>
+			
+	
+			<!-- <property name="hibernate.cache.use_second_level_cache" value="true" />
+            <property name="hibernate.cache.use_query_cache" value="true" />
+                   -->   
+            
+            
+             
+			<!-- Hibernate Search -->
+			<!-- 
+				if you want to disable JibernateSearch  
+				Dafoult is switchet on. No need this parameter to work wit Search
+			
+			<property name="hibernate.search.autoregister_listeners" value="false"/> 
+			-->
+			
+			<!-- in the context of JBOSS application server we need it to be a jpa provider in order to use elasticsearch as search engine-->
+			<!--<property name="jboss.as.jpa.providerModule" value="org.hibernate:5.3"/>-->
+			<!--<property name="wildfly.jpa.hibernate.search.module" value="org.hibernate.search.orm:5.10.3.Final"/>-->
+
+			<!-- elasticsearch (ES)-->
+			<property name="hibernate.search.default.indexmanager" value="elasticsearch"/>
+			<property name="hibernate.search.default.elasticsearch.host" value="http://127.0.0.1:9200 http://10.29.1.169:9200"/>
+			<property name="hibernate.search.default.elasticsearch.index_schema_management_strategy" value="CREATE"/> <!-- MERGE,CREATE,RECREATE,RECREATE_DELETE,VALIDATE, NONE-->
+			<property name="hibernate.search.default.elasticsearch.connection_timeout" value="3000"/>
+			<property name="hibernate.search.default.elasticsearch.read_timeout" value="60000"/>
+			<property name="hibernate.search.default.elasticsearch.max_total_connection" value="20"/>
+			<property name="hibernate.search.default.elasticsearch.max_total_connection_per_route" value="10"/>
+
+			<!-- ES discovery-->
+			<property name="hibernate.search.default.elasticsearch.discovery.enabled" value="true"/>
+			<property name="hibernate.search.default.elasticsearch.discovery.refresh_interval" value="10"/> <!-- seconds -->
+			<property name="hibernate.search.default.elasticsearch.discovery.default_scheme" value="http"/>
+
+			<property name="hibernate.search.default.elasticsearch.index_management_wait_timeout" value="10000"/>
+			<property name="hibernate.search.default.elasticsearch.required_index_status" value="yellow"/> <!-- yelow, red-->
+
+			<property name="hibernate.search.default.elasticsearch.refresh_after_write" value="false"/>
+
+			<!-- ES security
+			hibernate.search.default.elasticsearch.username ironman
+			hibernate.search.default.elasticsearch.password changeme
+			-->
+			
+			<!-- 
+				To use local Lucene indexing strategy 
+			
+			<property name="hibernate.search.default.directory_provider" value="filesystem"/>
+			<property name="hibernate.search.default.indexBase" value="./lucene/PDoi/indexes"/>
+			 -->
+			
+		</properties>
+
+	</persistence-unit>
+</persistence>

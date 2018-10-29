@@ -1,0 +1,439 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:c="http://java.sun.com/jstl/core"
+	  xmlns:jsf="http://xmlns.jcp.org/jsf"
+	  xmlns:p="http://primefaces.org/ui"
+	  xmlns:pe="http://primefaces.org/ui/extensions"
+	  
+	  xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+	<ui:composition template="/templateExt/mainExt.xhtml">
+		<ui:define name="title">#{labels['general.titleApp']}</ui:define>
+		
+		
+		<ui:define name="menu-items">
+			<ui:include src="/include/menuExt.xhtml" />
+		</ui:define>
+		
+		<ui:define name="content">
+		
+			<style>
+				.ui-fileupload-buttonbar {
+				    margin: 0px 0px 0px 0px !important;
+				    padding: 0px 0px 0px 0px !important;
+				    border: none;
+				}
+				.ui-fileupload {
+				    margin: 0px 0px 0px 0px !important;
+				    padding: 0px 0px 0px 0px !important;
+				    display: inline-block;
+				    border: none;
+				}
+				.ui-fileupload-content {
+				    display: none;  
+				}
+				.ui-fileupload-buttonbar .ui-button {
+				    top: -1px;
+				}
+				span.ui-fileupload-choose > span.ui-icon-plusthick  {
+				    display: none !important;
+				}
+				span.ui-fileupload-choose > span.ui-button-text{
+				    padding-left: 1em !important;
+				}
+				
+				.ui-selectonemenu-filter-container {
+				    width: 98% !important;
+				}
+				
+				
+				.ui-steps .ui-steps-item {
+				    width: 33%;
+				}
+				 
+				.ui-state-highlight {
+				    text-shadow: none !important;
+				}
+				 
+				.ui-steps.custom {
+				    margin-bottom: 30px;
+				}
+				 
+				.ui-steps.custom .ui-steps-item .ui-menuitem-link {
+				    height: 10px;
+				    padding: 0 1em;
+				}
+				 
+				.ui-steps.custom .ui-steps-item .ui-steps-number {
+				    background-color: #0081c2;
+				    color: #FFFFFF;
+				    display: inline-block;
+				    width: 30px;
+				    border-radius: 10px;
+				    margin-top: -10px;
+				    margin-bottom: 10px;
+				}
+				 
+				.ui-steps.custom .ui-steps-item.ui-state-highlight .ui-steps-title {
+				    color: #555;
+				}
+				
+				
+				.ui-treetable td {
+				   white-space:normal !important;
+				}
+				
+				.ui-outputlabel{
+					color:#039be5;					
+				} 
+				 
+			</style>
+		
+		   <h:form id="formApplic">
+		   
+		   	  <p:importConstants type="indexbg.pdoi.system.Constants" var="IBConstants" className="indexbg.pdoi.system.Constants"/>
+		   
+			  <p:tooltip/>
+			  			  
+			  <div class="container">
+			  
+			  <br/><br/>
+			  <div class="ui-selectonemenu-filter-container">
+			  <p:steps styleClass="custom " id="naviSubmission" activeIndex="#{applicationForm.keyTab}" readonly="true" >
+			    <p:menuitem value="#{labels['application.step1']}"  action="#{applicationForm.actionGoToStep(0)}" ajax="true" update="formApplic"/>
+			    <p:menuitem value="#{labels['application.step2']}"   action="#{applicationForm.actionGoToStep(1)}" ajax="true" update="formApplic"/>
+			    <p:menuitem value="#{labels['application.step3']}"    action="#{applicationForm.actionGoToStep(2)}" ajax="true" update="formApplic"/>
+			  </p:steps>
+			  </div>
+			  
+			  
+			  <p:outputPanel id="panelData" >
+			  		
+			  		<br/>
+			  		
+			  		<div>
+			        	<p:commandButton value="#{labels['general.back']}" icon="fa fa-arrow-left" rendered="#{applicationForm.keyTab==1}"
+			        		action="#{applicationForm.actionBackStep}" update="formApplic:panelData formApplic:naviSubmission"/>
+			        	
+			        	<span class="ui-separator"> </span>
+			        	
+			            <p:commandButton value="#{applicationForm.keyTab==1?labels['application.step3']:labels['general.next']}" icon="fa fa-arrow-right"  rendered="#{applicationForm.keyTab!=2}"
+			            	action="#{applicationForm.actionNextStep}" update="formApplic message"/>
+			            
+			            
+			            <p:commandButton value="#{labels['general.print']}" icon="fa fa-print" rendered="#{applicationForm.keyTab==2}"
+			            	action="#{applicationForm.generateFile}" ajax="false"/>
+				 	</div>
+			  		
+			  		<p:outputPanel id="panelApplic"  rendered="#{applicationForm.keyTab==0}">
+			  		
+			  		
+			  		<br/>
+			  		
+			  		<p:panel header="#{labels['general.titleApp']}" style="margin-bottom:20px">
+			  			<div class="ui-g">
+			  				<div class="ui-g-12 ui-md-6 ui-lg-4">
+			  				<p:selectOneRadio id="applicant_type" value="#{applicationForm.applic.applicantType}" layout="responsive" columns="2">
+						        <f:selectItems value="#{systemData.getSysClassification(IBConstants.CODE_SYSCLASS_TYPE_APPLICANT, null, applicationForm.currentLang, applicationForm.userId)}" 
+                                    		   var="itema" itemLabel="#{itema.tekst}" itemValue="#{itema.code}"/>	
+					            <p:ajax event="change" update="panelData" listener="#{applicationForm.actionChangeAppType}" process="@all"/>
+						    </p:selectOneRadio>
+						    </div>
+						</div>
+			  			<div class="ui-g">
+			  			   
+						    <div class="ui-g-12 ui-md-1 ui-lg-1 cc-right">
+									<h:outputText value="#{labels['general.names']}: " styleClass="req" style="white-space: pre;" rendered="#{applicationForm.applic.applicantType == IBConstants.CODE_ZNACHENIE_TYPE_APPLICANT_FIZ_LICE}"/>
+									<h:outputText value="#{labels['general.name']}:" styleClass="req" style="white-space: pre;" rendered="#{applicationForm.applic.applicantType == IBConstants.CODE_ZNACHENIE_TYPE_APPLICANT_URID_LICE}"/>	
+							</div>
+							
+						    <div class="ui-g-12 ui-md-9 ui-lg-9">
+									<p:inputText value="#{applicationForm.applic.fullNames}" id="fullNames" style="width:100%"/>
+									<p:message for="fullNames"  showDetail="true" showSummary="true" display="tooltip"/>
+							</div>
+							<div  class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
+								<p:selectBooleanCheckbox  id="publicName"  value="#{applicationForm.applic.namesPublication}"/>
+        						<p:outputLabel for="publicName" value=" #{labels['general.publikuvane']} " />
+							</div>
+						    <div class="ui-g-12 ui-md-1 ui-lg-1 cc-right" style="#{(applicationForm.applic.applicantType == IBConstants.CODE_ZNACHENIE_TYPE_APPLICANT_URID_LICE)?'':'display:none'}">
+									<h:outputText value="#{labels['general.sedalishte']}: " styleClass="req" style="white-space: pre;"/>
+							</div>
+						    <div class="ui-g-12 ui-md-9 ui-lg-9" style="#{(applicationForm.applic.applicantType == IBConstants.CODE_ZNACHENIE_TYPE_APPLICANT_URID_LICE)?'':'display:none'}">
+									<p:inputText id="headoffice" value="#{applicationForm.applic.headoffice}" style="width:100%"/>
+									<p:message for="headoffice"  showDetail="true" showSummary="true" display="tooltip"/>
+							</div>
+							<div  class="ui-g-12 ui-md-2 ui-lg-2 cc-right" style="#{(applicationForm.applic.applicantType == IBConstants.CODE_ZNACHENIE_TYPE_APPLICANT_URID_LICE)?'':'display:none'}">
+								<p:selectBooleanCheckbox  id="publicSedalishte" value="#{applicationForm.applic.headofficePublication}"/>
+        						<p:outputLabel for="publicSedalishte" value=" #{labels['general.publikuvane']} " />
+							</div>
+						</div>
+						
+						<div class="ui-g">
+						    <div class="ui-g-12 ui-md-1 ui-lg-1 cc-right">
+									<h:outputText value="#{labels['general.telefon']}: " style="white-space: pre;"/>
+							</div>
+						    <div class="ui-g-12 ui-md-9 ui-lg-3">
+									<p:inputText value="#{applicationForm.applic.phone}" style="width:100%"/>
+							</div>
+							<div  class="ui-g-12 ui-md-2 ui-lg-2  cc-right" >
+								<p:selectBooleanCheckbox  id="publicPhone" value="#{applicationForm.applic.phonePpublication}"/>
+        						<p:outputLabel for="publicPhone" value=" #{labels['general.publikuvane']} " />
+							</div>
+						
+						    <div class="ui-g-12 ui-md-1 ui-lg-1 cc-right">
+									<h:outputText value="#{labels['general.email']}: " style="white-space: pre;"/>
+							</div>
+						    <div class="ui-g-12 ui-md-9 ui-lg-3">
+									<p:inputText value="#{applicationForm.applic.email}" style="width:100%" readonly="true"/>
+							</div>
+							<div  class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
+								<p:selectBooleanCheckbox  id="publicMail" value="#{applicationForm.applic.emailPublication}"/>
+        						<p:outputLabel for="publicMail" value=" #{labels['general.publikuvane']} " />
+							</div>
+						</div>
+			  		
+			  		</p:panel>
+			  		
+			  		<p:panel header="#{labels['app.adresZaCoresp']}" style="margin-bottom:20px">
+			  			
+			  			<div class="ui-g"> 
+			  				<div class="ui-g-12 ui-md-12 ui-lg-12 cc-right">
+								<p:selectBooleanCheckbox  id="publicAddress" value="#{applicationForm.applic.addressPublication}"/>
+		        				<p:outputLabel for="publicAddress" value=" #{labels['general.publikuvane']} " />
+					  			</div>
+			  			</div>
+			  			<div class="ui-g">
+			  				<div class="ui-g-12 ui-md-1 ui-lg-1 cc-right">
+			  					<h:outputText value="#{labels['general.country']}: " styleClass="req"/>
+			  				</div>
+			  				<div class="ui-g-12 ui-md-3 ui-lg-3">
+			  					<p:selectOneMenu id="country" value="#{applicationForm.applic.country}"  style="width:90%" autoWidth="false">
+						            <f:selectItem itemLabel=" " itemValue="-1" />
+						            <f:selectItems value="#{systemData.getSysClassification(IBConstants.CODE_SYSCLASS_COUNTRIES, null, applicationForm.currentLang, applicationForm.userId)}" 
+                                    		   var="itema" itemLabel="#{itema.tekst}" itemValue="#{itema.code}"/>	
+					            	<p:ajax event="change" update="panelData" listener="#{applicationForm.actionChangeCountry}" process="@all"/>
+						        </p:selectOneMenu>
+			  				</div>
+			  				
+			  			</div>
+			  			<div class="ui-g" style="#{(applicationForm.applic.country == IBConstants.CODE_ZNACHENIE_BG)?'':'display:none'}">
+			  				<div class="ui-g-12 ui-md-1 ui-lg-1 cc-right">
+			  					<h:outputText value="#{labels['general.oblast']}: " styleClass="req"/>
+			  				</div>
+			  				<div class="ui-g-12 ui-md-3 ui-lg-3">
+			  					<p:selectOneMenu id="oblast" value="#{applicationForm.applic.region}" style="width:90%">
+			  					    <f:selectItem itemLabel=" " itemValue="" />
+						            <f:selectItems value="#{applicationForm.oblastList}" 
+                                    		   var="itema" itemLabel="#{itema.tekst}" itemValue="#{itema.code}"/>
+                                    <p:ajax event="change" update="panelData" listener="#{applicationForm.actionChangeOblast}"  process="@all"/>	
+						        </p:selectOneMenu>
+						       
+						        <p:tooltip for="oblast" rendered="#{not empty facesContext.messageList and not empty facesContext.getMessageList(p:component('oblast'))}">
+									<p:message for="oblast"  display="text" style="color:#ffffff; background:none; border:0px"/>
+								</p:tooltip>
+			  				</div>
+			  				<div class="ui-g-12 ui-md-1 ui-lg-1 cc-right">
+			  					<h:outputText value="#{labels['general.obshtina']}: " styleClass="req"/>
+			  				</div>
+			  				<div class="ui-g-12 ui-md-3 ui-lg-3">
+			  					<p:selectOneMenu id="obshtina" value="#{applicationForm.applic.municipality}"  style="width:90%">
+			  						<f:selectItem itemLabel=" " itemValue="" />
+						            <f:selectItems value="#{applicationForm.obshtiniList}" 
+                                    		   var="itema" itemLabel="#{itema.tekst}" itemValue="#{itema.code}"/>
+                                    <p:ajax event="change" update="panelData" listener="#{applicationForm.actionChangeObshtina}" process="@all"/>
+						        </p:selectOneMenu>
+						        <p:tooltip for="obshtina" rendered="#{not empty facesContext.messageList and not empty facesContext.getMessageList(p:component('obshtina'))}">
+									<p:message for="obshtina"  display="text" style="color:#ffffff; background:none; border:0px"/>
+								</p:tooltip>
+			  				</div>
+			  				<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right">
+			  					<h:outputText value="#{labels['general.nasMiasto']}: " styleClass="req"/>
+			  				</div>
+			  				<div class="ui-g-12 ui-md-2 ui-lg-2">
+			  					<p:selectOneMenu id="nasMesto" value="#{applicationForm.applic.town}" style="width:90%">
+						            <f:selectItem itemLabel=" " itemValue="" />
+						             <f:selectItems value="#{applicationForm.nasMestoList}" 
+                                    		   var="itema" itemLabel="#{itema.tekst}" itemValue="#{itema.code}"/>
+						        </p:selectOneMenu>
+						        <p:tooltip for="nasMesto" rendered="#{not empty facesContext.messageList and not empty facesContext.getMessageList(p:component('nasMesto'))}">
+									<p:message for="nasMesto"  display="text" style="color:#ffffff; background:none; border:0px"/>
+								</p:tooltip>
+			  				</div>
+			  			</div>
+			  			<div class="ui-g">
+			  				<div class="ui-g-12 ui-md-1 ui-lg-1 cc-right">
+			  					<h:outputText value="#{labels['general.adress']}: " styleClass="req"/>
+			  				</div>
+			  				<div class="ui-g-12 ui-md-8 ui-lg-8">
+									<p:inputText id="address" value="#{applicationForm.applic.address}" style="width:95%"/>
+									<p:message for="address"  showDetail="true" showSummary="true" display="tooltip"/>
+							</div>
+							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right">
+			  					<h:outputText value="#{labels['general.pk']}:  " />
+			  				</div>
+			  				<div class="ui-g-12 ui-md-1 ui-lg-1">
+									<p:inputText id="postCode" value="#{applicationForm.applic.postCode}" style="width:95%" maxlength="4"/>
+									<p:message for="postCode"  showDetail="true" showSummary="true" display="tooltip"/>
+							</div>
+			  			</div>
+			  			
+			  		</p:panel>
+			  		
+			  		<p:panel header="#{labels['application.requestTitle']}: " style="margin-bottom:20px">
+			  			<p:inputTextarea id="requestInfo" value="#{applicationForm.applic.request}"   rows="6" style="width:99%"/>	
+						<p:message for="requestInfo"  display="tooltip"/>
+			  		</p:panel>
+			  		
+			  		
+			  		<p:panel header="#{labels['general.attachedDoc']}" style="margin-bottom:20px">
+					
+						<f:facet name="actions">
+							<p:fileUpload id="filesUpload" fileUploadListener="#{applicationForm.uploadFileListener}"  label="" skinSimple="true" update="fileList" auto="true" 
+								allowTypes="#{systemData.getSettingsValue('fileExtensionsForAttaching')}"/>
+							<p:tooltip for="filesUpload" value="#{labels['file.upload']}" />									
+						</f:facet>			
+					
+						<div class="ui-g">
+
+						<div class="ui-g-12 ui-md-12 ui-lg-12">	
+							
+							 <p:dataTable id="fileList" var="row" value="#{applicationForm.filesList}"
+							 			  rowIndexVar="rkv" emptyMessage="" rows="10" style="margin-bottom:20px" paginator="true" reflow="true" 
+							 			  paginatorPosition="bottom" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">
+							      
+							       <p:column headerText="#{labels['general.No-symbol']}" width="20" priority="4">
+										<h:outputText value="#{rkv + 1}" />
+									</p:column>
+									
+									<p:column headerText="#{labels['file.filename']}" width="30%">
+							             <h:outputText value="#{row.filename}" />									             
+							         </p:column>
+							       	
+							       <p:column headerText="#{labels['file.description']}">									   
+							            <p:inputText value="#{row.description}" style="width:99%"/>
+							       </p:column>
+							       
+							       <p:column headerText="" width="100" exportable="false">
+							       		
+							       		<p:commandButton  id="download" ajax="false" actionListener="#{applicationForm.download(row)}" icon="fa fa-fw fa-download" title="#{labels['file.download']}"/>
+							       
+							       		<p:commandButton action="#{applicationForm.actionChangeFileNonVis(row)}" update="fileList" icon="fa fa-fw fa-check" title="#{labels['file.visible']}" style="color: green;" rendered="#{row.visibleOnSite}"/>
+										
+										<p:commandButton action="#{applicationForm.actionChangeFileVis(row)}" update="fileList" icon="fa fa-fw fa-times-circle" title="#{labels['file.nonVisible']}" style="color: #d90000;" rendered="#{!row.visibleOnSite}" />													
+									
+										<p:commandButton action="#{applicationForm.remove(row)}" update="fileList" icon="fa fa-fw fa-trash"  title="#{labels['general.delete']}" style="color: #d90000 ;">
+											<f:param name="idObjDel" value="#{row.id}" />
+											<p:confirm header="#{labels['general.delete']}" message="#{labels['file.confirmDeleteFile']}" icon="ui-icon-alert" />
+										</p:commandButton>
+									</p:column>
+							  
+							   </p:dataTable>
+							   
+							   <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+							        <p:commandButton value="#{labels['general.yes']}" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+							        <p:commandButton value="#{labels['general.no']}" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+							    </p:confirmDialog>
+							</div>
+						</div>
+					</p:panel>	
+					
+					
+					 <script type="text/javascript"> $('#formApplic\\:filesUpload_label').addClass('fa fa-fw fa-paperclip');</script>
+					</p:outputPanel>
+					<p:outputPanel id="panelZadSubekt" rendered="#{applicationForm.keyTab==1}">
+						<p:focus for="textZv1"/>
+						<br/>
+						<div class="ui-g">
+						    <div class="ui-g-12 ui-md-10 ui-lg-11">
+								<p:inputText value="#{applicationForm.searchWordClass}"    id="textZv1"    style="width:100%;"  placeholder="#{labels['general.search']}" />   
+				            </div>
+							<div class="ui-g-12 ui-md-2 ui-lg-1">
+							 	<p:commandButton icon="fa fa-fw fa-search"  id="searchBtn" actionListener="#{applicationForm.search()}"
+		   						update="formApplic:zadSubektiTree" title="#{labels['general.search']}"/>
+		   						<p:defaultCommand target="searchBtn"/>
+							<span class="ui-separator"></span>
+							  	<p:commandButton icon="fa fa-fw fa-refresh"  actionListener="#{applicationForm.refreshTree()}" id="refreshBtn"
+		   							update="formApplic:zadSubektiTree formApplic:textZv1" title="#{labels['general.refresh']}"/> 
+							</div>
+						</div>
+						
+						
+						<p:treeTable value="#{applicationForm.subectRootNode}" var="subekt"  selectionMode="single" selection="#{applicationForm.subectSelectedNode}" id="zadSubektiTree">
+					        <p:ajax event="select" listener="#{applicationForm.onNodeSelect}"  update="message"/>
+        					<p:ajax event="unselect" listener="#{applicationForm.onNodeUnselect}" />
+					        
+					        
+					        
+					        <p:column headerText="#{labels['general.name']}" >
+					            <h:outputText value="#{subekt.tekst}" escape="false"/>
+					        </p:column>
+					        
+					    </p:treeTable>
+						
+						
+						
+						<br/>
+					</p:outputPanel>
+					<p:outputPanel  rendered="#{applicationForm.keyTab==2}">
+						<br/>
+						<p:panel style="margin-bottom:10px">
+				  			
+				  			<div class="ui-g">
+				  				<div class="ui-g-12 ui-md-1 ui-lg-1 cc-right">
+				  					<h:outputText value="#{labels['app.nomerZaiavlenie']}: " style="font-weight: bold;"/>
+								</div>
+								<div class="ui-g-12 ui-md-3 ui-lg-2">
+									<p:outputLabel value="#{applicationForm.applic.applicationUri}"/>
+								</div>								
+								<div class="ui-g-12 ui-md-1 ui-lg-1 cc-right">
+									<h:outputText value="#{labels['general.status']}: " style="font-weight: bold;"/>
+								</div>
+								<div class="ui-g-12 ui-md-7 ui-lg-2">
+									<p:outputLabel value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_STATUS_APPLICATION, applicationForm.applic.status, applicationForm.currentLang, null, applicationForm.userId)}"/>								
+								</div>
+								<div class="ui-g-12 ui-md-1 ui-lg-1 cc-right">
+									<h:outputText value="#{labels['events.fromDate']}: " style="font-weight: bold;"/>
+								</div>
+								<div class="ui-g-12 ui-md-3 ui-lg-1">
+									<p:outputLabel value="#{applicationForm.applic.statusDate}">
+										<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{applicationForm.timeZone}"/>
+									</p:outputLabel>
+								</div>
+								<div class="ui-g-12 ui-md-1 ui-lg-1 cc-right">
+									<h:outputText value="#{labels['application.srok']}: " style="font-weight: bold;"/>
+								</div>
+								<div class="ui-g-12 ui-md-7 ui-lg-3">
+									<p:outputLabel value="#{applicationForm.applic.responseEndTime}">
+										<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{applicationForm.timeZone}"/>
+									</p:outputLabel>
+								</div>	
+				  			</div>
+				  		</p:panel>
+					</p:outputPanel>
+					
+				  <div>
+			        	<p:commandButton value="#{labels['general.back']}" icon="fa fa-arrow-left" rendered="#{applicationForm.keyTab==1}"
+			        		action="#{applicationForm.actionBackStep}" update="formApplic:panelData formApplic:naviSubmission"/>
+			        	
+			        	<span class="ui-separator"> </span>
+			        	
+			             <p:commandButton value="#{applicationForm.keyTab==1?labels['application.step3']:labels['general.next']}" icon="fa fa-arrow-right"  rendered="#{applicationForm.keyTab!=2}"
+			            	action="#{applicationForm.actionNextStep}" update="formApplic message"/>
+			            
+			            
+			            <p:commandButton value="#{labels['general.print']}" icon="fa fa-print" rendered="#{applicationForm.keyTab==2}"
+			            	action="#{applicationForm.generateFile}" ajax="false"/>
+				 </div>	
+			 	</p:outputPanel>
+		  		</div>
+		  	 
+		  	
+		  	 
+		   </h:form>
+		</ui:define>
+	</ui:composition>
+	
+</html>	

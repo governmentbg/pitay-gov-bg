@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<!--
+    JBoss, Home of Professional Open Source
+    Copyright 2013, Red Hat, Inc. and/or its affiliates, and individual
+    contributors by the @authors tag. See the copyright.txt in the
+    distribution for a full listing of individual contributors.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+ Marker file indicating JSF 2.2 should be enabled in the application -->
+<faces-config version="2.2" xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">
+    <managed-bean eager="true">
+        <managed-bean-name>systemData</managed-bean-name>
+        <managed-bean-class>indexbg.pdoi.system.SystemData</managed-bean-class>
+        <managed-bean-scope>application</managed-bean-scope>
+    </managed-bean>
+    <managed-bean>
+        <managed-bean-name>userData</managed-bean-name>
+        <managed-bean-class>indexbg.pdoi.system.UserData</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+    <!-- Form specific setup -->
+	 <application>
+	  <!-- Primefaces Dialog Framework -->
+	  <action-listener>org.primefaces.application.DialogActionListener</action-listener>
+	  <navigation-handler>org.primefaces.application.DialogNavigationHandler</navigation-handler>
+	  <view-handler>org.primefaces.application.DialogViewHandler</view-handler>
+	  <!-- End Primefaces Dialog Framework -->
+        <locale-config>
+            <default-locale>bg</default-locale>
+            <supported-locale>en</supported-locale>
+        </locale-config>
+        <message-bundle>messages</message-bundle>
+        <resource-bundle>
+            <base-name>i18n.beanMessages</base-name>
+            <var>beanMessages</var>
+        </resource-bundle>
+        <message-bundle>i18n.messages</message-bundle>
+        <resource-bundle>
+            <base-name>i18n.labels</base-name>
+            <var>labels</var>
+        </resource-bundle>
+        <resource-bundle>
+	   		<base-name>i18n.navigation</base-name>
+	   		<var>navTexts</var>
+	  	</resource-bundle>
+	  	
+	  	<system-event-listener>
+			<system-event-listener-class>indexbg.pdoi.system.MySystemListener</system-event-listener-class>
+			<system-event-class>javax.faces.event.PostConstructApplicationEvent</system-event-class>
+		</system-event-listener>
+		<system-event-listener>
+			<system-event-listener-class>indexbg.pdoi.system.MySystemListener</system-event-listener-class>
+			<system-event-class>javax.faces.event.PreDestroyApplicationEvent</system-event-class>
+		</system-event-listener>
+	  	
+    </application>
+
+    <!-- End Form specific setup -->
+</faces-config>

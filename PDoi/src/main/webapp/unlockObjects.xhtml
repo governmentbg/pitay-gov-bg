@@ -1,0 +1,211 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf" 
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+
+	<ui:composition template="/templates/main.xhtml">
+		
+	<ui:define name="title">  #{labels['menu.unlockObj']} </ui:define> 
+	<ui:define name="systemLogo">
+		  <img src="images/cadmin_logo.png"/>
+	</ui:define>
+	
+	<ui:define name="menu-items">
+		<ui:include src="/include/menuItems.xhtml"/>
+	</ui:define>
+	
+		
+	<ui:define name="content">		
+		<h:form id="formUnlockObj" onkeypress="if(event.keyCode == 13) {return false;}">
+			<p:growl id="message" showDetail="true" showSummary="true"/>
+			<p:importConstants type="indexbg.pdoi.system.Constants" var="IBConstants" className="indexbg.pdoi.system.Constants" />
+			<p:importConstants type="com.indexbg.system.SysConstants" var="IBConstantsSys" className="com.indexbg.system.SysConstants" />
+			<p:tooltip/>
+			<div class="container"> 
+		
+				<p:outputPanel id="panelData">
+					<br/>
+					<p:panel>
+					<ui:decorate template="/templates/panel.xhtml">
+						<ui:define name="panel-header">
+							<h:outputText styleClass="fa fa-fw fa-search" title="#{labels['general.search']}"/>
+						</ui:define>
+						<ui:define name="panel-content">
+							<p:outputPanel id="panelFilter" >
+								<div class="ui-g">
+									<div class="ui-g-7 ui-md-2 ui-lg-2 cc-right">
+										<h:outputText value="#{labels['general.uri']}:" />
+									</div>
+									<div class="ui-g-12 ui-md-10 ui-lg-10">
+										<p:inputText value="#{unlockObjects.regNom}"  id="idIdent" style="width:180px;" tabindex="1"/>
+									</div>
+								</div>
+								<div class="ui-g">
+									<div class="ui-g-7 ui-md-2 ui-lg-2 cc-right">
+										<h:outputText value="#{labels['general.InfObject']}:"/>
+									</div>
+									<div class="ui-g-12 ui-md-10 ui-lg-10">
+										<p:selectOneMenu id="idObject" value="#{unlockObjects.codeObj}" style="width:180px;" tabindex="2">
+		                                    <f:selectItem 
+		                                    	itemLabel="#{systemData.decodeItem(IBConstantsSys.CODE_CLASSIF_OBJECTS, IBConstants.CODE_OBJECT_APPLICATION, unlockObjects.currentLang, unlockObjects.currentDate, unlockObjects.idUser)}" 
+		                                    	itemValue="#{IBConstants.CODE_OBJECT_APPLICATION}" />
+		                                    <ui:remove><f:selectItems value="#{unlockObjects.objectsList}"/></ui:remove>
+		                                </p:selectOneMenu>
+									</div>
+								</div>
+								<div class="ui-g">
+									<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
+										<h:outputText value="#{labels['general.period']}:"/>
+									</div>
+									<div class="ui-g-12 ui-md-4 ui-lg-2">
+										<p:selectOneMenu id="idPer" value="#{unlockObjects.idPeriod}" style="width:180px;" tabindex="3">
+		                                    <f:selectItem value="#{null}" itemValue="#{null}"/>          
+		                                    <f:selectItems value="#{systemData.getSysClassification(IBConstantsSys.CODE_CLASSIF_PERIOD_NOFUTURE, unlockObjects.currentDate, unlockObjects.currentLang, unlockObjects.idUser)}"  
+		                                    		var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
+		                                      <p:ajax event="change" update="idPer dateOt dateDo"  listener="#{unlockObjects.changePeriod()}"   />   
+		                                </p:selectOneMenu>
+	                                </div>
+	                               
+	                               
+	                                <div class="ui-g-8 ui-md-1 ui-lg-1 cc-right" >
+										<h:outputText value="от:"/>
+									</div>
+									<div class="ui-g-12 ui-md-2 ui-lg-2">
+										<p:calendar id="dateOt" pattern="dd.MM.yyyy" mask="true"  showOn="button" 
+											timeZone="#{unlockObjects.timeZone}" size="10" locale="bg" tabindex="4"
+								         	style="font-size:12px;"   value="#{unlockObjects.dateFrom}" label="#{labels['publ.dateFrom']}"
+								          	styleClass="form-control #{unlockObjects.hasMessages('formUnlockObj:dateOt') ? 'cc-red ': '' }" >
+								          	<p:ajax event="dateSelect" listener="#{unlockObjects.checkDates(1)}"  update="formUnlockObj:dateOt formUnlockObj:dateDo formUnlockObj:idPer message" />
+								          	<p:ajax event="change" listener="#{unlockObjects.checkDates(1)}" update="formUnlockObj:dateOt formUnlockObj:dateDo formUnlockObj:idPer message" />
+								        </p:calendar>
+								        <p:message for="dateOt" showDetail="true" showSummary="true" display="tooltip"/>
+									</div>
+									<div class="ui-g-8 ui-md-2 ui-lg-1 cc-right" >
+										<h:outputText value="до:"/>
+									</div>
+									<div class="ui-g-12 ui-md-2 ui-lg-4">
+										<p:calendar id="dateDo" pattern="dd.MM.yyyy" mask="true" showOn="button" 
+											timeZone="#{unlockObjects.timeZone}" size="10" locale="bg" tabindex="5"
+								         	style="font-size:12px;"  value="#{unlockObjects.dateTo}" label="#{labels['publ.dateTo']}"   
+								          	styleClass="form-control #{unlockObjects.hasMessages('formUnlockObj:dateDo') ? 'cc-red' : '' }" >
+								          	<p:ajax event="dateSelect" listener="#{unlockObjects.checkDates(2)}" update="formUnlockObj:dateOt formUnlockObj:dateDo formUnlockObj:idPer message" />
+								          	<p:ajax event="change" listener="#{unlockObjects.checkDates(2)}" update="formUnlockObj:dateOt formUnlockObj:dateDo formUnlockObj:idPer message" />
+									     </p:calendar>  	
+									     <p:message for="dateDo" showDetail="true" showSummary="true" display="tooltip"/> 
+									</div> 
+									
+							
+								</div>
+															
+							</p:outputPanel>
+							<br/><br/>
+							
+							<p:outputPanel id="panelMenuBarDown">
+								<div class="ui-g">
+									<div class="ui-g-12 ui-md-3 ui-lg-2 cc-right">
+										<p:commandButton id="bnt_clear" update="formUnlockObj message" action="#{unlockObjects.initData}" 
+											icon="fa fa-fw fa-file-o" value="#{labels['general.clear']}" style="align:right;"/>
+									</div>
+									<div class="ui-g-12 ui-md-9 ui-lg-10 cc-right">
+										<p:commandButton id="bnt_search" update="formUnlockObj:panelData message" action="#{unlockObjects.actionSearch}" 
+											icon="fa fa-fw fa-search" value="#{labels['general.search']}" style="align:right;margin-right:15px;" />
+									</div>
+									
+								</div>
+							</p:outputPanel>
+	
+						</ui:define>
+					</ui:decorate>
+					</p:panel>
+					<br/><br/>
+	
+					<ui:decorate template="/templates/panel.xhtml">
+						<div class="ui-g">
+							<div class="ui-g-12 ui-md-3 ui-lg-2 cc-left">
+								<ui:define name="panel-header">
+									<h:outputText value="(#{unlockObjects.lockedList.rowCount})"/>
+								</ui:define>
+							</div>
+							<div class="ui-g-12 ui-md-3 ui-lg-2 cc-right">
+								<ui:define name="panel-buttons" >
+								    <p:commandButton id="btnUnlock" action="#{unlockObjects.actionUnlock}" value="#{labels['general.unlock']}"  
+								    	icon="ui-icon-unlocked"  update="formUnlockObj:panelData message">
+								    </p:commandButton>
+							    </ui:define>
+						    </div>
+					    </div>
+	
+						<ui:define name="panel-content">
+							<p:outputPanel id="panelTableL">
+								<p:dataTable var="row" value="#{unlockObjects.lockedList}" id="tableUO" reflow="true" 
+									rendered="#{unlockObjects.lockedList.rowCount > 0}" lazy="true"  
+									selection="#{unlockObjects.selListLocked}" 
+									rowIndexVar="rkv" emptyMessage="#{labels['general.norows']}" 
+									rows="10" paginator="true" paginatorPosition="bottom" 
+									paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+									style="margin-bottom:20px">
+									
+									<p:column headerText="#{labels['general.izbor']}" selectionMode="multiple" style="text-align:center;" width="5%" />
+									
+									<p:column headerText="#{labels['general.uri']}" width="10%" sortBy="#{row.A2}" >
+										<h:outputText value="#{row[1]}"/>
+									</p:column>
+									
+									<p:column  headerText="#{labels['general.date']}" width="8%" sortBy="#{row.A3}" style="text-align:center;">												
+										<h:outputText value="#{row[2]}">	
+											<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{unlockObjects.timeZone}"/>
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="#{labels['general.about']}" width="37%" >
+										<h:outputText value="#{row[3]}" escape="false"/>
+									</p:column>
+	
+									<p:column  headerText="#{labels['unlockObjects.dateLock']}" width="15%" sortBy="#{row.A5}" style="text-align:center;">												
+										<h:outputText value="#{row[4]}">	
+											<f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss" timeZone="#{unlockObjects.timeZone}"/>
+										</h:outputText>
+									</p:column>
+									
+									<p:column headerText="#{labels['unlockObjects.lockedBy']}" sortBy="#{row.A6}" width="25%" >
+										<h:outputText value="#{row[5]}" escape="false"/>
+									</p:column>
+	
+								</p:dataTable>
+							</p:outputPanel>
+						</ui:define>
+					</ui:decorate>
+
+				</p:outputPanel>
+			
+			</div>
+
+		</h:form>
+		
+		<style type="text/css">
+			.singleLine
+			{
+			    text-wrap:none;
+			    white-space:nowrap;
+			    overflow:hidden;
+			    text-overflow:ellipsis;
+			}
+			.wrapLine
+			{
+			    text-wrap:true;
+			    white-space:wrap;
+			
+			}
+		</style>
+	
+	</ui:define>
+
+</ui:composition>
+
+</html>

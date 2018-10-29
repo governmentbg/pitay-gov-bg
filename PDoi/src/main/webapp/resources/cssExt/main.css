@@ -1,0 +1,1130 @@
+html, body{
+	height: 100%;
+}
+	
+body {
+	margin: 0px;
+	padding: 0px;
+	font-family: 'Questrial', sans-serif;
+	font-size: 12pt;
+	/*color: rgba(0,0,0,.6);*/
+}
+	
+	
+h1,
+h2,
+h3,
+h4,
+h5 {
+	margin: 0;
+	padding: 0;
+	color: #404040;
+}
+	
+p,
+ol,
+ul {
+	margin-top: 0;
+}
+	
+ol,
+ul {
+	padding: 0;
+	list-style: none;
+}
+	
+p {
+	line-height: 180%;
+}
+	
+a {
+	color: #2056ac;
+}
+	
+a:hover {
+	text-decoration: none;
+}
+	
+
+/*********************************************************************************/
+/* Image Style                                                                   */
+/*********************************************************************************/
+
+.image {
+	display: inline-block;
+	border: 1px solid rgba(0,0,0,.1);
+}
+
+.image img {
+	display: block;
+	width: 100%;
+}
+	
+.image-full {
+	display: block;
+	width: 100%;
+	margin: 0 0 3em 0;
+}
+	
+.image-left {
+	float: left;
+	margin: 0 2em 2em 0;
+}
+	
+.image-centered {
+	display: block;
+	margin: 0 0 2em 0;
+}
+
+.image-centered img {
+	margin: 0 auto;
+	width: auto;
+}
+
+
+/*********************************************************************************/
+/* Social Icon Styles                                                            */
+/*********************************************************************************/
+
+ul.social-contacts {
+	margin: 0;
+	padding: 2em 0em 0em 0em;
+	list-style: none;
+}
+
+ul.social-contacts li {
+	display: inline-block;
+	padding: 0em 0.10em;
+	font-size: 1em;
+}
+
+ul.social-contacts li a {
+    color: #FFF;
+    text-decoration: none;
+}
+
+ul.social-contacts li a:hover {
+    text-decoration: underline;
+}
+
+ul.social-contacts li .icon {
+	margin: 0;
+	padding: 0;
+}
+
+/*********************************************************************************/
+/* Button Style                                                                  */
+/*********************************************************************************/
+
+.btn-primary {
+	display: inline-block;
+	margin-top: 2em;
+	padding: 0.8em 2em;
+    font-size: 1em;
+    line-height: 1.8em;
+    letter-spacing: 1px;
+    color: #FFF;
+	background-color: #64ABD1;
+    text-decoration: none;
+    transition: background-color .3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #5ea4df;
+}
+
+.ui-button {
+	background-image: none !important;
+	background-color: #64ABD1 !important;
+	padding: 0.1em !important;
+	color: #FFF !important;
+	text-shadow: none !important;
+	border: none !important;
+	border-radius: 0px !important;
+	transition: background-color .3s ease !important;
+	font-weight: bold;
+}
+
+.ui-button:hover {
+	background-color: #5ea4df !important;
+}
+.ui-icon-calendar{
+	background-image: url("/PDoi/javax.faces.resource/images/ui-icons_ffffff_256x240.png.jsf?ln=primefaces-bootstrap") !important;
+}	
+		
+/*********************************************************************************/
+/* Heading Titles                                                                */
+/*********************************************************************************/
+
+.title {
+	margin-bottom: 3em;
+}
+
+.title h2 {
+	font-size: 2.8em;
+}
+
+.title .byline {
+	font-size: 1.1em;
+	color: #6F6F6F; 
+}
+
+/*********************************************************************************/
+/* Header                                                                        */
+/*********************************************************************************/
+
+.header-wrapper {
+    position: relative;
+	background-image: url(../images/top.jpeg);
+    background-attachment: fixed;
+	background-repeat: no-repeat;
+    background-size: cover;
+    background-position-y: -350px;
+}
+
+.header-wrapper::before {
+    display: inline-block;
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: black;
+    opacity: .7;
+    z-index: 1;
+}
+
+.header {
+	text-align: center;
+    position: relative;
+    z-index: 2;
+}
+
+.login {
+	position: absolute;
+	top: 10px;
+	right: 0px;
+	color: #ffffff;
+    z-index: 2;
+    background-color: #64ABD1;
+    border-top-left-radius: 7px;
+    border-bottom-left-radius: 7px;
+}
+
+.login a {
+	display: inline-block;
+	padding: 0em 1.5em;
+    font-size: 0.90em;
+    font-weight: 600;
+    line-height: 60px;
+    color: #ffffff;
+    text-decoration: none;
+    text-transform: uppercase;
+    outline: 0;
+}
+
+.login > :first-child {
+    border-top-left-radius: 7px;
+    border-bottom-left-radius: 7px;
+}
+
+.login a:hover,
+.login a:focus,
+.login a:active {
+    color: #2056ac;
+    background-color: #ffffff;
+}
+
+.login a .icon {
+    display: inline-block;
+    font-size: 20px;
+    vertical-align: middle;
+}
+
+/*********************************************************************************/
+/* Logo                                                                          */
+/*********************************************************************************/
+
+.logo-container {
+	height: 155px;
+}
+
+.logo {
+	text-align: left;
+}
+
+.logo img {
+	width: 130px;
+}
+
+.logo-text {
+   display: inline-block;
+   vertical-align: top;
+   margin-top: 40px;
+}
+
+.logo-text h1 {
+	margin-bottom: 0.20em !important;
+    color: #ffffff;
+    font-size: 1.5em;
+	font-weight: bold;
+}
+
+.logo-text h4 {
+    color: #ffffff;
+    font-size: 1.5em;
+	font-weight: bold;
+}
+
+.logo-text h3 {
+    color: #ffffff;
+}
+
+.logo-text h4 {
+    color: #ffffff;
+}
+
+.logo-text a {
+	text-decoration: none;
+	color: #ffffff;
+}
+
+@media only screen and (max-width: 992px) {
+	
+	.logo-text {
+		display: none;
+	}
+	
+    .logo {
+        text-align: center;
+    }
+
+}
+
+/*********************************************************************************/
+/* Menu                                                                          */
+/*********************************************************************************/
+
+.menu {
+    background-color: #64ABD1;
+}
+
+.menu .nav {
+	display: inline-block;
+    margin: 0;
+	padding: 0em 2em;
+	text-align: center;
+}
+
+.menu li {
+	display: inline-block;
+}
+
+.menu li a {
+	display: inline-block;
+	padding: 0em 1.5em;
+    font-size: 0.90em;
+    font-weight: 600;
+    line-height: 60px;
+    color: #ffffff;
+    border-radius: 7px 7px 0px 0px;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color .3s ease, background-color .3s ease;
+}
+
+.menu li.active a,
+.menu li:hover a,
+.menu li:focus a,
+.menu li:active a {
+    background-color: #ffffff;
+    color: #2056ac;
+}
+
+.mobile-menu-handle {
+    display: none;
+}
+
+.menu-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.menu-dropdown-content {
+    right: 0;
+    border-radius: 7px;
+    display: none;
+    position: absolute;
+    background-color: #ffffff;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    border: 1px solid #eaeaea;
+    z-index: 1;
+}
+
+
+.menu-dropdown-content a {
+    margin: 0;
+    padding: 0;
+    color: #404040;
+    text-decoration: none;
+    outline: 0;
+}
+
+.menu-dropdown:hover .menu-dropdown-content {
+    display: block;
+}
+
+@media screen and (max-width: 1200px) {
+
+    .menu li a {
+        padding: .5em 1em 0;
+        font-size: .8em;
+        line-height: 40px;
+    }
+}
+
+@media only screen and (max-width: 992px) {
+
+    .menu {
+        position: absolute;
+        top: 10px;
+        left: 0px;
+        background: none;
+    }
+
+    .menu .mobile-menu-handle {
+        display: inline-block;
+        padding: .7em 1em;
+        font-size: 1.2em;
+        color: #64ABD1;
+        cursor: pointer;
+        background-color: #ffffff;
+        border-top-right-radius: 7px;
+        border-bottom-right-radius: 7px;
+    }
+
+    .menu .nav {
+        width: 200px;
+        padding: 0;
+        position: absolute;
+        top: 110%;
+        left: -200px;
+        background-color: #ffffff;
+        border: 1px solid #eaeaea;
+        border-left: none;
+        border-top-right-radius: 7px;
+        border-bottom-right-radius: 7px;
+        transition: right .4s ease, left .4s ease;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 10;
+    }
+
+    .menu.menu-opened .nav {
+        left: 0;
+    }
+
+    .menu li a {
+        padding: 1.5em 1.4em;
+        line-height: normal;
+        color: #64ABD1;
+    }
+}
+	
+	
+
+/*********************************************************************************/
+/* Banner                                                                        */
+/*********************************************************************************/
+
+#banner {
+	padding-top: 5em;
+}
+
+/*********************************************************************************/
+/* Wrapper                                                                       */
+/*********************************************************************************/
+
+
+.wrapper {
+	overflow: hidden;
+	padding: 0em 0em 5em 0em;
+	background: #FFF;
+	line-height: normal !important;
+	font-size: 12px;
+	min-height: 50%;
+}
+
+@media only screen and (max-width: 992px) {
+
+    .wrapper {
+        padding: 0;
+    }
+}
+
+
+/*********************************************************************************/
+/* Welcome                                                                       */
+/*********************************************************************************/
+
+.welcome-section {
+	
+	
+	margin-top: 2em;
+	margin-bottom: 2em;
+    padding-top: 0em;
+    padding-bottom: 0em;
+	text-align: justify;
+}
+
+@media only screen and (max-width: 992px) {
+
+    .welcome-section {
+        margin-top: 2em;
+         padding-bottom: 2em;
+    }
+}
+	
+
+/*********************************************************************************/
+/* Page                                                                          */
+/*********************************************************************************/
+
+#page-wrapper {
+	overflow: hidden;
+	background: #2F1E28;
+	padding: 3em 0em 6em 0em;
+	text-align: center;
+}
+
+
+/*********************************************************************************/
+/* Content                                                                       */
+/*********************************************************************************/
+
+#content {
+	float: left;
+	width: 700px;
+	padding-right: 100px;
+	border-right: 1px solid rgba(0,0,0,.1);
+}
+
+/*********************************************************************************/
+/* Sidebar                                                                       */
+/*********************************************************************************/
+
+#sidebar {
+	float: right;
+	width: 350px;
+}
+
+/*********************************************************************************/
+/* Footer                                                                     */
+/*********************************************************************************/
+
+.footer {
+    position: relative;
+    background-image:  url(../images/top.jpeg);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
+	text-align: center;
+}
+
+.footer::before {
+    display: inline-block;
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: black;
+    opacity: .6;
+    z-index: 1;
+}
+
+.footer .footer-content {
+    padding: 5em 0em;
+    position: relative;
+    z-index: 2;
+}
+
+.footer .info {
+	padding: 0 100px;
+}
+
+.footer .info p {
+    font-size: 0.9em;
+	letter-spacing: 1px;
+	color: rgba(255, 255, 255, .8);
+}
+
+.footer .copyrights {
+    font-size: 0.9em;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, .8);
+}
+
+.footer .copyrights a {
+	text-decoration: none;
+	color: rgba(255, 255, 255, 1);
+}
+
+.footer .copyrights a:hover {
+    text-decoration: underline;
+}
+
+.footer .img-left-wrap img,
+.footer .img-right-wrap img {
+    width: 250px;
+}
+
+.footer .img-left-wrap {
+    position: absolute;
+    bottom: 5em;
+    left: 100px;
+}
+
+.footer .img-right-wrap {
+    position: absolute;
+    right: 100px;
+    bottom: 5em;
+}
+
+@media only screen and (max-width: 1200px) {
+
+    .footer .footer-content {
+        padding: 5em 0 8em;
+    }
+
+    .footer .info {
+        padding: 0;
+    }
+
+    .footer .img-left-wrap {
+        right: 50%;
+        bottom: 20px;
+        left: auto;
+    }
+
+    .footer .img-right-wrap {
+        right: auto;
+        bottom: 20px;
+        left: 50%;
+    }
+}
+
+@media only screen and (max-width: 767px) {
+
+    .footer .footer-content {
+        padding: 4em 0 2em;
+    }
+
+    .footer .img-left-wrap {
+        position: static;
+        margin: 2em 0 1em;
+    }
+
+    .footer .img-right-wrap {
+        position: static;
+    }
+}
+
+/*********************************************************************************/
+/* Three Columns                                                                 */
+/*********************************************************************************/
+
+.container-services {
+    margin-top: 2em;
+    margin-bottom: 2em;
+    padding-top: 0em;
+    padding-bottom: 0em;
+    border-bottom: 1px solid rgba(0, 0, 0, .2);
+}
+
+.column-content {
+    padding: 20px 20px;
+    text-align: center;
+}
+
+.column-content .title {
+    margin: 0 0 3em;
+}
+
+.column-content .title .icon {
+    font-size: 30px;
+}
+
+.column-content .title h2 {
+    margin: 1em 0em;
+    font-size: 1.5em;
+    font-weight: 700;
+    font-size: 1.60em;
+}
+
+@media only screen and (max-width: 992px) {
+
+    .container-services {
+        margin-top: 0;
+    }
+
+    .column-content {
+        padding: 40px 20px 30px;
+    }
+
+    .column-content .title {
+        margin: 0 0 1em;
+    }
+
+    .column-content .title h2 {
+        margin: .5em 0;
+    }
+
+    .column-content .btn-primary {
+        margin-top: 0;
+    }
+}
+
+
+/*********************************************************************************/
+/* Paginators																	 */
+/*********************************************************************************/
+
+/* Page buttons */
+.ui-paginator-page {
+	background-image: none !important;
+	background-color: #64ABD1 !important;
+	color: #FFF !important;
+	text-shadow: none !important;
+	border: none !important;
+	border-radius: 0px !important;
+	transition: background-color .3s ease !important;
+	font-weight: bold;
+	padding: 4px 12px !important;
+}
+
+.ui-paginator-page:hover {
+	background-color: #5ea4df !important;
+}
+
+.ui-paginator-page.ui-state-active {
+	color: #64ABD1 !important;
+	background-color: white !important;
+	border: 1px solid #64ABD1 !important;
+	-webkit-box-shadow: 0 0 8px #64ABD1;
+    box-shadow: 0 0 8px #64ABD1;
+}
+
+/* First/Prev/Next/Last page buttons */
+.ui-paginator-first, .ui-paginator-prev,
+.ui-paginator-next, .ui-paginator-last {
+	background-image: none !important;
+	background-color: #64ABD1 !important;
+	color: #FFF !important;
+	text-shadow: none !important;
+	border: none !important;
+	border-radius: 0px !important;
+	transition: background-color .3s ease !important;
+	padding: 4px 10px !important;
+} 
+.ui-paginator {
+	border: none;
+	background-color:#ffffff;
+}
+.ui-paginator a span.ui-icon {
+	background-image: url(/PDoi/javax.faces.resource/images/ui-icons_ffffff_256x240.png.jsf?ln=primefaces-bootstrap);
+}
+
+.ui-paginator-rpp-options{
+	
+	background-image: none !important;
+	background-color: #fff !important;
+	
+	
+	border-radius: 0px !important;
+	
+	font-weight: bold;
+	padding: 3px 10px !important;
+}
+
+
+/*********************************************************************************/
+/* Misc.																		 */
+/*********************************************************************************/
+a.ui-link label.ui-outputlabel {
+	cursor: pointer;
+}
+
+/*********************************************************************************/
+/* Color Blind																	 */
+/*********************************************************************************/
+
+body.color-blind {
+    background: black !important;
+    color: white !important;
+}
+
+body.color-blind .login {
+	background-color: black;
+}
+
+/* Menu */
+body.color-blind .menu {
+	background-color: black;
+}
+
+/* Menu button */
+body.color-blind .menu .mobile-menu-handle {
+	background-color: black!important;
+	color: white;
+	border-radius: 0px;
+	transition: background-color .3s ease !important;
+}
+
+/* Menu button, hovered */
+body.color-blind .menu .mobile-menu-handle:hover {
+	background-color: #333 !important;
+}
+
+/* Menu button, clicked */
+body.color-blind .menu.menu-opened .mobile-menu-handle {
+	background-color: #555!important;
+	color: white;
+	border:  1px solid #aaa;
+}
+
+body.color-blind .menu li:hover {
+	background-color: #333;
+}
+
+body.color-blind .menu li a {
+	background-color: transparent !important;
+    color: yellow !important;
+}
+
+/* Menu dropdown */
+body.color-blind .menu.menu-opened .nav {
+	background-color: black;
+	border-radius: 0px;
+}
+
+body.color-blind #selectLangDropdown li a {
+	color: white !important;
+	background-color: black;
+	border: 1px solid white;
+}
+
+body.color-blind #selectLangDropdown li a:hover {
+	background-color: #333;
+}
+
+body.color-blind .menu-dropdown .menu-dropdown-content {
+	border: 1px solid white !important;
+	border-radius: 0px;
+}
+
+body.color-blind .menu-dropdown .menu-dropdown-content li {
+	background-color: black;
+}
+
+body.color-blind .menu-dropdown .menu-dropdown-content li:hover {
+	background-color: #333;
+}
+
+body.color-blind .menu-dropdown .menu-dropdown-content li a {
+	color: white !important;
+}
+
+body.color-blind .menu-dropdown .menu-dropdown-content li a:hover {
+	background-color: inherit;
+}
+
+body.color-blind .header-wrapper {
+    background: black !important;
+    color: white !important;
+}
+
+body.color-blind h1, body.color-blind h2, body.color-blind  h3 {
+    color: white !important;
+}
+
+body.color-blind .footer {
+    background: black !important;
+    color: white !important;
+}
+
+body.color-blind .wrapper {
+    background: black !important;
+    color: white !important;
+}
+
+body.color-blind .ui-panel{
+	 background: black !important;
+    color: white !important;
+}
+
+/* Steps labels */
+body.color-blind .ui-steps-title {
+	background: black !important;
+	color:white !important;
+}
+
+/* Active step */
+body.color-blind .ui-steps .ui-steps-item.ui-state-highlight {
+	background-color: white !important;
+	background-image: none;
+	border: 1px solid white;
+}
+body.color-blind .ui-steps .ui-steps-item.ui-state-highlight span.ui-steps-number {
+	background-color: black !important;
+	border: 1px solid white;
+}
+
+/* Inactive step */
+body.color-blind .ui-steps .ui-steps-item.ui-state-default {
+	background-color: white !important;
+	background-image: none;
+	border: 1px solid white;
+}
+body.color-blind .ui-steps .ui-steps-item.ui-state-default span.ui-steps-number {
+	background-color: black !important;
+	border: 1px solid white;
+}
+
+/* Input fields text */
+body.color-blind .ui-panel .ui-widget-content {
+    background: black !important;
+    color: white !important;
+}
+
+/* Radio button labels */
+body.color-blind .ui-radiobutton + label {
+	background: black !important;
+	color: white !important;
+}
+
+/* Checkbox labels */
+body.color-blind .ui-selectbooleancheckbox + label {
+	background: black !important;
+	color: white !important;
+	cursor: pointer;
+}
+
+/* Document titles */
+body.color-blind .ui-link.ui-widget {
+	background: black !important;
+	color: yellow !important;
+}
+
+/* Links inside opened documents (in sectionDetailsView.jsf) */
+body.color-blind #formSectD\:idFullTextD a {
+	background: black !important;
+	color: yellow !important;
+}
+
+/* Document titles */
+body.color-blind #formSectD\:panelFiles a button + span {
+	background: black !important;
+	color: yellow !important;
+}
+
+/* Application title */
+body.color-blind #formApplicView h5#applicationTitle {
+	background: black !important;
+	color: white !important;
+}
+
+/* Search titles */ 
+body.color-blind .ui-panel-content.ui-widget-content a.ui-link label.ui-outputlabel {
+	color: yellow !important;
+}
+
+/* Input fields */
+body.color-blind .ui-inputfield {
+	background-color: #333 !important;
+	color: white !important;
+	border-color: white !important;
+	text-shadow: none !important;
+}
+
+/* Input fields, active */
+body.color-blind .ui-inputfield.ui-state-focus {
+	background-color: black !important;
+	-moz-box-shadow:     0 0 8px #ccc !important;
+	-webkit-box-shadow:  0 0 8px #ccc !important;
+	box-shadow:          0 0 8px #ccc !important;
+	transition: background-color .3s ease !important;
+}
+
+body.color-blind .ui-outputlabel {
+	color: white;
+}
+
+/* Panel headers in applicationSubmission */
+body.color-blind .ui-panel-titlebar.ui-widget-header {
+	color: white;
+    background-color: black;
+    border: none;
+}
+
+/* Panel horizontal lines */
+body.color-blind .ui-panel-titlebar.ui-widget-header::after {
+	width: 100%;
+	height: 1px;
+	background-color: white;
+	margin-top: 0.3em;
+}
+
+/* Panel */
+body.color-blind .ui-panelgrid-content {
+	background-color: black;
+	color: white;
+}
+
+body.color-blind .ui-datagrid-content.ui-widget-content {
+	background-color: black !important;
+}
+
+/* Tree table nodes */
+body.color-blind .ui-treetable tr {
+	background-color: black !important;
+	color: white;
+}
+
+/* Tree table selected node */
+body.color-blind .ui-treetable tr.ui-state-highlight {
+	background-image: none;
+	background-color: white !important;
+	color: black;
+	background-image: none;
+}
+
+/* Tree table icons */
+body.color-blind .ui-treetable .ui-treetable-data span.ui-icon {
+	background-image: url(/PDoi/javax.faces.resource/images/ui-icons_ffffff_256x240.png.jsf?ln=primefaces-bootstrap);
+}
+
+/* Tree table icons, selected */
+body.color-blind .ui-treetable .ui-treetable-data .ui-state-highlight span.ui-icon {
+	background-image: url(/PDoi/javax.faces.resource/images/ui-icons_333333_256x240.png.jsf?ln=primefaces-bootstrap);
+}
+
+/* Paginators */
+body.color-blind .ui-paginator {
+	border: none;
+    background: black !important;
+}
+
+body.color-blind .ui-paginator .ui-paginator-current {
+	color: white !important;
+}
+
+body.color-blind .ui-paginator-page {
+	background-image: none !important;
+	background-color: black !important;
+	color: white !important;
+	text-shadow: none !important;
+	border: 1px solid white !important;
+	border-radius: 0px !important;
+	transition: background-color .3s ease !important;
+	font-weight: bold;
+	padding: 4px 12px !important;
+}
+
+body.color-blind .ui-paginator-page:hover {
+	background-color: #333 !important;
+}
+
+body.color-blind .ui-paginator-page.ui-state-active {
+	color: black !important;
+	background-color: white !important;
+	border: 1px solid white !important;
+	-webkit-box-shadow: 0 0 8px white;
+    box-shadow: 0 0 8px white;
+}
+
+body.color-blind .ui-paginator-first, 
+body.color-blind .ui-paginator-prev,
+body.color-blind .ui-paginator-next, 
+body.color-blind .ui-paginator-last {
+	background-image: none !important;
+	background-color: black !important;
+	color: white !important;
+	text-shadow: none !important;
+	border: 1px solid white !important;
+	border-radius: 0px !important;
+	transition: background-color .3s ease !important;
+	padding: 4px 10px !important;
+} 
+
+body.color-blind .ui-button {
+	background-image: none !important;
+	background-color: #000000 !important;
+	padding: 0.1em !important;
+	color: #FFF !important;
+	text-shadow: none !important;
+	border: 1px solid #ffffff !important;
+	border-radius: 0px !important;
+	transition: background-color .3s ease !important;
+	font-weight: bold;
+}
+
+body.color-blind .ui-button:hover {
+	background-color: #333 !important;
+}
+
+body.color-blind .btn-primary {
+	color: white;
+	background-color:black;
+	border: 1px solid white;
+	border-radius: 0px;
+	transition: background-color .3s ease !important;
+	font-weight: bold;
+}
+
+body.color-blind .btn-primary:hover {
+	background-color: #333 !important;
+}
+
+/* Inactive tabs */
+body.color-blind .ui-tabs-nav .ui-tabs-header a {
+	color: white !important;
+	text-shadow: none;
+}
+
+/* Hovered tabs */
+body.color-blind .ui-tabs-nav .ui-tabs-header.ui-state-hover a {
+	background-color: #555;
+}
+
+/* Active tab */
+body.color-blind .ui-tabs-nav .ui-tabs-header.ui-state-active a {
+	background-color: black;
+	color: white !important;
+	font-weight: bold;
+	text-shadow: none;
+}
+
+/* Datatable head */
+body.color-blind .ui-datatable thead th {
+	background-color: black !important;
+	color: white !important;
+	text-shadow: none !important;
+	box-shadow: none !important;
+	background-image: none !important;
+	border: 1px solid white !important;
+}
+
+/* Datatable rows */
+body.color-blind .ui-datatable tbody tr.ui-datatable-odd {
+	color:  white !important;
+	background-color: black !important;	
+}
+
+/* Datatable rows */
+body.color-blind .ui-datatable tbody tr.ui-datatable-even {
+	color: white !important;
+	background-color: #333 !important;
+}

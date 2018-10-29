@@ -1,0 +1,330 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf" xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+<ui:composition template="/templateExt/mainExt.xhtml">
+
+<ui:define name="metatags">
+	<meta property="og:locale" content="bg_BG" />
+	<meta property="og:type" content="website" />
+	<meta property="og:title" content="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_ADM_REGISTRY, applicationView.applic.responseSubjectId, applicationView.currentLang, null, applicationView.userId)}" />
+	<meta property="og:description" content="#{applicationView.applic.request}" />
+	<meta property="og:url" content="https://demo.indexbg.bg/PDoi/applicationView.jsf?idObj=#{applicationView.applic.id}" />
+	<meta property="og:site_name" content="Pdoi" />		
+	<meta name="twitter:card" content="summary" />
+	<meta name="twitter:description" content="#{applicationView.applic.request}" />
+	<meta name="twitter:title" content="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_ADM_REGISTRY, applicationView.applic.responseSubjectId, applicationView.currentLang, null, applicationView.userId)}" />
+	<meta name="twitter:site" content="@Pdoi" />
+	<meta name="twitter:creator" content="@Pdoi" />
+</ui:define>
+
+	<ui:define name="title">#{labels['general.titleApp']}</ui:define>
+	
+	<ui:define name="menu-items">
+		<ui:include src="/include/menuExt.xhtml" />
+	</ui:define>
+
+	<ui:define name="content">
+
+		
+		<h:form id="formApplicView">
+
+			<p:importConstants type="indexbg.pdoi.system.Constants" var="IBConstants" className="indexbg.pdoi.system.Constants" />
+
+			<p:tooltip />
+
+			<div class="container">
+
+				<p:outputPanel id="panelData">
+
+					<p:outputPanel id="panelApplic">
+
+						<p:panel>
+						
+							<h5 id="applicationTitle">#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_ADM_REGISTRY, applicationView.applic.responseSubjectId, applicationView.currentLang, null, applicationView.userId)}</h5>								
+							
+							<p:separator></p:separator>
+							
+							<div class="ui-g">								
+								<div class="ui-g-12 ui-md-12 ui-lg-12">									 
+									<h:outputText value="#{labels['app.nomerZaiavlenie']}: " style="font-weight: bold;" />
+									<p:spacer width="5" />
+									<p:outputLabel value="#{applicationView.applic.applicationUri}" />
+									<p:spacer width="5" />
+									
+									|
+									<p:outputLabel value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_STATUS_APPLICATION, applicationView.applic.status, applicationView.currentLang, null, applicationView.userId)}"/>
+									
+									<h:panelGroup rendered="#{applicationView.applic.registrationDate != null}">
+									|
+										<h:outputText value="#{labels['general.dataReg']}: " style="font-weight: bold;" />
+										<p:spacer width="5" />
+										<p:outputLabel value="#{applicationView.applic.registrationDate}" />
+										<p:spacer width="5" />
+									</h:panelGroup>
+									
+									<h:panelGroup rendered="#{applicationView.applic.responseEndTime != null}">
+									|
+										<h:outputText value="#{labels['application.srok']}: " style="font-weight: bold;"/>
+										<p:outputLabel value="#{applicationView.applic.responseEndTime}">
+											<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{applicationView.timeZone}"/>
+										</p:outputLabel>
+									</h:panelGroup>
+								</div>
+							</div> 					
+
+							<div class="ui-g">
+								
+								<div class="ui-g-12 ui-md-12 ui-lg-12">
+																	
+									<h:outputText styleClass="fa fa-eye" style="font-size:15px;" title="#{labels['app.numberVisitors']}"/>
+									<p:spacer width="5" />
+									<p:outputLabel value="#{applicationView.applic.numberOfVisits}" style="font-size:15px;"/> 
+									<p:spacer width="5" />
+									
+									|									
+									<p:commandButton actionListener="#{applicationView.actionUpdateLike}" styleClass="btn-pf-convert-to-bootstrap" icon="fa fa-thumbs-up" title="#{labels['appView.like']}" rendered="#{applicationView.viewLikeBtn}" update="@form"/>
+ 									<h:outputText styleClass="fa fa-thumbs-up" style="font-size:15px;" rendered="#{!applicationView.viewLikeBtn}"/>							
+									<p:spacer width="5" />
+									<p:outputLabel value="#{applicationView.applic.usefulness}" style="font-size:15px;"/>
+									<p:spacer width="5" />
+									
+									<h:panelGroup rendered="#{userData.userId != null and userData.userId != -1 and userData.userId != applicationView.applic.userReg and !applicationView.existFinalSolution}">
+									|									
+										<p:commandButton action="#{applicationView.actionSaveSubscription}" styleClass="btn-pf-convert-to-bootstrap" value="#{labels['appView.abonament']}" rendered="#{applicationView.subscriptionText == null or applicationView.subscriptionText == ''}" update="@form"/>
+										<p:outputLabel value="#{applicationView.subscriptionText}" style="font-size:15px;" rendered="#{applicationView.subscriptionText != null}"/>
+										<p:spacer width="5" />
+										<p:commandButton action="#{applicationView.actionDeleteSubscription}" styleClass="btn-pf-convert-to-bootstrap" style="color: #d90000;" icon="fa fa-fw fa-times" title="#{labels['appView.endAbonament']}" rendered="#{(applicationView.subscriptionText != null and applicationView.subscriptionText != '')}" update="@form" />
+									</h:panelGroup>					
+									
+									|
+									<h:outputLink id="content" value="#" styleClass="fa fa-user" />
+									<p:outputLabel for="content" value=" #{labels['app.zaqvitel']}" style="font-size:15px;" />
+								</div>
+								
+								<div class="ui-g-12 ui-md-12 ui-lg-12">
+									<p:panelGrid id="pnlSocial" columns="1" layout="grid" styleClass="ui-noborder">  
+									    <pe:social id="socialMedia"  
+									        shares="facebook,twitter,googleplus"   
+									        url="https://demo.indexbg.bg/PDoi/applicationView.jsf?idObj=#{applicationView.applic.id}"   
+									        text="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_ADM_REGISTRY, applicationView.applic.responseSubjectId, applicationView.currentLang, null, applicationView.userId)}"   
+									        theme="flat"
+									        shareIn="popup"
+									        showLabel="false"  
+									        showCount="true"  
+									        style="font-size: 12px"  
+									        emailTo="primefaces@primefaces.org"  
+									        twitterUsername="GovBulgaria"  
+									        twitterHashtags="Министерски съвет, ПДОИ"  
+									        onclick="console.log('share ' +this.share + ' url ' + this.url + ' at ' + e.timeStamp);"/>  
+									</p:panelGrid>
+								</div>
+
+								<p:overlayPanel id="overlayPanelContent" for="content" position="left" hideEffect="fade" >
+									
+									<div class="ui-g">
+				  			   
+									    <div class="ui-g-12 ui-md-3 ui-lg-3">
+											<h:outputText value="#{labels['general.names']}: " style="font-weight: bold;" rendered="#{applicationView.applic.applicantType == IBConstants.CODE_ZNACHENIE_TYPE_APPLICANT_FIZ_LICE}"/>
+											<h:outputText value="#{labels['general.name']}: " style="font-weight: bold;" rendered="#{applicationView.applic.applicantType == IBConstants.CODE_ZNACHENIE_TYPE_APPLICANT_URID_LICE}"/>									
+										</div>
+										
+									    <div class="ui-g-12 ui-md-9 ui-lg-9">
+											<h:outputText value="#{applicationView.applic.fullNames}" rendered="#{applicationView.applic.namesPublication}"/>	
+											<h:outputText value="******************" rendered="#{!applicationView.applic.namesPublication}"/>										
+										</div>
+										
+									    <div class="ui-g-12 ui-md-3 ui-lg-3" style="#{(applicationView.applic.applicantType == IBConstants.CODE_ZNACHENIE_TYPE_APPLICANT_URID_LICE)?'':'display:none'}">
+											<h:outputText value="#{labels['general.sedalishte']}: " style="font-weight: bold;" />
+										</div>
+									    <div class="ui-g-12 ui-md-9 ui-lg-9" style="#{(applicationView.applic.applicantType == IBConstants.CODE_ZNACHENIE_TYPE_APPLICANT_URID_LICE)?'':'display:none'}">
+											<h:outputText value="#{applicationView.applic.headoffice}" rendered="#{applicationView.applic.headofficePublication}" />
+											<h:outputText value="******************" rendered="#{!applicationView.applic.headofficePublication}"/>												
+										</div>
+										
+									</div>
+	
+									<div class="ui-g">										
+										
+										<div class="ui-g-12 ui-md-3 ui-lg-3">
+											<h:outputText value="#{labels['general.telefon']}: " style="font-weight: bold;" />
+										</div>
+										
+										<div class="ui-g-12 ui-md-9 ui-lg-9">
+											<h:outputText value="#{applicationView.applic.phone}" rendered="#{applicationView.applic.phonePpublication}"/>
+											<h:outputText value="******************" rendered="#{!applicationView.applic.phonePpublication}"/>													
+										</div>
+									
+										<div class="ui-g-12 ui-md-3 ui-lg-3">
+											<h:outputText value="#{labels['general.email']}: " style="font-weight: bold; white-space: nowrap;" />
+										</div>
+										<div class="ui-g-12 ui-md-9 ui-lg-9">
+											<h:outputText value="#{applicationView.applic.email}" rendered="#{applicationView.applic.emailPublication}"/>
+											<h:outputText value="******************" rendered="#{!applicationView.applic.emailPublication}"/>
+										</div>									
+										
+									</div>
+									
+									<p:outputPanel rendered="#{applicationView.applic.addressPublication}">
+									
+										<p:separator />
+										
+										<div class="ui-g">
+											<div class="ui-g-12 ui-md-12 ui-lg-12">
+												<h:outputText value="#{labels['general.adress']}: " style="font-weight: bold;"/>
+											</div>
+										</div>
+		
+										<div class="ui-g" style="#{(applicationView.applic.country != IBConstants.CODE_ZNACHENIE_BG)?'':'display:none'}">
+												
+											<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right">
+												<h:outputText value="#{labels['general.country']}: " style="font-weight: bold; white-space: nowrap;"/>
+											</div>
+											
+											<div class="ui-g-12 ui-md-10 ui-lg-10">
+												<h:outputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_COUNTRIES, applicationView.applic.country, applicationView.currentLang, applicationView.applic.dateLastMod, applicationView.userId)}"/>
+											</div>	
+		
+										</div>
+										
+										<div class="ui-g" style="#{(applicationView.applic.country == IBConstants.CODE_ZNACHENIE_BG)?'':'display:none'}">											
+											<div class="ui-g-12 ui-md-12 ui-lg-12">
+												<h:outputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_EKATTE, applicationView.applic.region, applicationView.currentLang, applicationView.applic.dateLastMod, applicationView.userId)}, 
+															  #{systemData.decodeItem(IBConstants.CODE_SYSCLASS_EKATTE, applicationView.applic.municipality, applicationView.currentLang, applicationView.applic.dateLastMod, applicationView.userId)}, 
+															  #{systemData.decodeItem(IBConstants.CODE_SYSCLASS_EKATTE, applicationView.applic.town, applicationView.currentLang, applicationView.applic.dateLastMod, applicationView.userId)}, 
+															  #{labels['appView.pk']} #{applicationView.applic.postCode}" />
+											</div>											
+										</div>
+											
+										<div class="ui-g">
+											<div class="ui-g-12 ui-md-12 ui-lg-12">
+												<h:outputText value="#{applicationView.applic.address}" />
+											</div>											
+											
+										</div>
+									
+									</p:outputPanel>
+
+								</p:overlayPanel>
+							
+							</div>
+
+							<div class="ui-g">
+								<div class="ui-g-12 ui-md-12 ui-lg-12 ">
+									<h:outputText id="requestInfo" value="#{applicationView.applic.add_info}" style="width:99%; font-size:16px;" escape="false"/>
+								</div>
+							</div>
+
+							<br />
+
+							<div class="ui-g">
+
+								<div class="ui-g-12 ui-md-12 ui-lg-12">
+									
+									<h:outputText value="#{labels['general.attachedDoc']}"  style="font-weight: bold;" rendered="#{applicationView.filesList.size() > 0}"/>
+
+									<p:dataTable var="row" value="#{applicationView.filesList}" rendered="#{applicationView.filesList.size() > 0}">
+
+										<p:column width="32">
+											<p:commandButton id="download" ajax="false" actionListener="#{applicationView.download(row)}" icon="fa fa-fw fa-download" title="#{labels['file.download']}" />
+										</p:column>
+
+										<p:column>
+											<h:outputText value="#{row.description}" rendered="#{row.description != null}" />
+											<h:outputText value="#{row.filename}" rendered="#{row.description == null or row.description == ''}" />
+										</p:column>
+
+									</p:dataTable>
+
+								</div>
+							
+							</div>
+
+							<div style="#{(applicationView.eventReshenie.addText != null)?'':'display:none'}">
+							
+								<h5>#{labels['appView.reshenie']}</h5>
+	
+								<p:separator></p:separator>
+	
+								<div class="ui-g">
+									
+									<div class="ui-g-12 ui-md-2 ui-lg-2">
+										<h:outputText value="#{labels['general.date']}: " style="font-weight: bold; font-size:15px;" />	
+										<p:spacer width="5" />
+										<p:outputLabel value="#{applicationView.eventReshenie.eventDate}" style="font-size:15px;">
+											<f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+										</p:outputLabel>								
+									</div>
+								
+								</div>
+								
+								<div class="ui-g">
+									<div class="ui-g-12 ui-md-12 ui-lg-12 ">
+										<h:outputText value="#{applicationView.eventReshenie.addText}" style="width:99%; font-size:16px;" escape="false"/>
+									</div>
+								</div>
+								
+								<br />
+							
+								<div class="ui-g">
+	
+									<div class="ui-g-12 ui-md-12 ui-lg-12">
+									
+										<h:outputText value="#{labels['general.attachedDoc']}"  style="font-weight: bold;" rendered="#{applicationView.filesListReshenie.size() > 0}"/>
+	
+										<p:dataTable var="row" value="#{applicationView.filesListReshenie}" rendered="#{applicationView.filesListReshenie.size() > 0}">
+	
+											<p:column width="32">
+												<p:commandButton id="download" ajax="false" actionListener="#{applicationView.download(row)}" icon="fa fa-fw fa-download" title="#{labels['file.download']}" />
+											</p:column>
+	
+											<p:column>
+												<h:outputText value="#{row.description}" rendered="#{row.description != null}" />
+												<h:outputText value="#{row.filename}" rendered="#{row.description == null or row.description == ''}" />
+											</p:column>
+	
+										</p:dataTable>
+	
+									</div>
+									
+									<div class="ui-g-12 ui-md-12 ui-lg-12">
+										<p:panelGrid id="pnlSocialDown" columns="1" layout="grid" styleClass="ui-noborder">  
+										    <pe:social id="socialMediaDown"  
+										        shares="facebook,twitter,googleplus"   
+										        url="https://demo.indexbg.bg/PDoi/applicationView.jsf?idObj=#{applicationView.applic.id}"   
+										        text="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_ADM_REGISTRY, applicationView.applic.responseSubjectId, applicationView.currentLang, null, applicationView.userId)}"   
+										        theme="flat"
+										        shareIn="popup"
+										        showLabel="false"  
+										        showCount="true"  
+										        style="font-size: 12px"  
+										        emailTo="primefaces@primefaces.org"  
+										        twitterUsername="GovBulgaria"  
+										        twitterHashtags="Министерски съвет, ПДОИ"  
+										        onclick="console.log('share ' +this.share + ' url ' + this.url + ' at ' + e.timeStamp);"/>  
+										</p:panelGrid>
+									</div>
+								
+								</div>
+							
+							</div>
+
+						</p:panel>
+					
+					</p:outputPanel>
+
+				</p:outputPanel>
+			
+			</div>
+
+		</h:form>
+	</ui:define>
+</ui:composition>
+
+</html>

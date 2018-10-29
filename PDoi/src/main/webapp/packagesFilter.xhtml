@@ -1,0 +1,236 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf" 
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+<ui:composition template="/templates/main.xhtml">
+
+	
+
+	<ui:define name="systemLogo">
+		<img src="images/cadmin_logo.png" />
+	</ui:define>
+	
+	<ui:define name="menu-items">
+		<ui:include src="/include/menuItems.xhtml" />
+	</ui:define>
+
+	<ui:define name="content">
+	
+		<h:form id="packageFilterForm">
+			<p:importConstants type="indexbg.pdoi.system.Constants" var="IBConstants" className="indexbg.pdoi.system.Constants"/>
+			<p:importConstants type="com.indexbg.system.SysConstants" var="IBConstantsSys" className="com.indexbg.system.SysConstants" />
+
+			<div style="width: 1024px; margin-right: auto; margin-left: auto">
+
+				<p:outputPanel id="panelData">
+				
+					<br />
+
+										
+					<br />
+					
+					<p:panel  >
+						<div class="ui-g">
+							<div class="ui-g-7 ui-md-3 ui-lg-1 cc-right" >
+								<h:outputText value="#{labels['general.period']}:"/>
+							</div>
+							<div class="ui-g-7 ui-md-3 ui-lg-3">
+								<p:selectOneMenu id="idPer" value="#{packageFilter.period}" style="width:250px;">
+		                             <f:selectItem value="#{null}" itemValue="#{null}"/>          
+		                             <f:selectItems value="#{systemData.getSysClassification(IBConstantsSys.CODE_CLASSIF_PERIOD_NOFUTURE, packageFilter.today, packageFilter.currentLang, packageFilter.userId)}"  
+		                                    var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
+		                             <p:ajax event="change" update="idPer dateOt dateDo"  listener="#{packageFilter.changePeriod()}"   />   
+		                        </p:selectOneMenu>
+	                        </div>
+	                                
+	                        <div class="ui-g-7 ui-md-2 ui-lg-2 cc-right" >
+									 <h:outputText value="#{labels['general.dataOt']}:"/>
+							</div>
+							<div class="ui-g-7 ui-md-3 ui-lg-2">
+									 <p:calendar id="dateOt" pattern="dd.MM.yyyy" mask="true"  showOn="button" 
+											timeZone="#{packageFilter.timeZone}" size="10" locale="bg" 
+								         	style="font-size:12px;"   value="#{packageFilter.dateFrom}" label="#{labels['publ.dateFrom']}"
+								          	styleClass="form-control #{packageFilter.hasMessages('packageFilterForm:dateOt') ? 'cc-red ': '' }" >
+								          	
+								      </p:calendar>
+								      <p:message for="dateOt" showDetail="true" showSummary="true" display="tooltip"/>
+							</div>
+							<div class="ui-g-7 ui-md-2 ui-lg-1 cc-right" >
+										<h:outputText value="#{labels['general.dataDo']}:"/>
+							</div>
+							<div class="ui-g-7 ui-md-3 ui-lg-3">
+										<p:calendar id="dateDo" pattern="dd.MM.yyyy" mask="true" showOn="button" 
+											timeZone="#{pubList.timeZone}" size="10" locale="bg" 
+								         	style="font-size:12px;"  value="#{packageFilter.dateTo}" label="#{labels['publ.dateTo']}"   
+								          	styleClass="form-control #{packageFilter.hasMessages('packageFilterForm:dateDo') ? 'cc-red' : '' }" >
+								          	
+									     </p:calendar>  	
+									     <p:message for="dateDo" showDetail="true" showSummary="true" display="tooltip"/> 
+							</div> 
+							<div class="ui-g-12 ui-md-2 ui-lg-1 cc-right" >
+								<h:outputText value="#{labels['packageFilter.typeMessage']}: " />
+							</div>
+							<div class="ui-g-12 ui-md-4 ui-lg-4">
+								<p:selectOneMenu value="#{packageFilter.typeMessage}" id="typeMessage" autoWidth="false" style="width:250px;">
+                                    <f:selectItem value="#{null}" itemValue="#{null}"/>  
+                                	<f:selectItem itemValue="1" itemLabel="Входящо" />
+								    <f:selectItem itemValue="2" itemLabel="Изходящо" />	                                    
+                                </p:selectOneMenu>											                        
+							</div>
+
+							<div class="ui-g-12 ui-md-2 ui-lg-1 cc-right" >
+								<h:outputText value="#{labels['packageFilter.formMessage']}: " />
+							</div>
+							<div class="ui-g-12 ui-md-4 ui-lg-6">
+								<p:selectOneMenu value="#{packageFilter.formMessage}" id="formMessage" autoWidth="false" style="width:330px;">
+                                    <f:selectItem value="#{null}" itemValue="#{null}"/>  
+	                                 <f:selectItems value="#{packageFilter.msgFormList}" />		                                    
+                                </p:selectOneMenu>											                        
+							</div>
+							
+							<div class="ui-g-12 ui-md-2 ui-lg-1 cc-right" >
+								<h:outputText value="#{labels['packageFilter.statusMessage']}: " />
+							</div>
+							<div class="ui-g-12 ui-md-4 ui-lg-4">
+								<p:selectOneMenu value="#{packageFilter.statusMessage}" id="statusMessage" autoWidth="false" style="width:250px;">
+                                    <f:selectItem value="#{null}" itemValue="#{null}"/>  
+	                                <f:selectItems value="#{packageFilter.msgStatusList}" />		                                    
+                                </p:selectOneMenu>											                        
+							</div>
+
+							<div class="ui-g-12 ui-md-2 ui-lg-1 cc-right" >
+								<h:outputText value="#{labels['packageFilter.statusSending']}: " />
+							</div>
+							<div class="ui-g-12 ui-md-4 ui-lg-6">
+								<p:selectOneMenu value="#{packageFilter.statusSending}" id="statusSending" autoWidth="false" style="width:330px;">
+                                    <f:selectItem value="#{null}" itemValue="#{null}"/>  
+	                                <f:selectItems value="#{packageFilter.msgCommStatusList}" />		                                    
+                                </p:selectOneMenu>											                        
+							</div>
+
+							<div class="ui-g-12 ui-md-2 ui-lg-1 cc-right">
+									<h:outputText value="#{labels['packageFilter.sender']}: "/>
+								</div>
+	
+								<div class="ui-g-12 ui-md-4 ui-lg-4">							
+								<p:inputText value="#{packageFilter.senderText}" id="sender" readonly="true" style="width:250px;"/>   
+			                	<ibg:selectOneModal header="#{labels['packageFilter.sender']}" userId="#{packageFilter.userId}" lang="#{packageFilter.currentLang}"
+						 	 			saveStateTree="true" isSelectNode="true" withBtnClear="true" codeClassif="#{IBConstants.CODE_SYSCLASS_ADM_REGISTRY}"     
+						 				update="packageFilterForm:sender" selectedCode="#{packageFilter.senderCode}" selectedText="#{packageFilter.senderText}"  />	    							
+								</div>
+								
+								<div class="ui-g-12 ui-md-2 ui-lg-1 cc-right" >
+								<h:outputText value="#{labels['packageFilter.docGUID']}: "/>
+							</div>
+
+							<div class="ui-g-12 ui-md-4 ui-lg-6">											
+    							<p:inputText id="docGUID" value="#{packageFilter.docGUID}" style="width:350px;"/>                         
+							</div>
+
+							<div class="ui-g-12 ui-md-2 ui-lg-1 cc-right">
+									<h:outputText value="#{labels['packageFilter.receiver']}: "/>
+								</div>
+	
+								<div class="ui-g-24 ui-md-8 ui-lg-8">							
+								<p:inputText value="#{packageFilter.receiverText}" id="receiver" readonly="true" style="width:250px;"/>   
+			                	<ibg:selectOneModal header="#{labels['packageFilter.receiver']}" userId="#{packageFilter.userId}" lang="#{packageFilter.currentLang}"
+						 	 			saveStateTree="true" isSelectNode="true" withBtnClear="true" codeClassif="#{IBConstants.CODE_SYSCLASS_ADM_REGISTRY}"     
+						 				update="packageFilterForm:receiver" selectedCode="#{packageFilter.receiverCode}" selectedText="#{packageFilter.receiverText}"  />	    							
+								</div>
+						
+							
+									
+							<div class="ui-g-12 ui-md-6 ui-lg-6" >
+				 					<p:commandButton action="#{packageFilter.actionClear()}" 
+						 		 	value="#{labels['general.clear']}" update="packageFilterForm:panelData" id="btnClear" /> 
+						 	</div>
+	
+						    <div class="ui-g-12 ui-md-6 ui-lg-6 cc-right" >
+						        	<p:commandButton action="#{packageFilter.actionSearch()}" 
+						         			 value="#{labels['general.search']}" update="packageFilterForm:panelData" id="btnSearch" />
+						    </div>
+						</div>
+					</p:panel>	
+					 
+					<br /> 
+					
+					<p:panel  header="Брой записи: #{packageFilter.messList.getRowCount()}" id="panelTable">
+			 						 	
+					 	 <p:dataTable id="tbl" var="row"  rendered="#{packageFilter.messList!=null}" 
+							value="#{packageFilter.messList}" lazy="true" rows="15"
+							rowIndexVar="idx" sortMode="single"
+							emptyMessage="#{labels['general.norows']}"
+							paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+							rowsPerPageTemplate="15,20,25,30" paginatorPosition="bottom"
+							paginator="true" style="margin-bottom:20px">
+						
+			
+						
+							<p:column style="width:5px;text-align: center">
+								<f:facet name="header">
+					                 No
+					            </f:facet>
+								<h:outputText value="#{idx + 1}" />
+							</p:column>
+
+							<p:column width="25" sortBy="#{row.A02MSGDAT}">
+								<f:facet name="header">
+									 <h:outputText value="#{labels['general.date']}"  />
+									  
+								</f:facet>
+								<h:outputText value="#{row[3]}" >
+								     <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+								</h:outputText>
+							</p:column>
+			
+							<p:column width="100" sortBy="#{row.A10STATDOC}">
+								<f:facet name="header">
+									<h:outputText value="#{labels['packageFilter.statusMessage']}" />
+								</f:facet>
+								<h:outputText value="#{row[11]}" />
+							</p:column>
+							
+							
+		
+							<p:column width="100" sortBy="#{row.A03SENDER}">
+								<f:facet name="header">
+									<h:outputText value="#{labels['packageFilter.sender']}" />
+								</f:facet>
+								<h:outputText value="#{row[4]}" />
+							</p:column>
+							
+							<p:column width="100" sortBy="#{row.A04RECEP}">
+								<f:facet name="header">
+									<h:outputText value="#{labels['packageFilter.receiver']}" />
+								</f:facet>
+								<h:outputText value="#{row[5]}" />
+							</p:column>
+							
+							
+							<p:column width="100" sortBy="#{row.A11STATIZPR}">
+								<f:facet name="header">
+									<h:outputText value="#{labels['packageFilter.statusSending']}" />
+								</f:facet>
+								<h:outputText value="#{row[12]}" />
+							</p:column>
+							
+						</p:dataTable>
+
+			         </p:panel>
+				</p:outputPanel>
+
+			</div>
+			
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>
+
+</html>
