@@ -199,7 +199,7 @@
 								<h:outputText value="#{idx + 1}" />
 							</p:column>
 
-							<p:column width="15%" sortBy="#{row[0].applicationUri}">
+							<p:column width="15%" > <ui:remove><!-- sortBy="#{row[0].applicationUri}" --></ui:remove>
 								<f:facet name="header">
 									<h:outputText value="#{labels['app.nomerZaiavlenie']}" />
 								</f:facet>
@@ -228,7 +228,7 @@
 								</f:facet>
 								<h:outputText value="#{row[0].request150}" />
 							</p:column>
-							 <p:column width="10%" sortBy="#{row[0].status}">
+							 <p:column width="10%"><ui:remove> <!--  sortBy="#{row[0].status}" --> </ui:remove>
 								<f:facet name="header">
 									<h:outputText value="#{labels['general.status']}" />
 								</f:facet>
@@ -243,7 +243,7 @@
 
 							 <p:column style="text-align: center" width="25" exportable="false">
 
-								 <p:commandButton  icon="fa fa-fw fa-edit" action="applicationForm.jsf" ajax="false" title="#{labels['general.izbor']}"   >
+								 <p:commandButton  icon="fa fa-fw fa-edit" action="#{applicationFilter.actionGoToEdit}" ajax="false" title="#{labels['general.izbor']}"   >
 								 	<f:param name="idObj" value="#{row[0].id}" />
 								 </p:commandButton>
 
@@ -253,7 +253,7 @@
 						</p:dataTable>
 
 			         </p:panel>
-				</p:outputPanel>
+				</p:outputPanel> 
 
 			</div>
 			

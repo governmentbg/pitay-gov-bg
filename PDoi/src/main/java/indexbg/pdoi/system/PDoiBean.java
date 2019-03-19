@@ -2,6 +2,7 @@ package indexbg.pdoi.system;
 
 import java.io.IOException;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
@@ -9,11 +10,22 @@ import javax.el.MethodExpression;
 import javax.el.ValueExpression;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.persistence.EntityManager;
 import javax.servlet.http.HttpSession;
 
+import com.indexbg.ocr.dao.ApplicationTree;
 import com.indexbg.system.BaseBean;
+import com.indexbg.system.db.JPA;
 import com.indexbg.system.exceptions.ObjectNotFoundException;
 import com.indexbg.system.utils.JSFUtils;
+
+import indexbg.pdoi.db.Files;
+
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.resource.transaction.spi.TransactionStatus;
+import org.hibernate.search.FullTextSession;
+import org.hibernate.search.Search;
 
 /**Основен клас, който трябва да наследяват всички бийнове.
  * Тук има методи които са полезни във всички бийнове
@@ -96,7 +108,7 @@ public class PDoiBean extends BaseBean {
 			return null;
 		}else{
 			Object value = session.getAttribute(key);
-			session.removeAttribute(key);
+			//session.removeAttribute(key); - ne bi trqbvalo da se maha
 			return value;
 		}
 	}
@@ -182,5 +194,36 @@ public class PDoiBean extends BaseBean {
 	        	return days;
 	    } 
 		
+	}
+
+	/**
+	 * Пресъздава пълнотекстовия индекс на даден Application
+	 * @param applicationId
+	 */
+	protected void indexApplication(Long applicationId) {
+		Transaction tx = null;
+		try {
+			EntityManager entityManager = JPA.getUtil().getEntityManager();
+			FullTextSession fullTextSession = Search.getFullTextSession(entityManager.unwrap(Session.class));
+			tx = fullTextSession.beginTransaction();
+			ApplicationTree app = entityManager.find(ApplicationTree.class, applicationId);
+			fullTextSession.index(app);
+		} finally {
+			if(tx!=null && tx.getStatus()== TransactionStatus.ACTIVE)
+				tx.commit();
+		}
+	}
+	
+	protected boolean checkForUploadedFileByName(String name, List<Files> filesList) {
+		
+		if(name==null) return false;
+		
+		for(Files f:filesList) {
+			if(f.getFilename().equals(name)) {
+				return true;
+			}
+			
+		}
+		return false;
 	}
 }

@@ -158,16 +158,32 @@ public class SectionContacts  extends PDoiBean{
 	 * @param event
 	 */
 	public void onNodeSelect(NodeSelectEvent event) {
-		SystemClassif item = (SystemClassif) event.getTreeNode().getData();
-		this.admAdress="";
-		if (null!=item){
-			this.codeAdmStruct=Long.valueOf(item.getCode());
-			this.nameAdmStruct = item.getTekst();
 		
+		admAdress = "";
+		nameAdmStruct = "";
+		admDataList = new ArrayList<Object[]>(); 
+		
+		if(event.getTreeNode().isLeaf()){
+		
+			SystemClassif item = (SystemClassif) event.getTreeNode().getData();
+			
+			if (null!=item){
+				codeAdmStruct=Long.valueOf(item.getCode());
+				nameAdmStruct = item.getTekst();
+			
+			}
+			
+			if (null!=this.codeAdmStruct) {
+				findAdmData();
+			}
+		} else {
+			if(event.getTreeNode().isExpanded()){
+				event.getTreeNode().setExpanded(false);
+        	} else {
+        		event.getTreeNode().setExpanded(true);
+        	}
+			event.getTreeNode().setSelected(false);
 		}
-		
-		if (null!=this.codeAdmStruct)
-			findAdmData();
     }
  
     public void onNodeUnselect(NodeUnselectEvent event) {
@@ -196,7 +212,7 @@ public class SectionContacts  extends PDoiBean{
 			
 			this.admDataList=new PublicationDAO(this.idUser).findAdminDataByOrgCode(this.codeAdmStruct,userTypes);
 			
-			ResponseSubject adrData=new ResponseSubjectDao(this.idUser).findById(this.codeAdmStruct);
+			ResponseSubject adrData=new ResponseSubjectDao(this.idUser,getSystemData()).findById(this.codeAdmStruct);
 			if(null!=adrData)
 				this.admAdress=adrData.getAddress();
 			
@@ -212,7 +228,7 @@ public class SectionContacts  extends PDoiBean{
 	public void findAdmins() {
 		
 		try {
-			List<Object[]> l = new PublicationDAO(this.idUser).findAdminData(7L, 42L);
+			//List<Object[]> l = new PublicationDAO(this.idUser).findAdminData(7L, 42L);
 			this.setAdmins(new PublicationDAO(this.idUser).findAdminData(7L, 42L));
 		} catch (DbErrorException e) {
 			LOGGER.error(e.getMessage(), e);

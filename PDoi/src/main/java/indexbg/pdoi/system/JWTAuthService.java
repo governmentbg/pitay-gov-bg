@@ -36,16 +36,7 @@ public class JWTAuthService extends BaseJWTAuthService {
 		userData.setUserId(json.get("id").getAsLong());
 		userData.setLoginName(json.get("login_name").getAsString());
 		userData.setLiceNames(json.get("names").getAsString());
-		
-		if(json.get("model")!=null && json.get("model").isJsonPrimitive()){
-			try {
-				Long model = json.get("model").getAsLong();
-				userData.setUserModel(model);
-			} catch (Exception e) {
-				userData.setUserModel(null);
-			}
-		}
-		
+				
 		JsonArray roles = json.get("roles").getAsJsonArray();
 		
 		HashMap<String, HashMap<String,Boolean>> rolesMap = new HashMap<>();

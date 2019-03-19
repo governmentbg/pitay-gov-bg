@@ -8,8 +8,8 @@
 	  xmlns:p="http://primefaces.org/ui"
 	  xmlns:pe="http://primefaces.org/ui/extensions"
 	  xmlns:ibg="http://java.sun.com/jsf/composite/components">
-		
-			<style>
+	  
+	  		<style>
 				.ui-fileupload-buttonbar {
 				    margin: 0px 0px 0px 0px !important;
 				    padding: 0px 0px 0px 0px !important;
@@ -37,7 +37,6 @@
 				.ui-selectonemenu-filter-container {
 				    width: 98% !important;
 				}
-				
 				
 				.ui-steps .ui-steps-item {
 				    width: 33%;
@@ -86,8 +85,10 @@
 				.ui-menu {
 				    width: auto ;
 				} 
+				
+				
 			</style>
-			
+				
 		   <p:tooltip/>
 		
 		   <h:form id="formApplicEdit">
@@ -114,9 +115,13 @@
 				            </p:commandButton>	
 				            
 				 		</f:facet>
+				 		<f:facet name="right">
+				 			<p:button value="#{labels['general.back']}" icon="fa fa-angle-double-left"   rendered="#{applicationForm.viewBackBtn!=null}"
+				            	outcome="#{applicationForm.viewBackBtn}" />
+				 		</f:facet>
 				    </p:toolbar>
 			  		
-			  		<p:tabView id="tabsAppl">
+			  		<p:tabView id="tabsAppl" dynamic="true" cache="false">
        				
        				<p:tab title="#{labels['general.titleApp']}">			  		
 			  		
@@ -323,6 +328,13 @@
 							            <h:outputText value="#{row.description}" rendered="#{row.description != null}"/>
 							            <h:outputText value="#{row.filename}" rendered="#{row.description == null or row.description == ''}"/>
 							       </p:column>
+							       
+							       <p:column headerText="#{labels['file.visible']}" width="100" exportable="false" rendered="#{appParam==2}">
+								       		
+						       			<h:outputText value="#{labels['general.yes']}" rendered="#{row.visibleOnSite}" />  
+						       			<h:outputText value="#{labels['general.no']}" rendered="#{!row.visibleOnSite}" />  
+										
+									</p:column>
 							  
 							   </p:dataTable>
 							   
@@ -415,19 +427,19 @@
 									       	
 									       <p:column headerText="" width="70" exportable="false">
 									       		
-									       		<p:commandButton action="eventsView.jsf"  ajax="false"   icon="fa fa-fw fa-search" title="#{labels['general.view']}" rendered="#{appParam==1}">
-													<f:param name="idObj" value="#{rowEvent.id}"/>
+									       		<p:commandButton action="eventsView.jsf" ajax="false" icon="fa fa-fw fa-search" title="#{labels['general.view']}" rendered="#{appParam==1}">
+													<f:param name="idEvent" value="#{rowEvent.id}"/>
 													<f:param name="isView" value="1"/>
 												</p:commandButton>
 												
-												<p:commandButton action="eventsViewExt.jsf"  ajax="false"   icon="fa fa-fw fa-search" title="#{labels['general.view']}" rendered="#{appParam==2}">
-													<f:param name="idObj" value="#{rowEvent.id}"/>
+												<p:commandButton action="#{events.actionGoToEvent}" oncomplete="PF('modalViewEvent').show();" icon="fa fa-fw fa-search" title="#{labels['general.view']}" rendered="#{appParam==2}" update=":formApplicEdit:tabsAppl:modalEventView">
+													<f:param name="idEvent" value="#{rowEvent.id}"/>
 													<f:param name="isView" value="1"/>
 												</p:commandButton>
 												
 												
 												<span jsf:rendered="#{applicationForm.adminMod}">
-										       		<p:commandButton action="#{applicationForm.actionDeleteEvent}" update="eventsList" icon="fa fa-fw fa-trash" style="color: #d90000;" title="#{labels['general.delete']}"
+										       		<p:commandButton action="#{applicationForm.actionDeleteEvent}" update="formApplicEdit" icon="fa fa-fw fa-trash" style="color: #d90000;" title="#{labels['general.delete']}"
 										       			rendered="#{( rkv+1 ) eq applicationForm.eventsList.size()? applicationForm.eventsControl[rowEvent.eventType][11] :false}"
 										       			onclick="if(!confirm('#{labels['app.confirmDeleteEvent']}'))return false;"  >
 														<f:param name="idEvent" value="#{rowEvent.id}"/>
@@ -446,6 +458,19 @@
 							</div>
 							
 						</p:outputPanel>
+						
+						 <p:dialog header="#{labels['eventsView.title']}" modal="true" resizable="true" width="auto" height="auto" widgetVar="modalViewEvent">
+						 
+							<p:outputPanel id="modalEventView">
+								
+								 <ui:include src="eventsInc.xhtml">
+									<ui:param name="isView" value="1" />
+								 </ui:include>	
+								 
+							</p:outputPanel>	
+										    
+						 </p:dialog> 
+						
 					</p:tab>
 					<p:tab title="#{labels['general.answer']}">
 						<p:outputPanel id="panelDes" >
@@ -497,13 +522,10 @@
 								</div>
 							</div>
 						</p:panel>	
-					
-						
 							
 						</p:outputPanel>
 					</p:tab>
 					</p:tabView>
-				  	
 				  		
 			 	</p:outputPanel>
 		  		</div>
@@ -513,7 +535,6 @@
 			      <p:commandButton value="#{labels['general.no']}" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
 			 </p:confirmDialog>
 		  	 
-		   </h:form>
+		</h:form>
 		
-	
 </html>	

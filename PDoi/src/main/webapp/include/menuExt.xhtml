@@ -7,32 +7,40 @@
 	  xmlns:p="http://primefaces.org/ui"
 	  xmlns:pe="http://primefaces.org/ui/extensions"
 	  xmlns:jsf="http://xmlns.jcp.org/jsf">
+
 	<ui:composition>
+	
 		<!-- MENU -->
 		<div class="menu">
-              <span class="mobile-menu-handle" title="#{labels['menuExt.men']}">
-                  <span class="icon fas fa-bars"></span>
-              </span>
-              <ul class="nav">
-                  <li>
-                      <a href="indexExt.jsf" title="">#{labels['menuExt.start']}</a>
-                  </li>
-                  <li>
-                      <a href="applicationSubmission.jsf"> #{labels['menu.sendApp']} </a>
-                  </li>
-                  <li>
-                      <a jsf:action="myApplications.xhtml@clear@?faces-redirect=true" jsf:rendered="#{userData.hasAccess(7,45)}">#{labels['menuExt.myZajav']}</a>
-                  </li>
-                  <li>
-                     <a href="searchApplications.jsf">#{labels['general.search']}</a>
-                  </li>
-                  
-                  <li ><a href="sectDocView.jsf?codeSect=1">#{labels['menu.documents']}</a></li>
-	      		  <li ><a href="sectStatView.jsf?codeSect=5">#{labels['menu.statistica']}</a></li>
-	              <li ><a href="sectContactsView.jsf">#{labels['sect.contacts']}</a></li>
-	     
-              </ul>
-          </div>
-
+			
+			<span class="mobile-menu-handle" title="#{labels['menuExt.men']}">
+				<span class="icon fas fa-bars"></span>
+			</span>
+			
+			<ul class="nav">
+				<li>
+					<a href="indexExt.jsf" title="">#{labels['menuExt.start']}</a>
+				</li>
+				<li>
+					<a href="applicationSubmission.jsf"> #{labels['menu.sendApp']} </a>
+				</li>
+				<li>
+					<a jsf:action="myApplications.xhtml@clear@?faces-redirect=true" jsf:rendered="#{userData.hasAccess(7,45)}">#{labels['menuExt.myZajav']}</a>
+				</li>
+				<li>
+					<a href="searchApplications.jsf">#{labels['general.search']}</a>
+				</li>
+				<li>
+					<a href="sectDocView.jsf?codeSect=1">#{labels['menu.documents']}</a>
+				</li>
+				<li>
+					<a href="sectStatView.jsf?codeSect=5">#{labels['menu.statistica']}</a>
+				</li>
+				<li>
+					<a href="sectContactsView.jsf">#{labels['sect.contacts']}</a>
+				</li>
+			</ul>
+		</div>
+	
 	</ui:composition>
 </html>

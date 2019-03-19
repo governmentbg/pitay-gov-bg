@@ -291,12 +291,21 @@ public class PublicationDAO extends TrackableDAO<Publication> {
 		sb.append("SELECT au.names, au.email, au.phone ");
 		sb.append("FROM adm_users au ");
 		sb.append("JOIN adm_user_roles aur ON ");
-		sb.append("aur.user_id = au.user_id AND aur.code_classif = ? and aur.code_role = ?");
+		sb.append("aur.user_id = au.user_id AND aur.code_classif = ? and aur.code_role = ? ");
+		sb.append("UNION ");
+		sb.append("SELECT au2.names, au2.email, au2.phone ");
+		sb.append("FROM adm_users au2 ");
+		sb.append("JOIN adm_user_group aug on au2.user_id = aug.user_id ");
+		sb.append("JOIN adm_group_roles agr on agr.group_id = aug.group_id AND agr.code_classif = ? and agr.code_role = ?");
+		
+		
 		
 		try{
 			Query query = createNativeQuery(sb.toString()); 
 			query.setParameter(1, classifCode);
 			query.setParameter(2, roleCode);
+			query.setParameter(3, classifCode);
+			query.setParameter(4, roleCode);
 			
 			return (List<Object[]>) query.getResultList();
 		

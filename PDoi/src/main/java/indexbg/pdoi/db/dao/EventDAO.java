@@ -1,5 +1,6 @@
 package indexbg.pdoi.db.dao;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -11,20 +12,26 @@ import javax.persistence.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.indexbg.system.SysConstants;
 import com.indexbg.system.db.TrackableDAO;
+import com.indexbg.system.db.dto.SystemJournal;
 import com.indexbg.system.exceptions.DbErrorException;
 import com.indexbg.system.utils.SearchUtils;
 
 import indexbg.pdoi.db.Event;
 import indexbg.pdoi.system.Constants;
+import indexbg.pdoi.system.SystemData;
 
 public class EventDAO extends TrackableDAO<Event> {	
 
 	static final Logger LOGGER = LoggerFactory.getLogger(EventDAO.class);
 	
-	public EventDAO (Long userId){
+	private SystemData sd;
+	
+	public EventDAO (Long userId, SystemData sd){
 		
-		super(userId);		
+		super(userId);
+		this.sd = sd;
 	}
 	
 	/** Измъкват се параметрите, които да се зареждат на страницата по вид на събитието
@@ -123,26 +130,59 @@ public class EventDAO extends TrackableDAO<Event> {
 				queryUpdateDate.setParameter(4, today);
 				
 				queryUpdateDate.executeUpdate();
+				
+				SystemJournal j = new SystemJournal();
+				
+				j.setCodeObject(Constants.CODE_OBJECT_APPLICATION); // на заявлението
+				j.setIdObject(idApp); // ид на заявление
+				j.setCodeAction(SysConstants.CODE_DEIN_KOREKCIA); // кода на корекция - CODE_DEIN_KOREKCIA
+				j.setDateAction(today); // датата на промяната
+				j.setIdUser(getUserId()); // ид на потребител
+				j.setIdentObject("С изтриване на събитие удължаване на срока се променя срока на: " + new SimpleDateFormat("dd.MM.yyyy").format(responseEndTime) + " към заявление с ид = " + idApp); // какво се променя
+				
+				getEntityManager().persist(j);
 			}
 			
 			if (tmpEvent.getEventType().equals(Constants.CODE_ZNACHENIE_TYPE_EVENT_FINAL_SOLUTION)) {
 				
-				Query queryUpdateStatus = createNativeQuery("update pdoi_application set status = " + Constants.CODE_ZNACHENIE_STATUS_APP_REGISTERED + ", status_date = ?2, response_date = null, response = null, user_last_mod = ?3, date_last_mod = ?2 where id = ?1 ");
+				Query queryUpdateStatus = createNativeQuery("update pdoi_application set status = " + Constants.CODE_ZNACHENIE_STATUS_APP_REGISTERED + ", status_date = ?2, response_date = null, response = null, app_id_for_view = null, user_last_mod = ?3, date_last_mod = ?2 where id = ?1 ");
 				
 				queryUpdateStatus.setParameter(1, idApp);
 				queryUpdateStatus.setParameter(2, today);
 				queryUpdateStatus.setParameter(3, getUserId());
 				
 				queryUpdateStatus.executeUpdate();
+				
+				SystemJournal j = new SystemJournal();
+				
+				j.setCodeObject(Constants.CODE_OBJECT_APPLICATION); // на заявлението
+				j.setIdObject(idApp); // ид на заявление
+				j.setCodeAction(SysConstants.CODE_DEIN_KOREKCIA); // кода на корекция - CODE_DEIN_KOREKCIA
+				j.setDateAction(today); // датата на промяната
+				j.setIdUser(getUserId()); // ид на потребител
+				j.setIdentObject("С изтриване на събитие крайно решение се променя статуса на: " + sd.decodeItem(Constants.CODE_SYSCLASS_STATUS_APPLICATION, Constants.CODE_ZNACHENIE_STATUS_APP_REGISTERED, Constants.CODE_DEFAULT_LANG, new Date(), getUserId()) 
+						+ " на дата: " + new SimpleDateFormat("dd.MM.yyyy").format(today) + " и се нулира крайното решение и датата на крайното решение " + " към заявление с ид = " + idApp); // какво се променя
+				getEntityManager().persist(j);
 			}
 			
+			//изтрива се от files_text реда за това ид на файл, който е прикачен към събитието, което се трие.
+			Query queryDelFilesText = createNativeQuery(" delete from files_text ft where ft.id_files in (select f.id from files f where f.code_object = " + Constants.CODE_OBJECT_EVENT + " and f.id_object = ?) "); 
+			
+			queryDelFilesText.setParameter(1, idEvent);
+			
+			queryDelFilesText.executeUpdate();
+			
+			//изтрива се от файла, който е прикачен към събитието, което се трие.
 			Query queryDeleteFiles = createNativeQuery(" delete from files where code_object = " + Constants.CODE_OBJECT_EVENT + " and id_object = ? "); 
 			
 			queryDeleteFiles.setParameter(1, idEvent);			
 			
 			queryDeleteFiles.executeUpdate();
 			
-			deleteById(idEvent);
+			//изтрива се събитието
+			//deleteById(idEvent);
+			tmpEvent.setSystemData(sd); 
+			delete(tmpEvent); 
 			
 		} catch (Exception e) {
 			throw new DbErrorException("Възникна грешка при изтриване на събитие", e);

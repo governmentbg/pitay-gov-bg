@@ -8,8 +8,8 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
+import org.slf4j.LoggerFactory;
 
 import com.indexbg.system.db.AbstractDAO;
 import com.indexbg.system.db.JPA;
@@ -26,13 +26,12 @@ import indexbg.pdoi.db.EgovMessages;
 import indexbg.pdoi.db.EgovMessagesFiles;
 import indexbg.pdoi.db.EgovOrganisations;
 import indexbg.pdoi.db.Files;
-import indexbg.pdoi.system.Constants;
 import indexbg.pdoi.system.SystemData;
 
 
 public class EgovMessagesDAO extends AbstractDAO<EgovMessages> {
 	
-	private static final Logger LOGGER = Logger.getLogger(EgovMessagesDAO.class);
+	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(EgovMessagesDAO.class);
 	
 	public EgovMessagesDAO(Long idUser){
 		super(idUser);		
@@ -54,12 +53,19 @@ public class EgovMessagesDAO extends AbstractDAO<EgovMessages> {
 		
 		eMessage.setDocGuid(applic.getDocGuid());
 		
-		eMessage.setDocRn(""); //moga i bez nego kato shte ima uri
-		eMessage.setDocSubject(applic.getRequest()); //slagam iskaneto
-		eMessage.setDocComment(""); //
+		String regNumUri="";
+		if(applic.getApplicationUri()!=null) {
+			
+			regNumUri = applic.getApplicationUri().substring(0, applic.getApplicationUri().indexOf("-"));
+		}
 		
-		eMessage.setDocUriReg(applic.getApplicationUri());
-		eMessage.setDocUriBtch(applic.getApplicationUri()); //TODO poredniqt nomer ot urito
+		
+		eMessage.setDocRn(regNumUri); //moga i bez nego kato shte ima uri
+		eMessage.setDocSubject(applic.getApplicationUri()+" "+eMessage.getDocVid()); //slagam iskaneto
+		eMessage.setDocComment(applic.getApplicationUri()+" "+eMessage.getDocVid()); //slagame uri to plus vida na dok po iskane na DAEU
+		
+		//eMessage.setDocUriReg(applic.getApplicationUri()); // TODO komentirame i pochvame da pishem v docRn
+		//eMessage.setDocUriBtch(applic.getApplicationUri()); // poredniqt nomer ot urito???
 		
 		eMessage.setDocDate(applic.getDateReg());
 		

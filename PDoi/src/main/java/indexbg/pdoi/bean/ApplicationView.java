@@ -1,6 +1,7 @@
 package indexbg.pdoi.bean;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -55,15 +56,16 @@ public class ApplicationView extends PDoiBean  {
 	private boolean existFinalSolution = false;
 	private String likeCookie = "";
 	private boolean viewLikeBtn = false;
+	private String viewBackBtn;
 	
 	/** Метод за зареждане на необходимите данни от Заявлението и Събитията към него за показване на екрана на потребителя.
 	 * */
 	@PostConstruct
 	public void loadApplicData() {
 		
-		ApplicationDAO appDAO = new ApplicationDAO(userId);
+		ApplicationDAO appDAO = new ApplicationDAO(userId, getSystemData());
 		FilesDAO filesDAO = new FilesDAO(userId);
-		EventDAO eventDAO = new EventDAO(userId);
+		EventDAO eventDAO = new EventDAO(userId, getSystemData());
 		
 		try {
 			userId = getUserData().getUserId();		
@@ -90,7 +92,7 @@ public class ApplicationView extends PDoiBean  {
 					}
 				}
 				applic.setAdd_info(sbEvents.toString());
-				List<Event> tmpEventReshen = new EventDAO(userId).listFromEventsByAppId(applic.getId(), Constants.CODE_ZNACHENIE_TYPE_EVENT_FINAL_SOLUTION);
+				List<Event> tmpEventReshen = new EventDAO(userId, getSystemData()).listFromEventsByAppId(applic.getId(), Constants.CODE_ZNACHENIE_TYPE_EVENT_FINAL_SOLUTION);
 				if(tmpEventReshen != null && tmpEventReshen.size() > 0) {
 					eventReshenie = tmpEventReshen.get(0);
 					filesListReshenie = filesDAO.findByCodeObjAndIdObj(eventReshenie.getCodeMainObject(), eventReshenie.getId(), true);
@@ -140,6 +142,9 @@ public class ApplicationView extends PDoiBean  {
 			if (likeCookie == null || likeCookie.equals("")) {
 				viewLikeBtn = true;				
 			}
+			
+			setViewBackBtn(JSFUtils.getRequestParameter("baBtn"));
+			
 				
 		} catch (ObjectNotFoundException e) {
 			userId = -1L;
@@ -177,11 +182,13 @@ public class ApplicationView extends PDoiBean  {
 			
 			}
 			
+			String codedfilename = URLEncoder.encode(file.getFilename(), "UTF8");
+			
 			FacesContext facesContext = FacesContext.getCurrentInstance();
 		    ExternalContext externalContext = facesContext.getExternalContext();
 		    externalContext.setResponseHeader("Content-Type", "application/x-download");
 		    externalContext.setResponseHeader("Content-Length", file.getContent().length + "");
-		    externalContext.setResponseHeader("Content-Disposition", "attachment;filename=\"" + file.getFilename() + "\"");
+		    externalContext.setResponseHeader("Content-Disposition", "attachment;filename=\"" + codedfilename + "\"");
 			externalContext.getResponseOutputStream().write(file.getContent());
 			facesContext.responseComplete();
 			
@@ -285,7 +292,7 @@ public class ApplicationView extends PDoiBean  {
 			
 			JPA.getUtil().begin();
 		
-			new ApplicationDAO(userId).updateLike(applic.getId(), applic.getUsefulness());
+			new ApplicationDAO(userId, getSystemData()).updateLike(applic.getId(), applic.getUsefulness());
 			
 			JPA.getUtil().commit();	
 			
@@ -381,5 +388,16 @@ public class ApplicationView extends PDoiBean  {
 	public void setViewLikeBtn(boolean viewLikeBtn) {
 		this.viewLikeBtn = viewLikeBtn;
 	}
+
+
+	public String getViewBackBtn() {
+		return viewBackBtn;
+	}
+
+
+	public void setViewBackBtn(String viewBackBtn) {
+		this.viewBackBtn = viewBackBtn;
+	}
+
 	
 }

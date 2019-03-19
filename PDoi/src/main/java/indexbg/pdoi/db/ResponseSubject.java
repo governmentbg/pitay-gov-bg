@@ -45,16 +45,16 @@ public class ResponseSubject extends TrackableEntity {
 	@Column(name="subject_name", nullable = false, length= 255)	
 	private String subjectName; 
 	
-	@Column(name="region", nullable = false)	
+	@Column(name="region", nullable = true)	
 	private Long region; 	
 	
-	@Column(name="municipality", nullable = false)	
+	@Column(name="municipality", nullable = true)	
 	private Long municipality; 	
 	
-	@Column(name="town", nullable = false)
+	@Column(name="town", nullable = true)
 	private Long town; 
 	
-	@Column(name="address", nullable = false, length= 100)	
+	@Column(name="address", length= 100)	
 	private String address; 
 	
 	@Column(name="phone",  length= 50)	
@@ -77,7 +77,7 @@ public class ResponseSubject extends TrackableEntity {
 	@Column(name = "date_to", length = 7)
 	private Date dateTo;
 	
-	@Column(name="zip_code", nullable = false)	
+	@Column(name="zip_code", nullable = true)	
 	private Long zipCode; 	
 	
 	@Column(name="adm_register")	
@@ -234,6 +234,10 @@ public class ResponseSubject extends TrackableEntity {
 
 	public void setAdmLevel(Long admLevel) {
 		this.admLevel = admLevel;
+	}
+	
+	public String getIdentInfo() {
+		return "Наименование :"+ subjectName;
 	}
 
 	@Override

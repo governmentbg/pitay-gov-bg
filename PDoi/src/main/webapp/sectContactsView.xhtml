@@ -18,134 +18,180 @@
 		
 		<ui:define name="content">
 		
-		<style type="text/css">
-			.ui-treetable.bordersno thead th,
-			.ui-treetable.bordersno tbody,
-			.ui-treetable.bordersno tbody tr,
-			.ui-treetable.bordersno tbody td {
-		    	border-style: none;
-		    	  white-space:normal !important;
-			}
-			.ui-treetable.bordersno thead{display: none;}
+			<style type="text/css">
 			
-			#contactsContainer {
-				position: relative;
-				top: 0;
-				margin-top: 0px; /* това е важно! */
-			}
-			
-			
-			.admins-panel {
-				margin-top: 2em;
-				margin-bottom: 2em;
-			}	
-			
-			.admin-title {
-				font-weight: bold;
-				font-size: 1.5em;
-			}
-			
-			.admin-entry {
-				margin-top: 0.8em;
-				margin-bottom: 0.8em;
-				/* border: 1px solid purple; */
-			}
-			
-			.admin-entry p {
-				margin: 0;
-			}
-			
-			.admin-entry p:nth-child(1) {
-				font-weight: bold;
-			}
-			
-			.contacts {
-				padding-top: 0.8em; 
-				padding-bottom: 0.8em; 
-				text-align: left;
-			}
-			
-			.struct-address {
-				margin-top: 0;
-				margin-bottom: 3em;
-			}
-			
-			.struct-address p {
-				margin: 0;
-			}
-			
-			.struct-address .struct {
-				font-weight: bold;
-				
-			}
-			
-			.ui-treetable {
-				font-weight: bold;
-			}
-			
-		</style>
-		<script type="text/javascript">
-
-			function scrollContactsIntoView() {
-				let panel = document.getElementById("formContacts:panelAdminRight");
-				let left = document.getElementById("formContacts:panelAdminLeft");
-				let contacts = document.getElementById("contactsContainer");
-
-				/* Ако са в една колона, да не се променя нищо */
-				if(panel.getClientRects()[0].left == left.getClientRects()[0].left) {
-					return;	
+				.ui-widget-content {
+					background-color: transparent;
 				}
 				
-				let panelY = panel.getClientRects()[0].top;
-				let panelHeight = panel.getClientRects()[0].height;
-				let columnsHeight = document.getElementById("formContacts:columnLayout").getClientRects()[0].height;
-				let contactsY = contacts.getClientRects()[0].top;
-
-				/* Ако Контакти минава нагоре извън видимост, да ги скролне надолу */
-				if(contactsY &lt; 0) {
-					let treeBottom = document.getElementById('formContacts:zadSubektiTree').getClientRects()[0].bottom + (window.scrollY || window.pageYOffset);
-					let contactsBottom = contacts.getClientRects()[0].bottom + (window.scrollY || window.pageYOffset);
+				.banner {
+				    background: linear-gradient(to right, rgba(0, 119, 179, 1) 0%, rgba(0, 119, 179, 1) 15%, rgba(0,119,179,0.5) 30%, rgba(0,119,179,0.5) 100%), url(./images/map-small.jpg);
+				    background-attachment: fixed;
+				    padding: 1em 0;
+				    background-position-y: -30px;
+				}
+				
+				body.color-blind .banner {
+					background: linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 15%, rgba(0, 0, 0, 0.5) 30%, rgba(0, 0, 0, 0.5) 100%), url(./images/map-small.jpg);
+				    background-attachment: fixed;
+				    background-position-y: -30px;
+				    filter: grayscale(1);
+				}
+				
+				.ui-treetable.bordersno thead th,
+				.ui-treetable.bordersno tbody,
+				.ui-treetable.bordersno tbody tr,
+				.ui-treetable.bordersno tbody td {
+			    	border-style: none;
+			    	  white-space:normal !important;
+				}
+				.ui-treetable.bordersno thead{display: none;}
+				
+				#contactsContainer {
+					position: relative;
+					top: 0;
+					margin-top: 0px; /* това е важно! */
+				}
+				
+				
+				.admins-panel {
+					margin-bottom: 1.5em;
+					-moz-border-radius: 5px;
+					-webkit-border-radius: 5px;
+					border-radius: 5px;
+					-webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+					-moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+					box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+					padding: 16px;
+					background-color: #f7f8f8;
+				}	
+				
+				.admin-title,
+				#formContacts\:admHed {
+					font-weight: bold;
+					font-size: 1.3em;
+				}
+				
+				.admin-entry {
+					margin-top: 0.8em;
+					margin-bottom: 0.8em;
+				}
+				
+				.admin-entry p {
+					margin: 0;
+				}
+				
+				.admin-entry p:nth-child(1) {
+					font-weight: bold;
+				}
+				
+				.contacts {
+					padding-top: 0.8em; 
+					padding-bottom: 0.8em; 
+					text-align: left;
+				}
+				
+				.struct-address {
+					margin-top: 0;
+					margin-bottom: 3em;
+				}
+				
+				.struct-address p {
+					margin: 0;
+				}
+				
+				.struct-address .struct {
+					font-weight: bold;
 					
-					let currentTopPadding = parseFloat(panel.style.paddingTop + 0, 10);
-					let newTopPadding = currentTopPadding + Math.abs(contactsY);
-
- 					/* Трябва контактите да се местят надолу, само ако долният им ръб няма да мине под нивото на дървото */
- 					if(!(contactsBottom + Math.abs(contactsY) &gt; treeBottom)) {
- 						$(panel).css({paddingTop: newTopPadding + 'px'});
- 					}
- 					else {
- 	 					/* Може долният ръб да е по-нисък, просто защото контактите са по-високи от дървото */
- 	 					if(panelHeight &gt; document.getElementById("formContacts:panelAdminLeft").getClientRects()[0].height) {
- 	 						// в този случай, не трябва да се прави нищо!
- 	 	 				}
- 	 					else {
-	 	 					/* да се сметне колко е максималният padding, който може да се сложи 
-							 * за да скролне контактите възможно най-надолу */
-							newTopPadding = columnsHeight - contacts.getClientRects()[0].height; 
-							$(panel).css({paddingTop: newTopPadding + 'px'});
- 	 	 				}
- 	 				}
 				}
 				
-				/* Ако се скролва нагоре, да връща контактите нагоре */
-				else if((contactsY &gt; 0) &amp;&amp; (contactsY - panelY) &gt; 0) {
-					let currentTopPadding = parseFloat(panel.style.paddingTop + 0, 10);
-					let shift = currentTopPadding - contactsY;
-					$(panel).css({paddingTop: shift + 'px'});
+				.ui-treetable {
+					font-weight,: bold;
 				}
 				
-				/* Да не излиза от горната граница, ако вече е стигнало максимално нагоре */
-				else if(contactsY &lt; panelY) {
-					$(panel).css({paddingTop: '0px'});
+			</style>
+		
+			<script type="text/javascript">
+	
+				function scrollContactsIntoView() {
+					let panel = document.getElementById("formContacts:panelAdminRight");
+					let left = document.getElementById("formContacts:panelAdminLeft");
+					let contacts = document.getElementById("contactsContainer");
+	
+					/* Ако са в една колона, да не се променя нищо */
+					if(panel.getClientRects()[0].left == left.getClientRects()[0].left) {
+						return;	
+					}
+					
+					let panelY = panel.getClientRects()[0].top;
+					let panelHeight = panel.getClientRects()[0].height;
+					let columnsHeight = document.getElementById("formContacts:columnLayout").getClientRects()[0].height;
+					let contactsY = contacts.getClientRects()[0].top;
+	
+					/* Ако Контакти минава нагоре извън видимост, да ги скролне надолу */
+					if(contactsY &lt; 0) {
+						let treeBottom = document.getElementById('formContacts:zadSubektiTree').getClientRects()[0].bottom + (window.scrollY || window.pageYOffset);
+						let contactsBottom = contacts.getClientRects()[0].bottom + (window.scrollY || window.pageYOffset);
+						
+						let currentTopPadding = parseFloat(panel.style.paddingTop + 0, 10);
+						let newTopPadding = currentTopPadding + Math.abs(contactsY);
+	
+	 					/* Трябва контактите да се местят надолу, само ако долният им ръб няма да мине под нивото на дървото */
+	 					if(!(contactsBottom + Math.abs(contactsY) &gt; treeBottom)) {
+	 						$(panel).css({paddingTop: newTopPadding + 'px'});
+	 					}
+	 					else {
+	 	 					/* Може долният ръб да е по-нисък, просто защото контактите са по-високи от дървото */
+	 	 					if(panelHeight &gt; document.getElementById("formContacts:panelAdminLeft").getClientRects()[0].height) {
+	 	 						// в този случай, не трябва да се прави нищо!
+	 	 	 				}
+	 	 					else {
+		 	 					/* да се сметне колко е максималният padding, който може да се сложи 
+								 * за да скролне контактите възможно най-надолу */
+								newTopPadding = columnsHeight - contacts.getClientRects()[0].height; 
+								$(panel).css({paddingTop: newTopPadding + 'px'});
+	 	 	 				}
+	 	 				}
+					}
+					
+					/* Ако се скролва нагоре, да връща контактите нагоре */
+					else if((contactsY &gt; 0) &amp;&amp; (contactsY - panelY) &gt; 0) {
+						let currentTopPadding = parseFloat(panel.style.paddingTop + 0, 10);
+						let shift = currentTopPadding - contactsY;
+						$(panel).css({paddingTop: shift + 'px'});
+					}
+					
+					/* Да не излиза от горната граница, ако вече е стигнало максимално нагоре */
+					else if(contactsY &lt; panelY) {
+						$(panel).css({paddingTop: '0px'});
+					}
 				}
-			}
-
-			/* Закачва се като listener */
-			$(window).scroll(scrollContactsIntoView);
-			
-		</script>
+	
+				/* Закачва се като listener */
+				$(window).scroll(scrollContactsIntoView);
+				
+			</script>
 	
 			<h:form id="formContacts" onkeypress="if(event.keyCode == 13 &amp;&amp; event.target.tagName!='TEXTAREA') {return false;}">
+				
+				
+				<div class="container-fluid box-blueDark banner">
+					<div class="container">
+						<div class="ui-g">
+							<div class="ui-g-12  ui-md-12 ui-lg-12">
+							<div class="page-title">
+								<div class="title-icon">
+										<div class="icon fas fa-users"></div>
+										<div >#{labels['sect.contacts']}</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<br/>
+				
+				
 				<div class="container">	
 				
 				<div class="admins-panel">
@@ -170,7 +216,7 @@
 						<h:outputText value="#{labels['contacts.adminsModerators']}"/>
 					</div>
 					<div class="line-separator-normal"/>
-				</div>
+				
 				
 				<p:panelGrid id="columnLayout" columns="2" layout="grid" styleClass="ui-noborder" 
 							columnClasses="ui-g-12 ui-md-8 ui-lg-8 cc-left, ui-g-12 ui-md-4 ui-lg-4 cc-center" >	
@@ -194,7 +240,7 @@
 							
 							<p:treeTable value="#{sectCont.subectRootNode}" var="subekt"  selectionMode="single" 
 										selection="#{sectCont.subectSelectedNode}" id="zadSubektiTree" style="ui-treetable" styleClass="bordersno">
-						        <p:ajax event="select" listener="#{sectCont.onNodeSelect}" update="formContacts:panelAdminRight" oncomplete="scrollContactsIntoView()"/>
+						        <p:ajax event="select" listener="#{sectCont.onNodeSelect}" update="@this formContacts:panelAdminRight" oncomplete="scrollContactsIntoView()"/>
 				     			<p:ajax event="unselect" listener="#{sectCont.onNodeUnselect}" update="formContacts:panelAdminRight"/>
 			     				<p:column>
 						            <h:outputText value="#{subekt.tekst}" escape="false"/>
@@ -231,6 +277,8 @@
 					      </p:outputPanel>
 
 					</p:panelGrid>
+				
+				</div>
 				</div>	
 				
 					

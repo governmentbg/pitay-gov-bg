@@ -25,21 +25,87 @@
 		
 	<ui:define name="content">		
 	
-		<style>
-			.ui-commandlink {
-				  color:#039be5;				
-				}			 
+		<style>	
+		
+			.banner-doc {
+				background: linear-gradient(to right, rgba(0, 119, 179, 1) 0%, rgba(0, 119, 179, 1) 15%, rgba(0,119,179,0.5) 30%, rgba(0,119,179,0.5) 100%), url(./images/docs.jpg);
+			    background-attachment: fixed;
+			    padding: 1em 0;
+			    background-position-y: -30px;
+			}		 
+					
+			.banner-stat {
+				background: linear-gradient(to right, rgba(0, 119, 179, 1) 0%, rgba(0, 119, 179, 1) 15%, rgba(0,119,179,0.5) 30%, rgba(0,119,179,0.5) 100%), url(./images/stat.jpg);
+			    background-attachment: fixed;
+			    padding: 1em 0;
+			    background-position-y: 30px;
+			}
 			
-			.ui-commandlink:hover {text-decoration:underline !important;  cursor: pointer;}
+			body.color-blind .banner-doc {
+				background: linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 15%, rgba(0, 0 ,0 ,0.5) 30%, rgba(0, 0, 0, 0.5) 100%), url(./images/docs.jpg);
+				background-attachment: fixed;
+				background-position-y: -30px;
+				filter: grayscale(1);
+			}
+			
+			body.color-blind .banner-stat {
+				background: linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 15%, rgba(0, 0 ,0 ,0.5) 30%, rgba(0, 0, 0, 0.5) 100%), url(./images/stat.jpg);
+				background-attachment: fixed;
+				background-position-y: 30px;
+				filter: grayscale(1);
+			}		
 			
 			.ui-datagrid-content {
 				border: none;
+			}
+			
+			.singleLine {
+			    text-wrap:none;
+			    white-space:nowrap;
+			    overflow:hidden;
+			    text-overflow:ellipsis;
+			}
+			
+			.wrapLine {
+			    text-wrap:true;
+			    white-space:wrap;
 			}
 		</style>
 		
 		<h:form id="formSectList">
 			<p:importConstants type="indexbg.pdoi.system.Constants" var="IBConstants" className="indexbg.pdoi.system.Constants" />
 			<p:tooltip/>
+			
+			<div class="container-fluid box-blueDark banner-doc" jsf:rendered="#{sectDoc!=null}">
+				<div class="container">
+					<div class="ui-g">
+						<div class="ui-g-12  ui-md-12 ui-lg-12">
+							<div class="page-title">
+							<div class="title-icon">
+									<div class="icon fas fa-layer-group"></div>
+									<div>#{labels['menu.documents']}</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="container-fluid box-blueDark banner-stat" jsf:rendered="#{sectStat!=null}">
+				<div class="container">
+					<div class="ui-g">
+						<div class="ui-g-12  ui-md-12 ui-lg-12">
+						<div class="page-title">
+							<div class="title-icon">
+								<div class="icon fas fa-pie-chart"></div>
+								<div>#{labels['menu.statistica']}</div>
+							</div>
+						</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<br/>
+			
 			<div class="container">
 				<p:outputPanel id="panelData">
 
@@ -53,13 +119,11 @@
 					        <p:panel style="text-align:center">
        							<h:panelGrid columns="1" style="width:100%;border:0px">
        								<p:link outcome="sectionDetailsView.jsf">
-       									<h:outputText value="#{row[2]}" escape="false" style="font-weight:bold;font-size:16px; " />
+       									<p:outputLabel value="#{row[2]}" escape="false" />
        									<f:param name="idPubl" value="#{row[0]}"/>
-									<f:param name="codeSect" value="#{sectList.codeSection}"/>
+										<f:param name="codeSect" value="#{sectList.codeSection}"/>
        								</p:link>
        							
-       								
-       								<br />
        								<h:outputText value="#{row[3]}" escape="false"/>
 									
 								</h:panelGrid>
@@ -74,22 +138,6 @@
 			</div>
 
 		</h:form>
-		
-		<style type="text/css">
-			.singleLine
-			{
-			    text-wrap:none;
-			    white-space:nowrap;
-			    overflow:hidden;
-			    text-overflow:ellipsis;
-			}
-			.wrapLine
-			{
-			    text-wrap:true;
-			    white-space:wrap;
-			
-			}
-		</style>
 	
 	</ui:define>
 

@@ -40,19 +40,37 @@
 		  	 -->
 		  </ui:remove>
 		  
-		  <!-- Други -->
+		  <ui:remove>
+		  <!-- Други 
 		  <li jsf:rendered="#{userData.hasAccess(7,41)}">
 		  <a jsf:action="apiZaqvlenieDemo.xhtml@clear@?faces-redirect=true">
 		  	<f:actionListener type="indexbg.pdoi.system.Locker"/>
 		  	API Заявление
 		  </a>
-		  </li>
-			
+		  </li> -->
+		  </ui:remove>
+		  
 		  <!-- Отключване на Инф. обекти -->
 		  <li jsf:rendered="#{userData.hasAccess(7,46)}">
 		  	<a jsf:action="unlockObjects.xhtml@clear@?faces-redirect=true">
 		  		<f:actionListener type="indexbg.pdoi.system.Locker"/>
 		  		#{labels['menu.unlockObj']}
+		  	</a>
+		  </li>
+		  	
+		  <!-- Статус на съобщенията -->
+		  <li jsf:rendered="#{userData.hasAccess(7,44)}">
+		  	<a jsf:action="packagesFilter.xhtml@clear@?faces-redirect=true">
+		  		<f:actionListener type="indexbg.pdoi.system.Locker"/>
+		  		#{labels['menu.packageFilter']}
+		  	</a>
+		  	</li>
+		  	
+		  <!-- Филтър изпратени имейли -->
+		  <li jsf:rendered="#{userData.hasAccess(7,47)}">
+		  	<a jsf:action="packagesFilter.xhtml@clear@?faces-redirect=true">
+		  		<f:actionListener type="indexbg.pdoi.system.Locker"/>
+		  		#{labels['menu.packageFilter']}
 		  	</a>
 		  	</li>
 			

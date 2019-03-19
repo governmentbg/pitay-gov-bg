@@ -10,7 +10,7 @@
 
 <ui:composition template="/templates/main.xhtml">
 
-	<ui:define name="title"> TEST SOCAL </ui:define>
+	<ui:define name="title"> TEST SOCIAL </ui:define>
 
 	<ui:define name="systemLogo">
 		 <img src="resources/images/logo.png"/>
@@ -23,8 +23,6 @@
 	<ui:define name="content">	
 
 		<h:form id="formTestSocal">
-			
-			
 		
 			<p:tooltip />
 
@@ -50,6 +48,10 @@
 					</p:panelGrid>
 					
 				</p:outputPanel>
+				
+				<br />
+				
+				<p:commandButton id="bnt" update="formTestSocal message" action="#{testBean.sendMailToAllAdmins}" icon="fa fa-mail-reply-all" value="Изпращане на мейл"/>		
 
 			</div>
 

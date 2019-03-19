@@ -43,9 +43,12 @@ public class ResponseSubjectDao extends TrackableDAO<ResponseSubject> {
 
 	static final Logger LOGGER = LoggerFactory.getLogger(ResponseSubjectDao.class);
 	
-	public ResponseSubjectDao (Long userId){
+	private SystemData sd;
+	
+	public ResponseSubjectDao (Long userId ,SystemData sd){
 		
-		super(userId);		
+		super(userId);	
+		this.sd = sd;
 	}
 	
 	/** Търсене на задължени субекти по зададени параметри
@@ -87,7 +90,7 @@ public class ResponseSubjectDao extends TrackableDAO<ResponseSubject> {
 	}
 	
 	
-	private ArrayList<ResponseSubject> getSubjectsfromAdmRegister(Date dat, SystemData sd) throws UnexpectedResultException, DbErrorException {
+	private ArrayList<ResponseSubject> getSubjectsfromAdmRegister(Date dat) throws UnexpectedResultException, DbErrorException {
 		
 		TreeSet<String> tip1 = new TreeSet<String>();
 		TreeSet<String> tip2 = new TreeSet<String>();
@@ -327,7 +330,7 @@ public class ResponseSubjectDao extends TrackableDAO<ResponseSubject> {
 	}
 	
 	
-	private ArrayList<String> getClosedSujectsIds(Date dat, SystemData sd) throws UnexpectedResultException {
+	private ArrayList<String> getClosedSujectsIds(Date dat) throws UnexpectedResultException {
 		
 		ArrayList<String> ids = new ArrayList<String>();
 		
@@ -358,7 +361,7 @@ public class ResponseSubjectDao extends TrackableDAO<ResponseSubject> {
 	
 	
 	
-	public String updateAdmRegisterEntries() {
+	public String updateAdmRegisterEntries() throws DbErrorException, UnexpectedResultException {
 		
 		long brUpdated = 0;
 		long brInserted = 0;
@@ -367,11 +370,11 @@ public class ResponseSubjectDao extends TrackableDAO<ResponseSubject> {
 		try {
 			JPA.getUtil().begin();
 			
-			ArrayList<ResponseSubject> records = getSubjectsfromAdmRegister(new Date(), new SystemData());
+			ArrayList<ResponseSubject> records = getSubjectsfromAdmRegister(new Date());
 			
 			
 			for (ResponseSubject tek: records) {
-				
+				System.out.println(tek.getSubjectName());
 				ResponseSubject subject = findByNomReg(tek.getNomerRegister());
 				if (subject != null) {
 					mergeResSubject(subject, tek);
@@ -383,7 +386,7 @@ public class ResponseSubjectDao extends TrackableDAO<ResponseSubject> {
 				}
 			}
 			
-			ArrayList<String> ids = getClosedSujectsIds(new Date(), new SystemData());
+			ArrayList<String> ids = getClosedSujectsIds(new Date());
 			for (String id : ids) {
 				ResponseSubject subject = findByNomReg(id);				
 				if (subject != null && subject.getDateTo() == null) {
@@ -405,11 +408,11 @@ public class ResponseSubjectDao extends TrackableDAO<ResponseSubject> {
 		} catch (DbErrorException e) {
 			JPA.getUtil().rollback();
 			LOGGER.error("DBError in  adm register !", e);
-			return "Грешка при запис на субекти от административния регистър !\r\n" + StringUtils.stack2string(e);
+			throw new DbErrorException("Грешка при запис на субекти от административния регистър !\r\n" + StringUtils.stack2string(e)); 
 		} catch (UnexpectedResultException e) {
 			JPA.getUtil().rollback();
 			LOGGER.error("Unexpected error in adm registry load !");
-			return "Грешка при четене на данни за субекти от административния регистър !\r\n" + StringUtils.stack2string(e);
+			throw new UnexpectedResultException("Грешка при четене на данни за субекти от административния регистър !\r\n" + StringUtils.stack2string(e));
 		}
 	}
 	

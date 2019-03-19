@@ -3,6 +3,7 @@ package indexbg.pdoi.bean;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -176,6 +177,10 @@ public class PublicationBean  extends PDoiBean {
 			
 			JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_INFO, getMessageResourceString("beanMessages", "general.succesSaveMsg"));
 			
+			if (!this.deleteFilesList.isEmpty()) {
+				deleteFilesList.clear();
+			}
+			
 			} catch (DbErrorException e) {
 			 	LOGGER.error(e.getMessage(), e);
 				JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString("beanMessages","general.errDataBaseMsg"), e.getMessage());
@@ -183,9 +188,13 @@ public class PublicationBean  extends PDoiBean {
 			} catch (ObjectInUseException e) {
 				LOGGER.error(e.getMessage(), e);
 				JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString("beanMessages","general.objectInUse"), e.getMessage());	
+				JPA.getUtil().rollback();
+			}  catch (Exception e) {
+				LOGGER.error(e.getMessage(), e);
+				JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString("beanMessages","general.errDataBaseMsg"), e.getMessage());	
+				JPA.getUtil().rollback();
 			} finally {
 				JPA.getUtil().closeConnection();
-				
 		} 
 	
 	}
@@ -221,7 +230,11 @@ public class PublicationBean  extends PDoiBean {
 			JPA.getUtil().commit();			
 				
 			JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_INFO, getMessageResourceString("beanMessages", "general.succesDeleteMsg"));
-
+			
+			if (!this.deleteFilesList.isEmpty()) {
+				deleteFilesList.clear();
+			}
+			
 			Navigation navHolder = new Navigation();			
 		    int i = navHolder.getNavPath().size();
 		    
@@ -231,12 +244,17 @@ public class PublicationBean  extends PDoiBean {
 			
 			
 		} catch (DbErrorException e) {
-			JPA.getUtil().rollback();
 			LOGGER.error(e.getMessage(), e);
 			JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString("beanMessages", "general.errDataBaseMsg"), e.getMessage());
+			JPA.getUtil().rollback();
 		} catch (ObjectInUseException e) {
 			LOGGER.error(e.getMessage(), e);
 			JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString("beanMessages","general.objectInUse"), e.getMessage());
+			JPA.getUtil().rollback();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString("beanMessages","general.errDataBaseMsg"), e.getMessage());	
+			JPA.getUtil().rollback();
 		} finally {
 			JPA.getUtil().closeConnection();
 		}
@@ -416,11 +434,13 @@ public void uploadFileListener(FileUploadEvent event){
 			
 			}
 			
+			String codedfilename = URLEncoder.encode(file.getFilename(), "UTF8");
+			
 			FacesContext facesContext = FacesContext.getCurrentInstance();
 		    ExternalContext externalContext = facesContext.getExternalContext();
 		    externalContext.setResponseHeader("Content-Type", "application/x-download");
 		    externalContext.setResponseHeader("Content-Length", file.getContent().length + "");
-		    externalContext.setResponseHeader("Content-Disposition", "attachment;filename=\"" + file.getFilename() + "\"");
+		    externalContext.setResponseHeader("Content-Disposition", "attachment;filename=\"" + codedfilename + "\"");
 			externalContext.getResponseOutputStream().write(file.getContent());
 			facesContext.responseComplete();
 			

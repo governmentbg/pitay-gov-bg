@@ -2,6 +2,7 @@ package indexbg.pdoi.db;
 
 import static javax.persistence.GenerationType.SEQUENCE;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -15,10 +16,13 @@ import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import com.indexbg.system.db.TrackableEntity;
+import com.indexbg.system.exceptions.DbErrorException;
 
 import indexbg.pdoi.system.Constants;
+import indexbg.pdoi.system.SystemData;
 
 @SqlResultSetMapping(name = "filterByIdTypeAndDate", classes = {
 		@ConstructorResult(targetClass = Event.class, 
@@ -80,6 +84,9 @@ public class Event extends TrackableEntity {
 	@Column(name="app_id_for_view", precision = 10, scale = 0)	
 	private Long appIdForView;
 	
+	@Transient
+	private transient SystemData systemData;
+	
 	/** default constructor */
 	public Event() {
 		
@@ -90,6 +97,10 @@ public class Event extends TrackableEntity {
 		this.id = id;
 		this.eventType = eventType;
 		this.eventDate = eventDate;
+	}
+	
+	public Event(SystemData sd) {
+		systemData = sd;
 	}
 
 	public Long getId() {
@@ -212,10 +223,44 @@ public class Event extends TrackableEntity {
 		return super.getDateLastMod();
 	}
 	
+	public SystemData getSystemData() {
+		return systemData;
+	}
+
+	public void setSystemData(SystemData systemData) {
+		this.systemData = systemData;
+	}
+
 	@Override
 	public Long getCodeMainObject() {
 		// TODO Auto-generated method stub
 		return Constants.CODE_OBJECT_EVENT;
+	}
+	
+	@Override
+	public String getIdentInfo() {
+		
+		String dopInfo = "";
+
+		try {
+			
+			if (systemData != null) {
+				
+				dopInfo = "Събитие : " + systemData.decodeItem(Constants.CODE_SYSCLASS_TYPE_EVENT, eventType, Constants.CODE_DEFAULT_LANG , new Date(), getUserReg()) + 
+						  " на дата: " + new SimpleDateFormat("dd.MM.yyyy").format(eventDate) + 
+						  " към заявление с ид = " + applicationId ;
+			} else {
+				
+				dopInfo = "Събитие : " + eventType  + 
+						  " на дата: " + new SimpleDateFormat("dd.MM.yyyy").format(eventDate) + 
+						  " към заявление с ид = " + applicationId ;
+			}	
+		
+		} catch (DbErrorException e) {
+			e.printStackTrace();
+		} 		
+		
+		return dopInfo;
 	}
 	
 }

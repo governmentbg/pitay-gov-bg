@@ -54,7 +54,7 @@ public class ResponseSubjects extends PDoiBean {
 	public void initData(){
 			try {
 				this.userId = getUserData().getUserId();
-				rsDao =  new ResponseSubjectDao(userId);
+				rsDao =  new ResponseSubjectDao(userId,getSystemData());
 				String idObj =JSFUtils.getRequestParameter("idObj");
 				if (idObj!=null) {
 					rs = rsDao.findById(Long.valueOf(idObj));

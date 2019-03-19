@@ -13,7 +13,7 @@ public class TestResponsibleSubjectDao {
 	public void testUpodateAdmRegister()  {
 			
 			try {
-				ResponseSubjectDao dao = new ResponseSubjectDao(-1L);		
+				ResponseSubjectDao dao = new ResponseSubjectDao(-1L,null);		
 
 				Date datBeg = new Date();
 				String s = dao.updateAdmRegisterEntries();

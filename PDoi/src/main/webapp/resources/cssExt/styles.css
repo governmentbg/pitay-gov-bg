@@ -251,7 +251,8 @@ main {
 	display: inline-block;
 	display: inline-block;
     position: relative;
-    left: -10px;
+    /* margin-left: -35px; */
+    margin-left: -4px;
 }
 
 

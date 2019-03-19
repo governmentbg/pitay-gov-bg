@@ -31,7 +31,24 @@
 	</ui:define>
 
 	<ui:define name="content">
-
+		<style>
+			.ui-link.ui-widget.fa-angle-double-left {
+				color: #64ABD1;
+				float: right;
+			}
+			.ui-link.ui-widget.fa-angle-double-left:hover,
+			.ui-link.ui-widget.fa-angle-double-left:hover label {
+				color: #037FBC;
+				text-decoration: underline;
+			}
+			
+			.ui-link.ui-widget.fa-angle-double-left label {
+				color: #64ABD1;
+				font-weight: bold;
+				font-size: 1em;
+				margin-left: 0.4em;
+			}
+		</style>
 		
 		<h:form id="formApplicView">
 
@@ -42,14 +59,17 @@
 			<div class="container">
 
 				<p:outputPanel id="panelData">
-
+			
 					<p:outputPanel id="panelApplic">
-
+					
 						<p:panel>
-						
-							<h5 id="applicationTitle">#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_ADM_REGISTRY, applicationView.applic.responseSubjectId, applicationView.currentLang, null, applicationView.userId)}</h5>								
+
+							<p:link outcome="#{applicationView.viewBackBtn}.jsf" styleClass="fas fa-angle-double-left" rendered="#{applicationView.viewBackBtn!=null}">
+								<p:outputLabel value="#{labels['general.back']}"/>
+							</p:link>	
 							
-							<p:separator></p:separator>
+							<h1 class="article-title">#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_ADM_REGISTRY, applicationView.applic.responseSubjectId, applicationView.currentLang, null, applicationView.userId)}</h1>
+							<hr class="line-separator"/>
 							
 							<div class="ui-g">								
 								<div class="ui-g-12 ui-md-12 ui-lg-12">									 
@@ -65,7 +85,9 @@
 									|
 										<h:outputText value="#{labels['general.dataReg']}: " style="font-weight: bold;" />
 										<p:spacer width="5" />
-										<p:outputLabel value="#{applicationView.applic.registrationDate}" />
+										<p:outputLabel value="#{applicationView.applic.registrationDate}" >
+											<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{applicationView.timeZone}"/>
+										</p:outputLabel>
 										<p:spacer width="5" />
 									</h:panelGroup>
 									
@@ -83,29 +105,29 @@
 								
 								<div class="ui-g-12 ui-md-12 ui-lg-12">
 																	
-									<h:outputText styleClass="fa fa-eye" style="font-size:15px;" title="#{labels['app.numberVisitors']}"/>
+									<h:outputText styleClass="fa fa-eye" title="#{labels['app.numberVisitors']}"/>
 									<p:spacer width="5" />
-									<p:outputLabel value="#{applicationView.applic.numberOfVisits}" style="font-size:15px;"/> 
+									<p:outputLabel value="#{applicationView.applic.numberOfVisits}"/> 
 									<p:spacer width="5" />
 									
 									|									
 									<p:commandButton actionListener="#{applicationView.actionUpdateLike}" styleClass="btn-pf-convert-to-bootstrap" icon="fa fa-thumbs-up" title="#{labels['appView.like']}" rendered="#{applicationView.viewLikeBtn}" update="@form"/>
- 									<h:outputText styleClass="fa fa-thumbs-up" style="font-size:15px;" rendered="#{!applicationView.viewLikeBtn}"/>							
+ 									<h:outputText styleClass="fa fa-thumbs-up" rendered="#{!applicationView.viewLikeBtn}"/>							
 									<p:spacer width="5" />
-									<p:outputLabel value="#{applicationView.applic.usefulness}" style="font-size:15px;"/>
+									<p:outputLabel value="#{applicationView.applic.usefulness}"/>
 									<p:spacer width="5" />
 									
 									<h:panelGroup rendered="#{userData.userId != null and userData.userId != -1 and userData.userId != applicationView.applic.userReg and !applicationView.existFinalSolution}">
 									|									
 										<p:commandButton action="#{applicationView.actionSaveSubscription}" styleClass="btn-pf-convert-to-bootstrap" value="#{labels['appView.abonament']}" rendered="#{applicationView.subscriptionText == null or applicationView.subscriptionText == ''}" update="@form"/>
-										<p:outputLabel value="#{applicationView.subscriptionText}" style="font-size:15px;" rendered="#{applicationView.subscriptionText != null}"/>
+										<p:outputLabel value="#{applicationView.subscriptionText}" rendered="#{applicationView.subscriptionText != null}"/>
 										<p:spacer width="5" />
 										<p:commandButton action="#{applicationView.actionDeleteSubscription}" styleClass="btn-pf-convert-to-bootstrap" style="color: #d90000;" icon="fa fa-fw fa-times" title="#{labels['appView.endAbonament']}" rendered="#{(applicationView.subscriptionText != null and applicationView.subscriptionText != '')}" update="@form" />
 									</h:panelGroup>					
 									
 									|
 									<h:outputLink id="content" value="#" styleClass="fa fa-user" />
-									<p:outputLabel for="content" value=" #{labels['app.zaqvitel']}" style="font-size:15px;" />
+									<p:outputLabel for="content" value=" #{labels['app.zaqvitel']}" />
 								</div>
 								
 								<div class="ui-g-12 ui-md-12 ui-lg-12">
@@ -118,7 +140,7 @@
 									        shareIn="popup"
 									        showLabel="false"  
 									        showCount="true"  
-									        style="font-size: 12px"  
+									        style="font-size: 0.9em"  
 									        emailTo="primefaces@primefaces.org"  
 									        twitterUsername="GovBulgaria"  
 									        twitterHashtags="Министерски съвет, ПДОИ"  
@@ -173,7 +195,7 @@
 									
 									<p:outputPanel rendered="#{applicationView.applic.addressPublication}">
 									
-										<p:separator />
+										<hr class="line-separator"/>
 										
 										<div class="ui-g">
 											<div class="ui-g-12 ui-md-12 ui-lg-12">
@@ -217,11 +239,9 @@
 
 							<div class="ui-g">
 								<div class="ui-g-12 ui-md-12 ui-lg-12 ">
-									<h:outputText id="requestInfo" value="#{applicationView.applic.add_info}" style="width:99%; font-size:16px;" escape="false"/>
+									<h:outputText styleClass="article-body" id="requestInfo" value="#{applicationView.applic.add_info}" style="width:99%;" escape="false"/>
 								</div>
 							</div>
-
-							<br />
 
 							<div class="ui-g">
 
@@ -248,16 +268,16 @@
 
 							<div style="#{(applicationView.eventReshenie.addText != null)?'':'display:none'}">
 							
-								<h5>#{labels['appView.reshenie']}</h5>
+								<h1 class="article-title">#{labels['appView.reshenie']}</h1>
 	
-								<p:separator></p:separator>
+								<hr class="line-separator"/>
 	
 								<div class="ui-g">
 									
 									<div class="ui-g-12 ui-md-2 ui-lg-2">
-										<h:outputText value="#{labels['general.date']}: " style="font-weight: bold; font-size:15px;" />	
+										<h:outputText value="#{labels['general.date']}: " style="font-weight: bold;" />	
 										<p:spacer width="5" />
-										<p:outputLabel value="#{applicationView.eventReshenie.eventDate}" style="font-size:15px;">
+										<p:outputLabel value="#{applicationView.eventReshenie.eventDate}">
 											<f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
 										</p:outputLabel>								
 									</div>
@@ -266,11 +286,10 @@
 								
 								<div class="ui-g">
 									<div class="ui-g-12 ui-md-12 ui-lg-12 ">
-										<h:outputText value="#{applicationView.eventReshenie.addText}" style="width:99%; font-size:16px;" escape="false"/>
+										<h:outputText styleClass="article-body" value="#{applicationView.eventReshenie.addText}" style="width:99%;" escape="false"/>
 									</div>
 								</div>
 								
-								<br />
 							
 								<div class="ui-g">
 	
@@ -291,24 +310,6 @@
 	
 										</p:dataTable>
 	
-									</div>
-									
-									<div class="ui-g-12 ui-md-12 ui-lg-12">
-										<p:panelGrid id="pnlSocialDown" columns="1" layout="grid" styleClass="ui-noborder">  
-										    <pe:social id="socialMediaDown"  
-										        shares="facebook,twitter,googleplus"   
-										        url="https://demo.indexbg.bg/PDoi/applicationView.jsf?idObj=#{applicationView.applic.id}"   
-										        text="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_ADM_REGISTRY, applicationView.applic.responseSubjectId, applicationView.currentLang, null, applicationView.userId)}"   
-										        theme="flat"
-										        shareIn="popup"
-										        showLabel="false"  
-										        showCount="true"  
-										        style="font-size: 12px"  
-										        emailTo="primefaces@primefaces.org"  
-										        twitterUsername="GovBulgaria"  
-										        twitterHashtags="Министерски съвет, ПДОИ"  
-										        onclick="console.log('share ' +this.share + ' url ' + this.url + ' at ' + e.timeStamp);"/>  
-										</p:panelGrid>
 									</div>
 								
 								</div>

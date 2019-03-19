@@ -6,7 +6,10 @@ import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpSession;
 
+import org.primefaces.component.datagrid.DataGrid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +43,8 @@ public class MyApplications extends PDoiBean {
 	private LazyDataModelSQL2Array appList = null;	
 	private LazyDataModelSQL2Array subsList = null;	
     private Long userID;
- 
+    
+    private Long initTables;
 
 	
 	public MyApplications() {
@@ -53,17 +57,23 @@ public class MyApplications extends PDoiBean {
 	@PostConstruct
 	public void initData(){
 			try {
+				String sappSortMyApp   = (String) getSessionScopeValue("sappSortMyApp");	
+				String sappSortSubsApp = (String) getSessionScopeValue("sappSortSubsApp");
+				
+				if(sappSortMyApp==null) { sappSortMyApp = "A0"; }
+				if(sappSortSubsApp==null) { sappSortSubsApp = "A0"; }
+				
 				userID = getUserData().getUserId();		
-				appDao =  new ApplicationDAO( userID);
+				appDao =  new ApplicationDAO(userID, getSystemData());
 				SelectMetadata smd;
 				smd = appDao.findApplications(null, null,null,null,null,null,null,userID,false,true,null);
-				String defaultSortColumn = "A0"; //A0
-				appList = new LazyDataModelSQL2Array(smd, defaultSortColumn);  
+				
+				appList = new LazyDataModelSQL2Array(smd, sappSortMyApp);  
 				
 				SelectMetadata smd1;
 				smd1 = appDao.findSubscriptions(userID);
 			
-				subsList = new LazyDataModelSQL2Array(smd1, defaultSortColumn);  
+				subsList = new LazyDataModelSQL2Array(smd1, sappSortSubsApp);  
 				
 			} catch (ObjectNotFoundException e) {
 				LOGGER.error("Грешка при работа със системата!!!", e);
@@ -81,10 +91,11 @@ public class MyApplications extends PDoiBean {
 		if(sortCol!=null && !"".equals(sortCol)) {
 			try {
 				
-				SelectMetadata smd;
-				smd = appDao.findApplications(null, null,null,null,null,null,null,userID,false,true,null);
+				SelectMetadata smd = appDao.findApplications(null, null,null,null,null,null,null,userID,false,true,null);
 				String defaultSortColumn = sortCol; 
-				appList = new LazyDataModelSQL2Array(smd, defaultSortColumn);  									
+				appList = new LazyDataModelSQL2Array(smd, defaultSortColumn);  	
+				
+				addSessionScopeAttribute("sappSortMyApp", sortCol);
 			}
 			catch (Exception e) {
 				LOGGER.error("Грешка при работа със системата!!!", e);
@@ -99,10 +110,11 @@ public class MyApplications extends PDoiBean {
 		if(sortCol!=null && !"".equals(sortCol)) {
 			try {
 				
-				SelectMetadata smd;
-				smd = appDao.findSubscriptions(userID);
+				SelectMetadata smd = appDao.findSubscriptions(userID);
 				
-				subsList = new LazyDataModelSQL2Array(smd, sortCol);  
+				subsList = new LazyDataModelSQL2Array(smd, sortCol); 
+				
+				addSessionScopeAttribute("sappSortSubsApp", sortCol);
 			}
 			catch (Exception e) {
 				LOGGER.error("Грешка при работа със системата!!!", e);
@@ -112,6 +124,25 @@ public class MyApplications extends PDoiBean {
 			}
 		}
 	}
+	
+	public void changePageMyApp() {
+		
+		DataGrid d = (DataGrid) FacesContext.getCurrentInstance().getViewRoot().findComponent("appFilterForm:tbl");
+		
+		if(d!=null) { 
+			addSessionScopeAttribute("sappPageMyApp", d.getFirst());		
+		}
+	}
+	
+	public void changePageSubsApp() {
+		
+		DataGrid d = (DataGrid) FacesContext.getCurrentInstance().getViewRoot().findComponent("appFilterForm:tbl1");
+		
+		if(d!=null) { 
+			addSessionScopeAttribute("sappPageSubsApp", d.getFirst());		
+		}
+	}
+	
 	
 	public LazyDataModelSQL2Array getAppList() {
 		return appList;
@@ -140,6 +171,33 @@ public class MyApplications extends PDoiBean {
 
 	public void setSubsList(LazyDataModelSQL2Array subsList) {
 		this.subsList = subsList;
+	}
+
+	public Long getInitTables() {
+		
+		if(initTables==null) { initTables=1L;
+			if(getSessionScopeValue("sappPageMyApp") != null) { 
+				DataGrid d = (DataGrid) FacesContext.getCurrentInstance().getViewRoot().findComponent("appFilterForm:tbl");
+				if(d!=null) { 
+					int page = (int) getSessionScopeValue("sappPageMyApp");
+					d.setFirst(page); 
+				}
+			}
+			if(getSessionScopeValue("sappPageSubsApp") != null) { 
+				DataGrid d1 = (DataGrid) FacesContext.getCurrentInstance().getViewRoot().findComponent("appFilterForm:tbl1");
+				if(d1!=null) { 
+					int page1 = (int) getSessionScopeValue("sappPageSubsApp");
+					d1.setFirst(page1); 
+				}
+			}
+		
+		}
+				
+		return initTables;
+	}
+
+	public void setInitTables(Long initTables) {
+		this.initTables = initTables;
 	}
 
 }

@@ -64,8 +64,16 @@
   <context-param>
     <description>Auth server url</description>
     <param-name>authServerAddress</param-name>
-     <!-- test <param-value>http://172.23.117.144:8080/AAServer/api/</param-value> -->
-     <param-value>http://10.29.1.165:8080/AAServer/api/</param-value>
+     
+     <!--  MS Test server 
+     <param-value>https://172.23.117.72:8443/AAServer/api/</param-value>
+     --> 
+       <!--  MS Production --> 
+     <param-value>http://172.23.117.145:8080/AAServer/api/</param-value>
+     
+     <!-- Indexbg  
+      <param-value>http://10.29.1.165:8080/AAServer/api/</param-value> 
+      -->
   </context-param>
   <context-param>
     <description>System client id</description>
@@ -83,9 +91,14 @@
     <param-value>true</param-value>
   </context-param>
    <context-param>
+    <description>Login with SAML2.0 to eAuthenticator</description>
+    <param-name>samlLogin</param-name>
+    <param-value>false</param-value>
+  </context-param>
+   <context-param>
     <description>registrationExt</description>
     <param-name>registrationExt</param-name>
-    <param-value>true</param-value>
+    <param-value>false</param-value>
   </context-param>
   <context-param>
     <description>System client secret</description>

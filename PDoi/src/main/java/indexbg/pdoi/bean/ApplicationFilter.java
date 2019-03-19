@@ -22,6 +22,7 @@ import com.indexbg.system.utils.JSFUtils;
 
 import indexbg.pdoi.db.dao.ApplicationDAO;
 import indexbg.pdoi.system.Constants;
+import indexbg.pdoi.system.Locker;
 import indexbg.pdoi.system.PDoiBean;
 
 /**
@@ -70,13 +71,13 @@ public class ApplicationFilter extends PDoiBean {
 			   
 				userId = getUserData().getUserId();
 				typeUser = getUserData().getTypeUser();
-				appDao =  new ApplicationDAO(userId);		
+				appDao =  new ApplicationDAO(userId, getSystemData());		
 				if(typeUser!=null && typeUser.longValue() != Constants.CODE_ZNACHENIE_TIP_POTR_VANSHEN) {
 					responseSubj = getUserData().getCodeOrg();
 					zadaljenSubText = getSystemData().decodeItem(Constants.CODE_SYSCLASS_ADM_REGISTRY, responseSubj, getCurrentLang(), new Date(), userId);
 					
 					SelectMetadata smd;
-					//TODO init parameters fo admin
+
 //					smd = appDao.findApplications(dateFrom, dateTo,status,responseSubj,text,nomer,selectedThemas,null,true,false,userId);
 					smd = new SelectMetadata();
 					smd.setSqlParameters(getSqlParameters());
@@ -181,6 +182,36 @@ public class ApplicationFilter extends PDoiBean {
 		nomer = "";
 		tematika = "";
 		selectedThemas = new ArrayList<Long>();
+	}
+	
+	public String  actionGoToEdit() {
+		
+		String idObj = JSFUtils.getRequestParameter("idObj");
+		
+		if(idObj!=null && !idObj.isEmpty()){
+		Locker locker = new Locker();
+		String isLocked="";
+			try {
+				isLocked = locker.isObjectLocked(Long.valueOf(idObj), Constants.CODE_OBJECT_APPLICATION, getUserId());
+			} catch (DbErrorException e) {
+				LOGGER.error(e.getMessage(),e);
+				JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString(Constants.beanMessages, "general.errDataBaseMsg"));
+				
+			} catch (Exception e) {
+				JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString(Constants.beanMessages,"general.unexpectedResult"));
+				LOGGER.error(e.getMessage(), e);
+				
+			} finally {
+				JPA.getUtil().closeConnection();
+			}
+			if(isLocked!=null &&!"".equals(isLocked)) {
+				JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString(Constants.beanMessages,"app.appInUse"));
+			    return "";
+			}
+		}
+		
+		
+		return "applicationForm.jsf";
 	}
 
 	public LazyDataModel getAppList() {

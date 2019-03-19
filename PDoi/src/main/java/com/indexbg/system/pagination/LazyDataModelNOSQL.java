@@ -1,7 +1,15 @@
 package com.indexbg.system.pagination;
 
-import com.indexbg.ocr.dao.ApplicationTree;
-import com.indexbg.system.db.JPA;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.persistence.EntityManager;
+
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 import org.hibernate.search.jpa.FullTextEntityManager;
@@ -13,9 +21,8 @@ import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortMeta;
 import org.primefaces.model.SortOrder;
 
-import javax.persistence.EntityManager;
-import java.io.Serializable;
-import java.util.*;
+import com.indexbg.ocr.dao.ApplicationTree;
+import com.indexbg.system.db.JPA;
 
 public class LazyDataModelNOSQL extends LazyDataModel<Object[]> implements Serializable {
 
@@ -25,7 +32,8 @@ public class LazyDataModelNOSQL extends LazyDataModel<Object[]> implements Seria
 	public LazyDataModelNOSQL(SelectMetadata smd, String defaultSortColumn) {
 		this.searchMetaData = smd;
 		this.defaultSortColumn  = defaultSortColumn;
-		load(1,15,defaultSortColumn, SortOrder.ASCENDING, Collections.emptyMap());
+		//calculate and set rowcount
+		load(0,-1,defaultSortColumn, SortOrder.ASCENDING, Collections.emptyMap()).size();
 	}
 
 	@Override
@@ -53,25 +61,35 @@ public class LazyDataModelNOSQL extends LazyDataModel<Object[]> implements Seria
 
 			BooleanJunction<BooleanJunction> bool = qb.bool();
 			if (!textToSearchFor.equals("")) {
+				//TODO dobavi filtar po "visible_on_site"
 				bool
 						.must(
-								qb.keyword().fuzzy().withPrefixLength(1).withEditDistanceUpTo(1)
-										//				.onFields("fullNames", "status", "request")
-										.onField("fullNames").andField("request").boostedTo(1).andField("add_info").andField("attachments.files.text.contentText")
-										.matching(textToSearchFor).createQuery()
+//								qb.keyword().fuzzy().withPrefixLength(1).withEditDistanceUpTo(1)
+//										//				.onFields("fullNames", "status", "request")
+//										.onField("fullNames").andField("request").boostedTo(1).andField("add_info").andField("attachments.files.text.contentText")
+//										.matching(textToSearchFor).createQuery()
+								qb.simpleQueryString().onField("request").boostedTo(1).andField("add_info")
+									.matching(textToSearchFor).createQuery()
 						);
+
+				bool.should(
+						qb.bool().must(qb.simpleQueryString().onField("attachments.files.text.contentText").andField("events.attachments.files.contentText").matching(textToSearchFor).createQuery()
+					).must(
+						qb.keyword().onField("attachments.visibleOnSite").matching("true").createQuery()
+					).createQuery()
+				);
 			}
 			Date dateVal = (Date) searchMetaData.getSqlParameters().get("dateFrom");
 			if (dateVal!=null ) {
 
-				bool.must(qb.range().onField("registrationDate")
+				bool.must(qb.range().onField("dateReg")
 						.above(dateVal)
 						.createQuery()
 				);
 			}
 			dateVal = (Date) searchMetaData.getSqlParameters().get("dateTo");
 			if (dateVal!=null) {
-				bool.must(qb.range().onField("registrationDate")
+				bool.must(qb.range().onField("dateReg")
 						.below(dateVal)
 						.createQuery()
 				);
@@ -93,12 +111,22 @@ public class LazyDataModelNOSQL extends LazyDataModel<Object[]> implements Seria
 
 			String stringVal = (String) searchMetaData.getSqlParameters().get("nomer");
 			if (stringVal!=null && !stringVal.equals("")){
-				bool.must(qb.keyword().onField("applicationUri").matching(longVal).createQuery());
+				bool.must(qb.keyword().wildcard().onField("applicationUri").matching("*"+stringVal+"*").createQuery());
 			}
 
 			longVal = (Long) searchMetaData.getSqlParameters().get("responseSubj");
 			if (longVal!=null ) {
-				bool.must(qb.keyword().onField("responseSubjectId").matching(longVal).createQuery());
+				bool.must(qb.keyword().withConstantScore().onField("responseSubjectId").ignoreAnalyzer().matching(longVal).createQuery());
+			}
+
+			arrayVal = (ArrayList<Long>) searchMetaData.getSqlParameters().get("selectedSubj");
+			if (arrayVal!=null && !arrayVal.isEmpty()) {
+				BooleanJunction inner = qb.bool();
+				for (Long localVal:
+						arrayVal) {
+					inner = inner.should(qb.keyword().withConstantScore().onField("responseSubjectId").ignoreAnalyzer().matching(localVal).createQuery());
+				}
+				bool.must(inner.createQuery());
 			}
 
 			stringVal = (String) searchMetaData.getSqlParameters().get("fromAdmin");
@@ -133,15 +161,22 @@ public class LazyDataModelNOSQL extends LazyDataModel<Object[]> implements Seria
 			persistenceQuery.setProjection(FullTextQuery.THIS,FullTextQuery.SCORE);
 
 // execute search
-
 			persistenceQuery.setFirstResult(first);
-//			persistenceQuery.setMaxResults(pageSize);
+
+			if (pageSize!=-1) {
+				persistenceQuery.setMaxResults(pageSize);
+			} else {
+				setRowCount(persistenceQuery.getResultSize());
+				return Collections.emptyList();
+			}
 
 			List resultList = persistenceQuery.getResultList();
-
-			this.setRowCount(resultList.size());
+			//System.out.println("getResultSize ------> "+persistenceQuery.getResultSize());
+			//System.out.println("resultList ------> "+resultList.size());
 			return resultList;
 		} finally {
 			JPA.getUtil().closeConnection();		}
 	}
+	
+	
 }

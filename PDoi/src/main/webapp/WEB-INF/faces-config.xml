@@ -67,4 +67,7 @@
     </application>
 
     <!-- End Form specific setup -->
+    <lifecycle>
+	    <phase-listener id="nocache">indexbg.pdoi.system.CacheControlPhaseListener</phase-listener>
+	</lifecycle>
 </faces-config>

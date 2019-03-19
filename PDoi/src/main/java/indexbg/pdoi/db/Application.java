@@ -397,4 +397,7 @@ public class Application extends TrackableEntity {
 		this.appIdForView = appIdForView;
 	}	
 	
+	public String getIdentInfo() {
+		return "Рег.ном :"+applicationUri+" Подател: "+fullNames;
+	}
 }

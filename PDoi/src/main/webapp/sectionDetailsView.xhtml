@@ -20,26 +20,31 @@
 	
 		
 	<ui:define name="content">		
-	
-		<style>
-			a:hover {text-decoration:underline !important;}
-			
-			
-		</style>
 		
 		<h:form id="formSectD">
 			<p:importConstants type="indexbg.pdoi.system.Constants" var="IBConstants" className="indexbg.pdoi.system.Constants" />
 			<p:tooltip/>
-			<div class="container">		
+			
+			<div class="container-fluid box-blueDark" style=" padding: 1em 0;">
+				<div class="container">
+					
 					<div class="ui-g">
-						<div class="ui-g-12  ui-md-12 ui-lg-10">
-							<h:outputText id="idTitleD" value="#{sectDetails.publ.title}" escape="false" style="font-weight:bold; font-size:18px;" />
+						<div class="ui-g-12  ui-md-12 ui-lg-12">
+							<h1 class="article-title">
+								<h:outputText id="idTitleD" value="#{sectDetails.publ.title}" escape="false" style="color:#fff;" />
+							</h1>
 						</div>
-					</div>	
+					</div>
+					
+				</div>
+			</div>
+			<br/>
+			
+			<div class="container">		
+						
 					<div class="ui-g">
-						<div class="ui-g-12  ui-md-12 ui-lg-10">	
-							<h:outputText id="idFullTextD" value="#{sectDetails.publ.fullText}" escape="false"  style="text-align:justify;"/> 
-
+						<div class="ui-g-12  ui-md-12 ui-lg-12">	
+							<h:outputText styleClass="article-body" id="idFullTextD" value="#{sectDetails.publ.fullText}" escape="false" /> 
 						</div>
 					</div>
 						
@@ -60,22 +65,6 @@
 	
 
 		</h:form>
-		
-		<style type="text/css">
-			.singleLine
-			{
-			    text-wrap:none;
-			    white-space:nowrap;
-			    overflow:hidden;
-			    text-overflow:ellipsis;
-			}
-			.wrapLine
-			{
-			    text-wrap:true;
-			    white-space:wrap;
-			
-			}
-		</style>
 	
 	</ui:define>
 

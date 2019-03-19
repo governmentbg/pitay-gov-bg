@@ -2,6 +2,7 @@ package indexbg.pdoi.bean;
 
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -173,11 +174,13 @@ public class SectionDetailsBean  extends PDoiBean{
 				}
 			}
 			
+			String codedfilename = URLEncoder.encode(file.getFilename(), "UTF8");
+			
 			FacesContext facesContext = FacesContext.getCurrentInstance();
 		    ExternalContext externalContext = facesContext.getExternalContext();
 		    externalContext.setResponseHeader("Content-Type", "application/x-download");
 		    externalContext.setResponseHeader("Content-Length", file.getContent().length + "");
-		    externalContext.setResponseHeader("Content-Disposition", "attachment;filename=\"" + file.getFilename() + "\"");
+		    externalContext.setResponseHeader("Content-Disposition", "attachment;filename=\"" + codedfilename + "\"");
 			externalContext.getResponseOutputStream().write(file.getContent());
 			facesContext.responseComplete();
 			

@@ -39,12 +39,13 @@
 		<class>com.indexbg.ocr.dao.FilesNode</class>
 		<class>com.indexbg.ocr.dao.FilesTextNode</class>
 		<class>com.indexbg.ocr.dao.SubscriptionNode</class>
-
+		
+		<class>indexbg.pdoi.db.Mail</class>
 
 		<properties>
 			
 		  	
-		  	<!-- POSTGRE (Indexbg) -->
+		  	<!-- POSTGRE (Indexbg) 
 			<property name="db.vendor.name" value="postgresql" /> 
 			<property name="hibernate.connection.driver_class" value="org.postgresql.Driver" />
 			<property name="hibernate.connection.url" value="jdbc:postgresql://10.29.1.166:5432/msomdb" />
@@ -54,7 +55,7 @@
 			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
 			<property name="hibernate.current_session_context_class" value="thread" />
 			<property name="hibernate.show_sql" value="false" />
-			
+			-->
 			
 			<!-- POSTGRE (MS Test) 
 			<property name="db.vendor.name" value="postgresql" /> 
@@ -67,7 +68,7 @@
 			<property name="hibernate.current_session_context_class" value="thread" />
 			<property name="hibernate.show_sql" value="false" />
 			-->
-			<!-- POSTGRE (MS - Production) 
+			<!-- POSTGRE (MS - Production) -->
 			<property name="db.vendor.name" value="postgresql" /> 
 			<property name="hibernate.connection.driver_class" value="org.postgresql.Driver" />
 			<property name="hibernate.connection.url" value="jdbc:postgresql://172.23.117.142:5432/msomdb" />
@@ -76,9 +77,9 @@
 			<property name="hibernate.connection.isolation" value="2" />
 			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL94Dialect" />
 			<property name="hibernate.current_session_context_class" value="thread" />
-			<property name="hibernate.show_sql" value="false" />
-			-->
+			<property name="hibernate.show_sql" value="false" /> 
 			
+			  
 			
 			
 			<property name="hibernate.generate_statistics" value="false"/>
@@ -105,7 +106,15 @@
 
 			<!-- elasticsearch (ES)-->
 			<property name="hibernate.search.default.indexmanager" value="elasticsearch"/>
-			<property name="hibernate.search.default.elasticsearch.host" value="http://127.0.0.1:9200 http://10.29.1.169:9200"/>
+			<!-- Index  
+			 <property name="hibernate.search.default.elasticsearch.host" value="http://127.0.0.1:9200 http://10.29.1.169:9200"/>
+			 --> 
+			<!-- Ms Test -->
+			<!-- <property name="hibernate.search.default.elasticsearch.host" value="http://127.0.0.1:9200 http://10.29.1.169:9200"/> -->
+			<!-- MS Production -->
+			 <property name="hibernate.search.default.elasticsearch.host" value="http://172.23.117.142:9200 http://172.23.117.143:9200"/> 
+			
+			
 			<property name="hibernate.search.default.elasticsearch.index_schema_management_strategy" value="CREATE"/> <!-- MERGE,CREATE,RECREATE,RECREATE_DELETE,VALIDATE, NONE-->
 			<property name="hibernate.search.default.elasticsearch.connection_timeout" value="3000"/>
 			<property name="hibernate.search.default.elasticsearch.read_timeout" value="60000"/>

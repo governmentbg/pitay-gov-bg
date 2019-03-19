@@ -38,6 +38,18 @@ public class MyRunnableEgovMessages implements Job {
 		
 		
 		try {
+			
+			String linkAdmin = "";
+			String linkUser = "";
+			
+			Query queryl1 = JPA.getUtil().getEntityManager().createNativeQuery ("select option_value from system_options where option_label = 'linkToInternalSite'");
+			Object objl1  =  queryl1.getSingleResult();
+			if(objl1!=null) { linkAdmin =objl1.toString(); }
+			Query queryl2 = JPA.getUtil().getEntityManager().createNativeQuery ("select option_value from system_options where option_label = 'linkToExternalSite'");
+			Object objl2  = queryl2.getSingleResult();
+			if(objl2!=null) { linkUser =objl2.toString(); }
+			
+			
 			Query query = JPA.getUtil().getEntityManager().createNativeQuery ("select a.id id, em.msg_reg_dat date,  em.msg_reg_dat + '14 days' srok ,a.application_uri ,a.email ,a.response_subject_id ,a.applicant_type  ,a.full_names from egov_messages em, pdoi_application a where em.id = a.egov_mess_id and a.status = "
 					+ Constants.CODE_ZNACHENIE_STATUS_APP_EXPECTED_REG + " and em.msg_rn is not null and em.msg_reg_dat is not null");
 			
@@ -77,17 +89,17 @@ public class MyRunnableEgovMessages implements Job {
 					eventPodavane.setEventType(Constants.CODE_ZNACHENIE_TYPE_EVENT_CONFIRM_FROM_SYSTEM);
 					eventPodavane.setStatus(Constants.CODE_ZNACHENIE_STATUS_EVENT_COMPLETED);
 					
-					new EventDAO(-100L).save(eventPodavane);
+					new EventDAO(-100L, null).save(eventPodavane);
 					
 					// ismakvame imeilite na adminite na zadaljenite subekti -to
 					List<Object[]> dataForAdmin = new PublicationDAO(-100L).findAdminEmailByOrgCode(rsId); 
-					EgovOrganisations eOrg = new ResponseSubjectDao(-100L).responseSubjectSEOS(rsId);
+					EgovOrganisations eOrg = new ResponseSubjectDao(-100L,null).responseSubjectSEOS(rsId);
 					
 					
 					//уведомителните съобщения, които ще се изпращат
 					try {
 						String name = null;
-						String link = null;
+						
 						
 						if (appType.longValue() == Constants.CODE_ZNACHENIE_TYPE_APPLICANT_FIZ_LICE) { 
 							name = fullNames;										
@@ -98,7 +110,7 @@ public class MyRunnableEgovMessages implements Job {
 						
 						mailsTo = new ArrayList<>();
 						mailsTo.add(appEmail);			
-						t = new Thread(new MyRunnableMail(Constants.CODE_ZNACHENIE_SHABLON_POTV_APPLIC_ZDOI_S_SOES, mailsTo, appUri, eOrg.getAdministrativeBodyName(), srok, name, null, null, null, link));	
+						t = new Thread(new MyRunnableMail(Constants.CODE_ZNACHENIE_SHABLON_POTV_APPLIC_ZDOI_S_SOES, mailsTo, appUri, eOrg.getAdministrativeBodyName(), srok, name,  -2L, null, linkUser+idApp));	
 						t.start();
 						
 						
@@ -110,7 +122,7 @@ public class MyRunnableEgovMessages implements Job {
 									mailsToAdm.add(SearchUtils.asString(ea[1]));
 								}
 							}
-							t = new Thread(new MyRunnableMail(Constants.CODE_ZNACHENIE_SHABLON_POTV_ADMIN_ZDOI_S_SOES, mailsToAdm, appUri, eOrg.getAdministrativeBodyName(), srok, null, null, null, null, link));	
+							t = new Thread(new MyRunnableMail(Constants.CODE_ZNACHENIE_SHABLON_POTV_ADMIN_ZDOI_S_SOES, mailsToAdm, appUri, eOrg.getAdministrativeBodyName(), srok, null, -2L, null, linkAdmin+idApp));	
 							t.start();
 						
 						}

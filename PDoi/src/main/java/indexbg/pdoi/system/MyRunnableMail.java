@@ -1,6 +1,7 @@
 package indexbg.pdoi.system;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Properties;
 
 import javax.activation.DataSource;
@@ -8,21 +9,25 @@ import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 import javax.persistence.Query;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.indexbg.system.db.JPA;
-
+import com.indexbg.system.exceptions.DbErrorException;
 import com.indexbg.system.exceptions.InvalidParameterException;
 import com.indexbg.system.mail.Mailer3;
 import com.indexbg.system.mail.Mailer3.Content;
 import com.indexbg.system.utils.StringUtils;
+
+import indexbg.pdoi.db.Mail;
+import indexbg.pdoi.db.dao.MailerDAO;
 
 
 
 
 public class MyRunnableMail implements Runnable {
 	
-	private static final Logger LOGGER = Logger.getLogger(MyRunnableMail.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MyRunnableMail.class);
 	
 	private long codeShablon=0;
 	
@@ -35,20 +40,17 @@ public class MyRunnableMail implements Runnable {
 	private String eventName;
 	private String link;
 	
-	private Long idJournal;
 	private Long idUser;
 	
-	public MyRunnableMail(long codeShablon, ArrayList<String> mail, Long idJournal, Long idUser){
+	public MyRunnableMail(long codeShablon, ArrayList<String> mail, Long idUser){
 		 this.mail = mail;
 		 this.codeShablon = codeShablon;
-		 this.idJournal = idJournal;
 		 this.idUser = idUser;
 	}
 	
-	public MyRunnableMail(long codeShablon, ArrayList<String> mail, String uri, String zdoi, String srok, String nameLice, Long idJournal, Long idUser, String eventName, String link){
+	public MyRunnableMail(long codeShablon, ArrayList<String> mail, String uri, String zdoi, String srok, String nameLice,  Long idUser, String eventName, String link){
 		 this.mail = mail;
 		 this.codeShablon = codeShablon;
-		 this.idJournal = idJournal;
 		 this.idUser = idUser;
 		 this.uri = uri;
 		 this.zdoi = zdoi;
@@ -71,6 +73,7 @@ public class MyRunnableMail implements Runnable {
 		
 		String subject = "";
 		String cont = "";
+		String error=null;
 		
 		try {
 			
@@ -114,74 +117,49 @@ public class MyRunnableMail implements Runnable {
 			mailer3.sent(Content.HTML,mailProps,mailProps.getProperty("user.name"),mailProps.getProperty("user.password"),
 			       mailProps.getProperty("mail.from"), "PDOI",mail,subject, cont, new ArrayList<DataSource>());
 			
-			if(idJournal != null || idUser!=null){
-				insertJournal(cont);
-			}
 		} catch (AddressException e) {
 			LOGGER.error("Error sendMail AddressException", e);
-			if(idJournal != null || idUser!=null){
-				insertJournal(StringUtils.stack2string(e));
-			}
+			error=StringUtils.stack2string(e);
 		} catch (InvalidParameterException e) {
 			LOGGER.error("Error sendMail InvalidParameterException", e);
-			if(idJournal != null || idUser!=null){
-				insertJournal(StringUtils.stack2string(e));
-			}
+			error=StringUtils.stack2string(e);
 		} catch (MessagingException e) {
 			LOGGER.error("Error sendMail MessagingException", e);
-			if(idJournal != null || idUser!=null){
-				insertJournal(StringUtils.stack2string(e));
-			}
+			error=StringUtils.stack2string(e);
+			
 		} catch (Exception e) {
 			LOGGER.error("Error sendMail Exception", e);
-			if(idJournal != null || idUser!=null){
-				insertJournal(StringUtils.stack2string(e));
-			}
+			error=StringUtils.stack2string(e);
 		} finally {
+			//the record that will handle successful/ unsuccessful sent email
+			// the user email, email subject, email body, id_user, the date of send email, error string containg stacktrace , name lice ako e fizichesko lice
+			String mailtxt="";
+			for(String s:mail ){
+				if(mailtxt.length()>0) mailtxt+=";";
+				mailtxt+=s;
+			}
+			Mail mail=new Mail( idUser,  zdoi,  mailtxt,  nameLice,  subject,  cont, new Date(),  error,  uri);
+			System.out.println("idUser "+  this.idUser + " zdoi "+  zdoi+" mailtxt "+ mailtxt+"  nameLice "+nameLice+" subject  "
+			+ subject+" cont "+cont+"  date"+ new Date()+" error "+   error+"uri"+ uri);
+			
+			try {
+				
+				JPA.getUtil().begin();
+				new MailerDAO(idUser).save(mail);
+				JPA.getUtil().commit();
+				
+			} catch (DbErrorException e) {
+				LOGGER.error("Error saving mail Object", e);
+				JPA.getUtil().rollback();
+			} catch (Exception e) {
+				LOGGER.error("Error saving mail Object", e);
+				JPA.getUtil().rollback();
+			}
 			JPA.getUtil().closeConnection();
 		}
 	 }
 	 
-	  private void insertJournal(String dopInfo){
-		    
-//		  JPA.getUtil().begin();
-//		  try {
-//			    //------------------- журналиране ----------------------------------------------
-//			    JournalDAO jdao = new JournalDAO(Constants.PORTAL_USER_ID,  new SystemData());
-//			    
-//			    Journal j = jdao.findById(idJournal);
-//			    
-//			    if(j==null){
-//			    	j = new Journal();
-//			    	j.setCodeObject(Constants.CODE_OBJECT_USER);
-//			      	j.setCodeAction(Constants.CODE_DEIN_USER_REQUEST_PROMYANA_PASS);
-//			      	j.setIdObject(idUser);
-//			      	j.setIdUser((idUser==null?Constants.PORTAL_USER_ID:idUser));
-//			    }
-//				
-//		      	j.setDateAction(new Date());
-//		      	
-//		      	if(j.getIdentObject()==null){
-//		      		j.setIdentObject(dopInfo); 
-//		      	} else {
-//		      		j.setIdentObject(j.getIdentObject()+" <br/> Изпратено съобщение: <br/> "+dopInfo); 
-//		      	}
-//		      	
-//		      	jdao.save(j);
-//		      	JPA.getUtil().commit();
-//				//-----------------------------------------------------------------------------	
-//		  } catch (HibernateException e) {
-//				LOGGER.error("HibernateException pri zapis v journala - sendMail na potrebitel !", e);
-//				JPA.getUtil().rollback();
-//				//throw new WSFault("Error pri zapis v journala - sendMail na potrebitel", StringUtils.stack2string(e));
-//		  } catch (Exception e) {
-//				LOGGER.error("Exception pri zapis v journala - sendMail na potrebitel !", e);
-//				JPA.getUtil().rollback();
-//				//throw new WSFault("Error pri zapis v journala - sendMail na potrebitel", StringUtils.stack2string(e));
-//		  } finally {
-//			  JPA.getUtil().closeConnection();
-//		  }
-	  }
+	  
 	
 	
 	 public void run(){ 

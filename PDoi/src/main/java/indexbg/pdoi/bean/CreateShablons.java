@@ -7,11 +7,10 @@ import java.util.Date;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
 
-import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.aspose.words.SaveFormat;
 import com.indexbg.system.db.JPA;
@@ -32,7 +31,7 @@ import indexbg.pdoi.system.UserData;
 
 public class CreateShablons {
 
-	private static final Logger LOGGER = Logger.getLogger(CreateShablons.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CreateShablons.class);
 	
 	/** Взима шаблона на заявлението от базата
 	 * 
@@ -72,7 +71,7 @@ public class CreateShablons {
 	 * @throws ObjectNotFoundException
 	 * @throws Exception
 	 */
-	public Files createShablApplic(Application applic, SystemData sd, UserData ud) throws  DbErrorException, ObjectNotFoundException, Exception {
+	public Files createShablApplic(Application applic, List<Files> filesList, SystemData sd, UserData ud) throws  DbErrorException, ObjectNotFoundException, Exception {
 		
 		Files filledFileShablon = null;
 		
@@ -96,7 +95,12 @@ public class CreateShablons {
 			// 4. Създава попълнен документ от шаблона
 			com.aspose.words.Document docFilledShablon = null;
 			
-			docFilledShablon = fillApplicShablon(applic, docEmptyShablon, sd, ud);
+			String fileName = "zayavlenie_ZDOI";
+			SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+			
+			fileName =  fileName + "_" + sdf.format(applic.getDateReg())+".pdf";
+			
+			docFilledShablon = fillApplicShablon(applic, fileName, filesList, docEmptyShablon, sd, ud);
 			
 			ByteArrayOutputStream dstStream = new ByteArrayOutputStream();
 			//docFilledShablon.save(dstStream, SaveFormat.DOCX);
@@ -105,14 +109,9 @@ public class CreateShablons {
 			
 			if (bytearray !=null){ 
 				// 5. Създава файла от създадения MS Word документ					
-				String fileName = "application";
-				if (fileName == null || fileName.isEmpty())
-					fileName = shabl.getFilename();
 				
-				SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
-	
-				//fileName =  fileName.split("\\.")[0] + "_" + sdf.format(new Date())+".docx";
-				fileName =  fileName.split("\\.")[0] + "_" + sdf.format(new Date())+".pdf";
+//				if (fileName == null || fileName.isEmpty())
+//					fileName = shabl.getFilename();
 				
 				filledFileShablon = new Files();
 				filledFileShablon.setFilename(fileName);					
@@ -210,7 +209,7 @@ public class CreateShablons {
 	 * @throws ObjectNotFoundException
 	 * @throws Exception
 	 */
-	public com.aspose.words.Document fillApplicShablon(Application applic, com.aspose.words.Document pattern, SystemData sd, UserData ud) throws DbErrorException, ObjectNotFoundException, Exception {
+	private com.aspose.words.Document fillApplicShablon(Application applic, String fileName, List<Files> filesList, com.aspose.words.Document pattern, SystemData sd, UserData ud) throws ObjectNotFoundException, Exception {
 		
 		pattern.getRange().getBookmarks().get("zdoi").setText(sd.decodeItem(Constants.CODE_SYSCLASS_ADM_REGISTRY, applic.getResponseSubjectId(), 1L, new Date(), ud.getUserId()));
 		
@@ -231,21 +230,39 @@ public class CreateShablons {
 		
 		pattern.getRange().getBookmarks().get("darjava").setText(sd.decodeItem(Constants.CODE_SYSCLASS_COUNTRIES, applic.getCountry(), 1L, new Date(), ud.getUserId()));
 		
-		pattern.getRange().getBookmarks().get("oblast").setText(sd.decodeItem(Constants.CODE_SYSCLASS_EKATTE, applic.getRegion(), 1L, new Date(), ud.getUserId()));
+		if (applic.getRegion() != null) {
+			pattern.getRange().getBookmarks().get("oblast").setText("област " + sd.decodeItem(Constants.CODE_SYSCLASS_EKATTE, applic.getRegion(), 1L, new Date(), ud.getUserId()) + ", ");
+		} else {
+			pattern.getRange().getBookmarks().get("oblast").setText("");
+		}
 		
-		pattern.getRange().getBookmarks().get("obshtina").setText(sd.decodeItem(Constants.CODE_SYSCLASS_EKATTE, applic.getMunicipality(), 1L, new Date(), ud.getUserId()));
+		if (applic.getMunicipality() != null) {
+			pattern.getRange().getBookmarks().get("obshtina").setText("община " + sd.decodeItem(Constants.CODE_SYSCLASS_EKATTE, applic.getMunicipality(), 1L, new Date(), ud.getUserId()) + ", ");
+		} else {
+			pattern.getRange().getBookmarks().get("obshtina").setText("");
+		}
 		
-		pattern.getRange().getBookmarks().get("nasMesto").setText(sd.decodeItem(Constants.CODE_SYSCLASS_EKATTE, applic.getTown(), 1L, new Date(), ud.getUserId()));
+		if (applic.getTown() != null) {
+			pattern.getRange().getBookmarks().get("nasMesto").setText(sd.decodeItem(Constants.CODE_SYSCLASS_EKATTE, applic.getTown(), 1L, new Date(), ud.getUserId()) + ", ");
+		} else {
+			pattern.getRange().getBookmarks().get("nasMesto").setText("");
+		}
 		
-		pattern.getRange().getBookmarks().get("adres").setText(applic.getAddress());
+		if (applic.getAddress() != null && !applic.getAddress().isEmpty()) {
+			pattern.getRange().getBookmarks().get("adres").setText(applic.getAddress().trim());
+		} else {
+			pattern.getRange().getBookmarks().get("adres").setText("");
+		}
 		
-		pattern.getRange().getBookmarks().get("postCode").setText(applic.getPostCode());
+		if (applic.getPostCode() != null && !applic.getPostCode().isEmpty()) {
+			pattern.getRange().getBookmarks().get("postCode").setText(", п.к. " + applic.getPostCode());
+		} else {
+			pattern.getRange().getBookmarks().get("postCode").setText("");
+		}
 		
 		pattern.getRange().getBookmarks().get("zdoi1").setText(sd.decodeItem(Constants.CODE_SYSCLASS_ADM_REGISTRY, applic.getResponseSubjectId(), 1L, new Date(), ud.getUserId()));
 		
 		pattern.getRange().getBookmarks().get("zapitvane").setText(applic.getRequest());
-		
-		List<Files> filesList = new FilesDAO(ud.getUserId()).findByCodeObjAndIdObj(applic.getCodeMainObject(), applic.getId());
 		
 		SimpleDateFormat sdfDate = new SimpleDateFormat("dd.MM.yyyy");
 		int count = 1;
@@ -253,27 +270,29 @@ public class CreateShablons {
 		
 		if (!filesList.isEmpty()) {			
 			for (Files fileTmp : filesList) {
-				files.append(count);
-				files.append(". ");
-				if (fileTmp.getDescription() != null && !fileTmp.getDescription().isEmpty()) {
-					files.append(fileTmp.getDescription());
-				} else {
-					files.append(fileTmp.getFilename());
+				if(!fileName.equals(fileTmp.getFilename())) {
+					files.append(count);
+					files.append(". ");
+					if (fileTmp.getDescription() != null && !fileTmp.getDescription().isEmpty()) {
+						files.append(fileTmp.getDescription());
+					} else {
+						files.append(fileTmp.getFilename());
+					}
+					files.append(".");					
+					files.append("\n");
+					
+					count++;
 				}
-				files.append(".");					
-				files.append("\n");
-				
-				count++;
 			}
 			
 			pattern.getRange().getBookmarks().get("files").setText(files.toString());
 		}
 		
-		if(applic.getRegistrationDate()!=null){
-			pattern.getRange().getBookmarks().get("dataReg").setText(sdfDate.format(applic.getRegistrationDate()).toString() + " г.");			
-		} else {
-			pattern.getRange().getBookmarks().get("dataReg").setText("");//TODO dali netrqbva da se slaga tekst
-		}
+		pattern.getRange().getBookmarks().get("dataReg").setText("Дата на подаване: " + sdfDate.format(applic.getDateReg()).toString() + " г.");
+		
+		if(applic.getRegistrationDate()!=null){			
+			pattern.getRange().getBookmarks().get("registrationDate").setText("Дата на регистрация: " + sdfDate.format(applic.getRegistrationDate()).toString() + " г.");			
+		} 
 		
 		return pattern;			
 	}	

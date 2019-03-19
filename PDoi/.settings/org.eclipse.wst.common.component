@@ -4,16 +4,8 @@
         <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
-        <dependent-module archiveName="System3-0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/System3/System3">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="IndexUI-0.0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/IndexUI/IndexUI">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="OCR-0.0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/OCR/OCR">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <property name="java-output-path" value="/PDoi/target/classes"/>
         <property name="context-root" value="PDoi"/>
+        <property name="component.exclusion.patterns" value="**/log4j.properties,**/log4j2.xml"/>
     </wb-module>
 </project-modules>

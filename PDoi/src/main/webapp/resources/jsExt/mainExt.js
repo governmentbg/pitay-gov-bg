@@ -1,8 +1,9 @@
 
 let size = localStorage.getItem('font');
 if (size) {
-	document.querySelector('body').style.fontSize = size + 'px';
-	document.querySelector('.wrapper').style.fontSize = size + 'px';
+	$("body").css({ fontSize: size + 'px'});
+	//document.querySelector('body').style.fontSize = size + 'px';
+	//document.querySelector('.wrapper').style.fontSize = size + 'px';
 }
 
 let handicap = localStorage.getItem('handicap');
@@ -32,14 +33,17 @@ function font(increase) {
   } else {
     size >= min ? size-- : '';
   }
-  body.style.fontSize = size + 'px';
-  wrapper.style.fontSize = size + 'px';
+  //body.style.fontSize = size + 'px';
+  //wrapper.style.fontSize = size + 'px';
+  $("body").css({ fontSize: size + 'px'});
+  //$(".wrapper").css({ fontSize: size + 'px'});
   localStorage.setItem('font', size);
 }
 
 function resetFont() {
-	document.querySelector('body').style.fontSize = '12pt';
-	document.querySelector('.wrapper').style.fontSize = '12px';
+	//document.querySelector('body').style.fontSize = '16px';
+	//document.querySelector('.wrapper').style.fontSize = '16px';
+	$("body").css({fontSize: ""});
 	localStorage.removeItem('font');
 }
 

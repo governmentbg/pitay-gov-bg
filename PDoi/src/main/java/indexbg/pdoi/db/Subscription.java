@@ -2,6 +2,7 @@ package indexbg.pdoi.db;
 
 import static javax.persistence.GenerationType.SEQUENCE;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -14,6 +15,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import com.indexbg.system.db.TrackableEntity;
+import com.indexbg.system.exceptions.DbErrorException;
 
 import indexbg.pdoi.system.Constants;
 
@@ -116,6 +118,12 @@ public class Subscription extends TrackableEntity {
 	public Long getCodeMainObject() {
 		// TODO Auto-generated method stub
 		return Constants.CODE_OBJECT_SUBSCRIPTION;
+	}
+	
+	@Override
+	public String getIdentInfo() throws DbErrorException {
+		// TODO Auto-generated method stub
+		return "Абониране на потребител с id = " + userId + " на дата: " + new SimpleDateFormat("dd.MM.yyyy").format(dateFrom) + " към заявление с ид = " + applicationId ;
 	}
 	
 }

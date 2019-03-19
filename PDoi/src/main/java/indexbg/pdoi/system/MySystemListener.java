@@ -107,10 +107,13 @@ public class MySystemListener implements SystemEventListener {
 			this.scheduler = new StdSchedulerFactory("pdoi_quartz.properties").getScheduler();
 			
 			//добавяm joba за OCR към scheduler-а
-			//scheduleOCRJob();
+			scheduleOCRJob();
 			
 			// Проверява за обработени съобщения от ЕГОВ!
 			scheduleEgovJob();
+			
+			//Обновяване на задължени субекти
+			scheduleUpdateAdmRegisterEntries();
 			
 			boolean start = Boolean.valueOf(this.sd.getSettingsValue("quartz.scheduler.pdoi.start"));
 			
@@ -153,7 +156,7 @@ public class MySystemListener implements SystemEventListener {
 		JobKey jobKey = jobOCR.getKey();
 		this.scheduler.getListenerManager().addJobListener(new BaseJobListener("pdoi"), KeyMatcher.keyEquals(jobKey));
 		
-		if (this.scheduler.checkExists(trigOCR.getKey())) {
+		if (this.scheduler.checkExists(jobKey)) {
 			this.scheduler.rescheduleJob(trigOCR.getKey(), trigOCR);
 		} else {
 			this.scheduler.scheduleJob(jobOCR, trigOCR);
@@ -177,12 +180,34 @@ public class MySystemListener implements SystemEventListener {
 		JobKey jobKey = jobEgov.getKey();
 		this.scheduler.getListenerManager().addJobListener(new BaseJobListener("pdoiEgov"), KeyMatcher.keyEquals(jobKey));
 		
-		if (this.scheduler.checkExists(trigEgov.getKey())) {
+		if (this.scheduler.checkExists(jobKey)) {
 			this.scheduler.rescheduleJob(trigEgov.getKey(), trigEgov);
 		} else {
 			this.scheduler.scheduleJob(jobEgov, trigEgov);
 		}
 
+	}
+	
+	private void scheduleUpdateAdmRegisterEntries () throws SchedulerException {
+		
+		Trigger trigUpdateAdmRegEntries = TriggerBuilder.newTrigger().withIdentity("trigUpdateAdmRegEntries", "pdoi")
+				.withDescription("Тригер, който се стартира на всеки 24 часа").withSchedule(CronScheduleBuilder
+				.cronSchedule(this.sd.getSettingsValue("quartz.update.register.entries.trigger.cron"))).startAt(new Date(System.currentTimeMillis() + 17000L))
+				.build();
+		
+		JobDetail jobUpdateAdmRegEntries = JobBuilder.newJob(UpdateAdmRegisterEntries.class) //
+				.withIdentity("jobUpdateAdmRegEntries", "pdoi") //
+				.withDescription("Обновяване на задължени субекти") //
+				.build(); //
+		
+		JobKey jobKey = jobUpdateAdmRegEntries.getKey();
+		this.scheduler.getListenerManager().addJobListener(new BaseJobListener("pdoiUpdateAdmRegEntries"), KeyMatcher.keyEquals(jobKey));
+		
+		if (this.scheduler.checkExists(jobKey)) {
+			this.scheduler.rescheduleJob(trigUpdateAdmRegEntries.getKey(), trigUpdateAdmRegEntries);
+		} else {
+			this.scheduler.scheduleJob(jobUpdateAdmRegEntries, trigUpdateAdmRegEntries);
+		}
 	}
 	
 }

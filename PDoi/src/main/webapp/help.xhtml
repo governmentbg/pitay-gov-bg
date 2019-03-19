@@ -1,0 +1,153 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:c="http://java.sun.com/jstl/core"
+	  xmlns:jsf="http://xmlns.jcp.org/jsf"
+	  xmlns:p="http://primefaces.org/ui"
+	  xmlns:pe="http://primefaces.org/ui/extensions"
+	  xmlns:ibg="http://java.sun.com/jsf/composite/ibg">
+
+	<ui:composition template="/templateExt/mainExt.xhtml">
+		<ui:define name="title">#{labels['indexExt.title']}</ui:define>
+		
+		<!-- Navigation menu -->
+		<ui:define name="menu-items">
+			<ui:include src="/include/menuExt.xhtml"/>
+		</ui:define>
+		
+		
+		<ui:define name="content">
+	
+			<style>
+			
+			.banner {
+				background: linear-gradient(to right, rgba(0, 119, 179, 1) 0%, rgba(0, 119, 179, 1) 15%, rgba(0,119,179,0.5) 50%, rgba(0,119,179,0.5) 100%), url(./images/video.jpg);
+			    background-attachment: fixed;
+			    background-size: contain;
+			    padding: 1em 0;
+			}	
+			
+			body.color-blind .banner {
+				background: linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 15%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0.5) 100%), url(./images/video.jpg);
+			    background-attachment: fixed;
+			    background-size: contain;
+			    filter: grayscale(1);
+			}
+			
+			.help-button {
+				margin: 1em auto;
+				padding: 0.6em 1em !important;
+			}
+			
+			body.color-blind .help-button {
+				padding: 0.6em 1em !important;
+			}
+			
+			body.color-blind .video-button-active .icon {
+				color: black;
+			}
+			
+			
+			.video-button-active {
+				background-color: #FFB300 !important;
+				pointer-events: none;
+			}
+			
+			.video-button-active:hover {
+				background-color: #E8A300 !important;
+			}
+			
+			body.color-blind .video-button-active {
+				background-color: white !important;
+				color: black !important;
+			}
+			
+			.pdf-button {
+				background-color: #EE6E73 !important;
+			}
+			
+			.pdf-button:hover {
+				background-color: #D96469 !important;
+			}
+			
+			.pdf-button a {
+				color: white;
+			}
+			
+			.video-title {
+			    font-size: 2em;
+    			text-align: right;
+			}
+			
+			</style>
+		
+			<script>
+				$(document).on('click', '.video-button', function() {
+					$("#video-player").css("display", "block");
+					$("#video-player").children().attr("src", "${facesContext.externalContext.requestContextPath}/resources/docs/" + this.id);
+					$("#video-player")[0].load();
+					$(".video-button-active").removeClass("video-button-active");
+					$(this).addClass("video-button-active");
+					$(".video-title").empty().append($(this).children().text());
+				});
+			</script>
+			
+			<h:form style="height: 100%">
+			
+				<div class="container-fluid box-blueDark banner">
+					<div class="container">
+						<div class="ui-g">
+							<div class="ui-g-12  ui-md-12 ui-lg-12">
+							<div class="page-title">
+								<div class="title-icon">
+										<div class="icon fas fa-video"></div>
+										<div>#{labels['general.titleHelp']}</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<br/>
+				
+				<div class="container">
+					
+					<!-- Video tabs -->
+					<div class="ui-g">
+						
+						<div class="ui-g-12 ui-md-3">
+							<div id="user_reg.mp4" class="ui-sm-5 ui-md-8 ui-button help-button video-button">
+								<span>#{labels['general.videoRegister']}</span>
+								<span style="margin-right: 0.5em;float: right;"><i class="icon fas fa-video"></i></span>
+							</div>
+							
+							<div id="podavane_zaiavlenie.mp4" class="ui-sm-5 ui-md-8 ui-button help-button video-button">
+								<span>#{labels['general.videoSubmit']}</span>
+								<span style="margin-right: 0.5em; float: right;"><i class="icon fas fa-video"></i></span>
+							</div>
+							
+							<a class="ui-sm-5 ui-md-8 ui-button help-button pdf-button" href="resources/docs/User_Guide v3.pdf" target="_blank">
+								<span>Инструкция в ПДФ</span>
+								<span style="margin-right: 0.5em; float: right;"><i class="icon fas fa-file-pdf-o"></i></span>
+							</a>
+							
+						</div>
+						
+						
+						<div class="ui-g-12 ui-md-9">
+							<video style="display: none;" width="100%" height="100%" controls="true" id="video-player">
+						  		<source src="" type="video/mp4"/>Your browser does not support HTML5 video.
+							</video>
+							<div class="video-title"></div>
+						</div>
+						
+					</div>
+				</div>
+			
+			</h:form>
+		</ui:define>
+	</ui:composition>
+	
+</html>	

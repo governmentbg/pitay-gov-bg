@@ -222,6 +222,8 @@
 						<h:panelGroup rendered="#{events.showAttr.containsKey(events.filesCode)}">
 							<p:panel header="#{labels['general.attachedDoc']}" style="margin-bottom:10px">
 							
+								<h:outputText value="#{labels['general.filesForAttaching']}" />
+							
 								<f:facet name="actions">
 								
 									<p:fileUpload id="filesUpload" fileUploadListener="#{events.uploadFileListener}"  label="" skinSimple="true" update="fileList" auto="true" 

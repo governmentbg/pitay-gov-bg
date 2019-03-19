@@ -11,8 +11,10 @@ import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
 import javax.persistence.Query;
 
-import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.indexbg.system.db.JPA;
 import com.indexbg.system.exceptions.DbErrorException;
 import com.indexbg.system.exceptions.InvalidParameterException;
@@ -38,7 +40,7 @@ public class Locker extends PDoiBean implements ActionListener {
 	 * 
 	 */
 	private static final long serialVersionUID = -5520403088715949562L;
-	static final Logger LOGGER = Logger.getLogger(Locker.class);
+	static final Logger LOGGER = LoggerFactory.getLogger(Locker.class);
 
 	/*
 	 * Този метод трябва да се извика (но не е задължително) от страниците по

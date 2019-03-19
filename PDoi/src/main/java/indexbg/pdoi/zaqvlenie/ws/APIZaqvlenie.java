@@ -42,7 +42,7 @@ public class APIZaqvlenie {
 		Application ap=null;
 		try {
 			
-			ap=new ApplicationDAO(-1L).findByURI(uri);
+			ap=new ApplicationDAO(-1L, null).findByURI(uri);
 
 		} catch (DbErrorException e) {
 			LOGGER.error(e.getMessage(),e);

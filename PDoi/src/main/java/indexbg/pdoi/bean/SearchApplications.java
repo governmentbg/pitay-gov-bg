@@ -6,22 +6,32 @@ import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpSession;
 
 import com.indexbg.system.pagination.LazyDataModelNOSQL;
+
+import org.apache.xmlbeans.impl.common.SystemCache;
+import org.primefaces.PrimeFaces;
+import org.primefaces.component.datagrid.DataGrid;
+import org.primefaces.context.RequestContext;
 import org.primefaces.model.LazyDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.indexbg.system.db.JPA;
+import com.indexbg.system.db.dto.SystemClassif;
 import com.indexbg.system.exceptions.ObjectNotFoundException;
 import com.indexbg.system.pagination.LazyDataModelSQL2Array;
 import com.indexbg.system.pagination.SelectMetadata;
 import com.indexbg.system.utils.DateUtils;
 import com.indexbg.system.utils.JSFUtils;
+import com.indexbg.system.utils.SearchUtils;
 
 import indexbg.pdoi.db.dao.ApplicationDAO;
 import indexbg.pdoi.system.Constants;
 import indexbg.pdoi.system.PDoiBean;
+import indexbg.pdoi.system.SystemData;
 
 /**
  * @author idineva
@@ -49,12 +59,14 @@ public class SearchApplications extends PDoiBean {
 	private Date dateFrom;
 	private Date dateTo;
 	private Long status;
-	private String zadaljenSubText;	
+	private String zadaljenSubText = "";
+	private List<Long> selectedSubj=new ArrayList<Long>();
 	private Long responseSubj;
 	private String tematika = "";
 	private String nomer;
 	private List<Long> selectedThemas=new ArrayList<Long>();
 
+	private Long pageHidden;
 	
 	public SearchApplications() {
 		
@@ -63,12 +75,13 @@ public class SearchApplications extends PDoiBean {
 	/**
 	 * Инициализира променливите в класа.
 	 */
+	@SuppressWarnings("unchecked")
 	@PostConstruct
 	public void initData(){
 			try {
 		   
 				userID = getUserData().getUserId();		
-				appDao =  new ApplicationDAO( userID);				
+				appDao =  new ApplicationDAO(userID, getSystemData());				
 			} catch (ObjectNotFoundException e) {
 				LOGGER.error("Грешка при работа със системата!!!", e);
 				JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString(Constants.beanMessages, "general.exception"));
@@ -77,41 +90,105 @@ public class SearchApplications extends PDoiBean {
 				LOGGER.error("Грешка при работа със системата!!!", e);
 				JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString(Constants.beanMessages, "general.exception"));
 			}
+			
+			//--------- param -------
+			Map<String, Object> params  = (Map<String, Object>) getSessionScopeValue("sappSMDAttr");	
+			
+			if(params!=null){
+				try {
+					SelectMetadata smd = new SelectMetadata();
+					smd.setSqlParameters(params);
+					appList = new LazyDataModelNOSQL(smd, null);	
+					
+					dateFrom = (Date) params.get("dateFrom");
+					dateTo = (Date) params.get("dateTo");
+					text = (String) params.get("text");
+					status = (Long) params.get("status");
+					tematika = (String) params.get("tematika");
+					selectedThemas = (List<Long>) params.get("selectedThemas");
+					responseSubj = (Long) params.get("responseSubj");
+					selectedSubj = (List<Long>) params.get("selectedSubj");			
+					nomer = (String) params.get("nomer");					
+					period =  (Long) getSessionScopeValue("period");
+					zadaljenSubText = (String) getSessionScopeValue("zadaljenSubText");
+					
+					
+					if(dateFrom!=null||dateTo!=null|| status!=null || (selectedThemas!=null && !selectedThemas.isEmpty()) || (nomer!=null && !nomer.isEmpty())) {
+						PrimeFaces.current().executeScript("$('#advanced-search').slideToggle();");
+					}
+					
+				} catch (Exception e) {
+					LOGGER.error("Грешка при работа със системата!!!", e);	
+					JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString("beanMessages","general.exception"));					
+				
+				} finally {
+					JPA.getUtil().closeConnection();
+				}
+								
+				
+			}
 	}
 	
+	public void changePage() {
+		
+		FacesContext context = FacesContext.getCurrentInstance();
+		HttpSession session = (HttpSession) context.getExternalContext().getSession(false);		
+		
+		session.removeAttribute("sappPage");
+		
+		DataGrid d = (DataGrid) FacesContext.getCurrentInstance().getViewRoot().findComponent("appFilterForm:tbl");
+		
+		if(d!=null) { 
+			
+			addSessionScopeAttribute("sappPage", d.getFirst());		
+		}
+	}
 	
 	/**
 	 *  Извежда списък с резултати по зададени критерии.
 	 */
 	public void actionSearch(){
-		try {
 		
-			SelectMetadata smd;
-//				smd = appDao.findApplications(dateFrom, dateTo,status,responseSubj,text,nomer,selectedThemas,null,false,true,null);
-			smd = new SelectMetadata();
-			Map<String, Object> params = new HashMap();
-			smd.setSqlParameters(params);
-			params.put("dateFrom", dateFrom);
-			params.put("dateTo", dateTo);
-			params.put("text", text);
-			params.put("status",status);
-			params.put("tematika",tematika);
-			params.put("responseSubj",responseSubj);
-			params.put("nomer",nomer);
-
-
-//			String defaultSortColumn = "A7";//A7 ,A0
-			appList = new LazyDataModelNOSQL(smd, null);
-						
-//		} catch (DbErrorException e) {
-//			LOGGER.error("Грешка при търсене на заявления! ", e);
-//			JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString("beanMessages", "general.errDataBaseMsg"));
-		} catch (Exception e) {
-			LOGGER.error("Грешка при работа със системата!!!", e);	
-			JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString("beanMessages","general.exception"));					
-		
-		}finally {
-			JPA.getUtil().closeConnection();
+		if(dateFrom == null && dateTo ==null && status == null && (selectedSubj==null || selectedSubj.isEmpty()) && (selectedThemas == null || selectedThemas.isEmpty())
+				&& (nomer==null|| "".equals(nomer)) && (text==null|| "".equals(text)) ) {
+			
+			JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString("beanMessages","general.insertParameters"));					
+		}else {
+			try {
+				
+				SelectMetadata smd;
+	//				smd = appDao.findApplications(dateFrom, dateTo,status,responseSubj,text,nomer,selectedThemas,null,false,true,null);
+				smd = new SelectMetadata();
+				Map<String, Object> params = new HashMap();
+				smd.setSqlParameters(params);
+				
+				params.put("dateFrom", dateFrom);
+				params.put("dateTo", dateTo);
+				params.put("text", text);
+				params.put("status",status);
+				params.put("tematika",tematika);
+				params.put("selectedThemas",selectedThemas);
+				params.put("responseSubj",responseSubj);
+				params.put("selectedSubj",selectedSubj);
+				params.put("nomer",nomer);
+									
+				addSessionScopeAttribute("sappSMDAttr", params);
+				addSessionScopeAttribute("zadaljenSubText", zadaljenSubText);
+				addSessionScopeAttribute("period", period);
+				
+	//			String defaultSortColumn = "A7";//A7 ,A0
+				appList = new LazyDataModelNOSQL(smd, null);
+				
+	//		} catch (DbErrorException e) {
+	//			LOGGER.error("Грешка при търсене на заявления! ", e);
+	//			JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString("beanMessages", "general.errDataBaseMsg"));
+			} catch (Exception e) {
+				LOGGER.error("Грешка при работа със системата!!!", e);	
+				JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString("beanMessages","general.exception"));					
+			
+			}finally {
+				JPA.getUtil().closeConnection();
+			}
 		}
 	}
 	
@@ -147,11 +224,22 @@ public class SearchApplications extends PDoiBean {
 		nomer = "";
 		tematika = "";
 		selectedThemas = new ArrayList<Long>();
+		selectedSubj = new ArrayList<Long>();
+		
+		//mahame zapazenite parametri ot sesiqta
+		FacesContext context = FacesContext.getCurrentInstance();
+		HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
+		session.removeAttribute("sappSMDAttr");
+		session.removeAttribute("zadaljenSubText");
+		session.removeAttribute("period");
+		session.removeAttribute("sappPage");
+		
+		
 	}
 	
 	
 	public LazyDataModel getAppList() {
-		return appList;
+		return appList;		
 	}
 
 	public void setAppList(LazyDataModel appList) {
@@ -162,7 +250,7 @@ public class SearchApplications extends PDoiBean {
 		return new Date();
 	}
 
-	public String getText() {
+	public String getText() {		
 		return text;
 	}
 
@@ -170,7 +258,7 @@ public class SearchApplications extends PDoiBean {
 		this.text = text;
 	}
 
-	public Long getUserID() {
+	public Long getUserID() {		
 		return userID;
 	}
 
@@ -249,6 +337,34 @@ public class SearchApplications extends PDoiBean {
 	public void setSelectedThemas(List<Long> selectedThemas) {
 		this.selectedThemas = selectedThemas;
 	}
+	
+	public List<Long> getSelectedSubj() {
+		return selectedSubj;
+	}
 
+	public void setSelectedSubj(List<Long> selectedSubj) {
+		this.selectedSubj = selectedSubj;
+	}
 
+	public Long getPageHidden() {
+		if(pageHidden==null) { pageHidden=1L;
+			if(getSessionScopeValue("sappPage") != null) { 
+				
+				
+				DataGrid d = (DataGrid) FacesContext.getCurrentInstance().getViewRoot().findComponent("appFilterForm:tbl");
+				
+				if(d!=null) { 
+					
+					int page = (int) getSessionScopeValue("sappPage");
+					d.setFirst(page); 
+				}
+			}
+		}
+		return pageHidden;
+	}
+
+	public void setPageHidden(Long pageHidden) {
+		this.pageHidden = pageHidden;
+	}	
+	
 }

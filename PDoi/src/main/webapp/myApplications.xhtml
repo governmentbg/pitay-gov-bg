@@ -15,33 +15,67 @@
 		<ui:include src="/include/menuExt.xhtml" />
 	</ui:define>
 
-	<ui:define name="content">
+	<ui:define name="content">	
 	
-		<style>			
+		<style>		
+		
+			.banner {
+				background: linear-gradient(to right, rgba(0, 119, 179, 1) 0%, rgba(0, 119, 179, 1) 15%, rgba(0,119,179,0.5) 50%, rgba(0,119,179,0.5) 100%), url(./images/background.jpg);
+			    background-attachment: fixed;
+			    background-size: contain;
+			    padding: 1em 0;
+			}	
 			
-			.ui-link {
-				  color:#039be5;				
-				}			 
-			
-			.ui-link:hover {text-decoration:underline !important; color:#039be5; cursor: pointer;}
+			body.color-blind .banner {
+				background: linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 15%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0.5) 100%), url(./images/background.jpg);
+			    background-attachment: fixed;
+			    background-size: contain;
+			    filter: grayscale(1);
+			}	
+					 
 			.ui-datagrid-content {
 				border: none;
 			}
+			
+			.ui-state-default .ui-icon {
+				background-image: url(/PDoi/javax.faces.resource/images/ui-icons_ffffff_256x240.png.jsf?ln=primefaces-bootstrap);
+			}
 		</style>	
-	
+		
+		<h:form>
+			 <p:remoteCommand name="rcMyApp" actionListener="#{myApplications.changePageMyApp}" immediate="true" update="@this"/> 
+			 <p:remoteCommand name="rcSubsApp" actionListener="#{myApplications.changePageSubsApp}" immediate="true" update="@this"/> 
+		</h:form>
+		
 		<h:form id="appFilterForm">
 				
 			<p:importConstants type="indexbg.pdoi.system.Constants" var="IBConstants" className="indexbg.pdoi.system.Constants"/>
 			<p:importConstants type="com.indexbg.system.SysConstants" var="IBConstantsSys" className="com.indexbg.system.SysConstants" />
-
-			<div class="container">
+			
+			<h:inputHidden value="#{myApplications.initTables}" />
+			
+			<div class="container-fluid box-blueDark banner">
+				<div class="container">
+					<div class="ui-g">
+						<div class="ui-g-12  ui-md-12 ui-lg-12">
+						<div class="page-title">
+							<div class="title-icon">
+									<div class="icon fas fa-file-alt"></div>
+									<div>#{labels['menuExt.myZajav']}</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<br/>
+			
+			<div class="container"> 
 
 				<p:outputPanel id="panelData">	
-						
-					<br />
 					
 					<div class="ui-g-12 ui-md-12 ui-lg-12 cc-right" style="padding: 0;">
-						<p:menuButton value="#{labels['general.sort']}" >
+						<p:menuButton value="#{labels['general.sort']}" rendered="#{myApplications.appList!=null and myApplications.appList.getRowCount()>0}">
 					        <p:menuitem value="#{labels['responseSubjects.title']}" actionListener="#{myApplications.actionSort('A3')}" update="tbl" />		
 					        <p:menuitem value="#{labels['general.dataPodavane']}" actionListener="#{myApplications.actionSort('A7')}" update="tbl" />				     		     
 					    </p:menuButton>
@@ -52,6 +86,7 @@
 							<h:outputText value="#{labels['adminApp.title']}: #{myApplications.appList.getRowCount()}" />
 							
 						</ui:define>
+						
 						<ui:define name="panel-content">
 			 						 	
 					 	 <p:dataGrid id="tbl" var="row" rendered="#{myApplications.appList!=null}" columns="1" layout="grid" 
@@ -62,11 +97,12 @@
 							rowsPerPageTemplate="2,5,10,15" paginatorPosition="bottom"
 							paginator="true" style="margin-bottom:20px; border:0px" >
 							
-							  <p:panel >
+							  <p:panel>
 						            <h:panelGrid columns="1" style="width:100%">
-						               <p:link outcome="applicationFormExt.jsf" >
-											<p:outputLabel  value="#{row[4]}" style="color:#039be5;font-size:large"/>
-											<f:param name="idObj" value="#{row[0]}" />	
+						               <p:link outcome="applicationFormExt.jsf" onclick="rcMyApp()">
+											<p:outputLabel  value="#{row[4]}"/>
+											<f:param name="idObj" value="#{row[0]}" />
+											<f:param name="baBtn" value="myApplications"/>		
 										</p:link>
 									 	<h:panelGroup>
 									 	 	<h:outputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_ADM_REGISTRY, row[3], myApplications.currentLang, myApplications.today, myApplications.userID)}" />
@@ -87,7 +123,7 @@
 											  	
 										    |
 										    <h:outputText value="#{labels['general.status']}: " />
-										   <h:outputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_STATUS_APPLICATION, row[5], searchApplications.currentLang, searchApplications.today, searchApplications.userID)}" />
+										   <h:outputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_STATUS_APPLICATION, row[5], myApplications.currentLang, myApplications.today, myApplications.userID)}" />
 						                
 						                </h:panelGroup>
 						            </h:panelGrid>
@@ -100,7 +136,7 @@
 			        
 			        
 			        <div class="ui-g-12 ui-md-12 ui-lg-12 cc-right" style="padding: 0;">
-						<p:menuButton value="#{labels['general.sort']}" >
+						<p:menuButton value="#{labels['general.sort']}" rendered="#{myApplications.subsList!=null and myApplications.subsList.getRowCount()>0}">
 					        <p:menuitem value="#{labels['responseSubjects.title']}" actionListener="#{myApplications.actionSortSubs('A3')}" update="tbl1" />		
 					        <p:menuitem value="#{labels['general.dataPodavane']}" actionListener="#{myApplications.actionSortSubs('A7')}" update="tbl1" />				     		     
 					    </p:menuButton>
@@ -122,11 +158,12 @@
 							rowsPerPageTemplate="2,5,10,15" paginatorPosition="bottom"
 							paginator="true" style="margin-bottom:20px; border:0px" >
 							
-							  <p:panel >
+							  <p:panel>
 						            <h:panelGrid columns="1" style="width:100%">
-						               <p:link outcome="applicationView.jsf" >
-											<p:outputLabel  value="#{row[4]}" style="color:#039be5;font-size:large"/>
+						               <p:link outcome="applicationView.jsf" onclick="rcSubsApp()">
+											<p:outputLabel  value="#{row[4]}"/>
 											<f:param name="idObj" value="#{row[0]}" />	
+											<f:param name="baBtn" value="myApplications"/>	
 										</p:link>
 						 				<h:panelGroup>
 						                	<h:outputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_ADM_REGISTRY, row[3], myApplications.currentLang, myApplications.today, myApplications.userID)}" />
@@ -147,7 +184,7 @@
 											  	
 										    |
 										    <h:outputText value="#{labels['general.status']}: " />
-										   <h:outputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_STATUS_APPLICATION, row[5], searchApplications.currentLang, searchApplications.today, searchApplications.userID)}" />
+										   <h:outputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_STATUS_APPLICATION, row[5], myApplications.currentLang, myApplications.today, myApplications.userID)}" />
 						                
 						                </h:panelGroup>
 						            </h:panelGrid>

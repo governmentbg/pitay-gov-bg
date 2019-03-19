@@ -1,6 +1,7 @@
 package indexbg.pdoi.db.dao;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -11,8 +12,10 @@ import javax.persistence.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.indexbg.system.SysConstants;
 import com.indexbg.system.db.JPA;
 import com.indexbg.system.db.TrackableDAO;
+import com.indexbg.system.db.dto.SystemJournal;
 import com.indexbg.system.exceptions.DbErrorException;
 import com.indexbg.system.pagination.SelectMetadata;
 import com.indexbg.system.utils.DialectConstructor;
@@ -21,14 +24,18 @@ import com.indexbg.system.utils.StringUtils;
 
 import indexbg.pdoi.db.Application;
 import indexbg.pdoi.system.Constants;
+import indexbg.pdoi.system.SystemData;
 
 public class ApplicationDAO extends TrackableDAO<Application> {	
 
 	static final Logger LOGGER = LoggerFactory.getLogger(ApplicationDAO.class);
 	
-	public ApplicationDAO (Long userId){
+	private SystemData sd;
+	
+	public ApplicationDAO (Long userId, SystemData sd){
 		
-		super(userId);		
+		super(userId);
+		this.sd = sd;
 	}
 	
 	/** Ъпдейтва определени полета на заявлението спрямо подадените параметри
@@ -43,7 +50,7 @@ public class ApplicationDAO extends TrackableDAO<Application> {
 		
 		try {
 
-			Query query = createNativeQuery("update pdoi_application set response_subject_id = ?, user_last_mod = ?, date_last_mod = ? ,status = ?, status_date = ? where id = ?"); 
+			Query query = createNativeQuery("update pdoi_application set response_subject_id = ?, user_last_mod = ?, date_last_mod = ?, status = ?, status_date = ? where id = ?"); 
 			
 			query.setParameter(1, responseSubject);			
 			query.setParameter(2, userLastMod);
@@ -53,6 +60,19 @@ public class ApplicationDAO extends TrackableDAO<Application> {
 			query.setParameter(6, id);
 
 			query.executeUpdate();
+			
+			SystemJournal j = new SystemJournal();
+			
+			j.setCodeObject(Constants.CODE_OBJECT_APPLICATION); // на заявлението
+			j.setIdObject(id); // ид на заявление
+			j.setCodeAction(SysConstants.CODE_DEIN_KOREKCIA); // кода на корекция - CODE_DEIN_KOREKCIA
+			j.setDateAction(new Date()); // датата на промяната
+			j.setIdUser(getUserId()); // ид на потребител
+			j.setIdentObject("Променя се задълженият субект на: " + sd.decodeItem(Constants.CODE_SYSCLASS_ADM_REGISTRY, responseSubject, Constants.CODE_DEFAULT_LANG, new Date(), getUserId()) 
+							+ " и статуса на: " + sd.decodeItem(Constants.CODE_SYSCLASS_STATUS_APPLICATION, Constants.CODE_ZNACHENIE_STATUS_APP_EXPECTED_REG, Constants.CODE_DEFAULT_LANG, new Date(), getUserId()) 
+							+ " на дата: " + new SimpleDateFormat("dd.MM.yyyy").format(new Date()) + " към заявление с ид = " + id); // какво се променя
+			
+			getEntityManager().persist(j);			
 
 		} catch (Exception e) {
 			throw new DbErrorException("Възникна грешка при ъпдейтване на задълженото лице на заявлението от събитието!!!", e);
@@ -72,8 +92,12 @@ public class ApplicationDAO extends TrackableDAO<Application> {
 	public void updateStatusFromEvent(Long status, Date dateStatus, String reshenie, Long userLastMod, Date dateLastMod, Long id, Long appIdForView) throws DbErrorException {
 	
 		try {
-	
-			Query query = createNativeQuery("update pdoi_application set status = ?1, status_date = ?2, response_date = ?2, response = ?3, user_last_mod = ?4, date_last_mod = ?5, app_id_for_view = ?7 where id = ?6"); 
+			
+			String sqlAppView = "";
+			if(appIdForView!=null) {
+				sqlAppView = ", app_id_for_view = ?7";
+			}
+			Query query = createNativeQuery("update pdoi_application set status = ?1, status_date = ?2, response_date = ?2, response = ?3, user_last_mod = ?4, date_last_mod = ?5" + sqlAppView + " where id = ?6"); 
 			
 			query.setParameter(1, status);
 			query.setParameter(2, dateStatus);
@@ -81,9 +105,23 @@ public class ApplicationDAO extends TrackableDAO<Application> {
 			query.setParameter(4, userLastMod);
 			query.setParameter(5, dateLastMod);
 			query.setParameter(6, id);
-			query.setParameter(7, appIdForView);
-	
+			if(appIdForView!=null) {
+				query.setParameter(7, appIdForView);
+			}
 			query.executeUpdate();
+			
+			SystemJournal j = new SystemJournal();
+			
+			j.setCodeObject(Constants.CODE_OBJECT_APPLICATION); // на заявлението
+			j.setIdObject(id); // ид на заявление
+			j.setCodeAction(SysConstants.CODE_DEIN_KOREKCIA); // кода на корекция - CODE_DEIN_KOREKCIA
+			j.setDateAction(new Date()); // датата на промяната
+			j.setIdUser(getUserId()); // ид на потребител
+			j.setIdentObject("Променя се статуса на: " + sd.decodeItem(Constants.CODE_SYSCLASS_STATUS_APPLICATION, status, Constants.CODE_DEFAULT_LANG, new Date(), getUserId()) 
+							+ " на дата: " + new SimpleDateFormat("dd.MM.yyyy").format(dateStatus) + " към заявление с ид = " + id
+							+ " и крайното решение е: " + reshenie); // какво се променя
+			
+			getEntityManager().persist(j);
 	
 		} catch (Exception e) {
 			throw new DbErrorException("Възникна грешка при ъпдейтване на статуса на заявлението от събитието!!!", e);
@@ -110,6 +148,17 @@ public class ApplicationDAO extends TrackableDAO<Application> {
 			query.setParameter(4, id);
 	
 			query.executeUpdate();
+			
+			SystemJournal j = new SystemJournal();
+			
+			j.setCodeObject(Constants.CODE_OBJECT_APPLICATION); // на заявлението
+			j.setIdObject(id); // ид на заявление
+			j.setCodeAction(SysConstants.CODE_DEIN_KOREKCIA); // кода на корекция - CODE_DEIN_KOREKCIA
+			j.setDateAction(new Date()); // датата на промяната
+			j.setIdUser(getUserId()); // ид на потребител
+			j.setIdentObject("Променя се срока на: " + new SimpleDateFormat("dd.MM.yyyy").format(responseEndTime) + " на заявление с ид = " + id); // какво се променя
+			
+			getEntityManager().persist(j);			
 	
 		} catch (Exception e) {
 			throw new DbErrorException("Възникна грешка при ъпдейтване на крайния срок на заявлението от събитието!!!", e);
@@ -143,6 +192,21 @@ public class ApplicationDAO extends TrackableDAO<Application> {
 			query.setParameter(7, id);
 	
 			query.executeUpdate();
+			
+			SystemJournal j = new SystemJournal();
+			
+			j.setCodeObject(Constants.CODE_OBJECT_APPLICATION); // на заявлението
+			j.setIdObject(id); // ид на заявление
+			j.setCodeAction(SysConstants.CODE_DEIN_KOREKCIA); // кода на корекция - CODE_DEIN_KOREKCIA
+			j.setDateAction(new Date()); // датата на промяната
+			j.setIdUser(getUserId()); // ид на потребител
+			j.setIdentObject("Променя се статуса на: " + sd.decodeItem(Constants.CODE_SYSCLASS_STATUS_APPLICATION, status, Constants.CODE_DEFAULT_LANG, new Date(), getUserId()) 
+							+ " на дата: " + new SimpleDateFormat("dd.MM.yyyy").format(dateStatus)
+							+ " и се слага дата на регистрация: " + new SimpleDateFormat("dd.MM.yyyy").format(registrationDate) 
+							+ " и срок: " + new SimpleDateFormat("dd.MM.yyyy").format(responseEndTime)
+							+ " към заявление с ид = " + id); // какво се променя
+			
+			getEntityManager().persist(j);
 	
 		} catch (Exception e) {
 			throw new DbErrorException("Възникна грешка при ъпдейтване на заявлението от събитието за потвърждаване от деловодна система!!!", e);

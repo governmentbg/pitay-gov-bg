@@ -70,19 +70,7 @@
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-slf4j-impl</artifactId>
 			<version>2.6.2</version>
-			
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-web</artifactId>
-			<version>2.6.2</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.logging.log4j</groupId>
-					<artifactId>log4j-api</artifactId>
-				</exclusion>
-				
-			</exclusions>
+			<scope>${my.scope}</scope>
 		</dependency>
 		
 		<dependency>
@@ -198,7 +186,7 @@
 		    <artifactId>h2</artifactId>
 		    <version>1.4.192</version>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>com.indexbg.system</groupId>
 			<artifactId>System3</artifactId>
 			<version>0.1</version>
@@ -209,6 +197,10 @@
 				<exclusion>
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.java.dev.jna</groupId>
+					<artifactId>jna</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -224,8 +216,69 @@
 			   		<groupId>org.slf4j</groupId>
 			   		<artifactId>slf4j-api</artifactId>
 			   	</exclusion>
+			   	<exclusion>
+			   		<groupId>org.apache.logging.log4j</groupId>
+			   		<artifactId>log4j-web</artifactId>
+			   	</exclusion>
 			   </exclusions>
+		</dependency> 
+		<dependency>
+		    <groupId>com.indexbg.ocr</groupId>
+		    <artifactId>OCR</artifactId>
+		    <version>0.0.1-SNAPSHOT</version>
+		    <exclusions>
+		    	<exclusion>
+		    		<groupId>org.apache.logging.log4j</groupId>
+		    		<artifactId>log4j-api</artifactId>
+		    	</exclusion>
+		    	<exclusion>
+		    		<groupId>org.slf4j</groupId>
+		    		<artifactId>slf4j-api</artifactId>
+		    	</exclusion>
+		    	<exclusion>
+		    		<groupId>org.apache.logging.log4j</groupId>
+		    		<artifactId>log4j-core</artifactId>
+		    	</exclusion>
+		    	<exclusion>
+		    		<groupId>log4j</groupId>
+		    		<artifactId>log4j</artifactId>
+		    	</exclusion>
+		    	<exclusion>
+		    		<groupId>org.slf4j</groupId>
+		    		<artifactId>log4j-over-slf4j</artifactId>
+		    	</exclusion>
+		    	<exclusion>
+		    		<groupId>net.java.dev.jna</groupId>
+		    		<artifactId>jna</artifactId>
+		    	</exclusion>
+		    </exclusions>
+		</dependency>   
+		-->
+		
+		<!--  Only from GitHub (Start) -->
+		<dependency>
+			<groupId>com.indexbg.system</groupId>
+			<artifactId>System3</artifactId>
+			<version>0.1</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/System3-0.1.jar</systemPath>
 		</dependency>
+		<dependency>
+			<groupId>com.indexbg</groupId>
+			<artifactId>IndexUI</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/IndexUI-0.0.1-SNAPSHOT.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>com.indexbg.ocr</groupId>
+			<artifactId>OCR</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/OCR-0.0.1-SNAPSHOT.jar</systemPath>
+		</dependency>
+		
+		<!--  Only from GitHub (End) -->
 		
 		<!-- GSON -->
 	    <dependency>
@@ -279,25 +332,7 @@
 		    <version>2.0.0</version>
 		</dependency>
 		-->
-		<dependency>
-		    <groupId>com.indexbg.ocr</groupId>
-		    <artifactId>OCR</artifactId>
-		    <version>0.0.1-SNAPSHOT</version>
-		    <exclusions>
-		    	<exclusion>
-		    		<groupId>org.apache.logging.log4j</groupId>
-		    		<artifactId>log4j-api</artifactId>
-		    	</exclusion>
-		    	<exclusion>
-		    		<groupId>org.slf4j</groupId>
-		    		<artifactId>slf4j-api</artifactId>
-		    	</exclusion>
-		    	<exclusion>
-		    		<groupId>org.apache.logging.log4j</groupId>
-		    		<artifactId>log4j-core</artifactId>
-		    	</exclusion>
-		    </exclusions>
-		</dependency>   
+		
 		
 		<dependency>
     		<groupId>org.quartz-scheduler</groupId>
@@ -336,13 +371,26 @@
 
 	          <scope>provided</scope>
 		 </dependency>
-		
+
+		 <dependency>
+		 	<groupId>net.java.dev.jna</groupId>
+		 	<artifactId>jna-platform</artifactId>
+		 	<version>4.3.0</version>
+		 </dependency>
  </dependencies>
 		
    
    
   <build>
 		<finalName>PDoi</finalName>
+		<!-- 
+		<resources>
+			<resource>
+				<directory>src/main/webapp/WEB-INF</directory>
+     			 <filtering>true</filtering>
+			</resource>
+		</resources> -->
+		
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -392,6 +440,23 @@
                 	<password>krasig</password> -->
                 </configuration>
             </plugin>
+			<plugin>
+	        <artifactId>maven-war-plugin</artifactId>
+	        <configuration>
+	          <!-- <packagingExcludes>.xhtml</packagingExcludes> -->
+	          	<webResources>
+		            <resource>
+		                <filtering>true</filtering>
+		                <directory>src/main/webapp</directory>
+		                <includes>
+		                    <include>**/web.xml</include>
+		                </includes>
+		            </resource>
+		        </webResources>
+		         <packagingExcludes>**/log4j.properties,**/log4j2.xml</packagingExcludes>
+	        </configuration>
+        </plugin> 
+		
 		</plugins>
 	</build>
 	

@@ -6,7 +6,8 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.aspose.words.Bookmark;
 import com.aspose.words.BookmarkCollection;
@@ -34,7 +35,7 @@ import com.aspose.words.WrapType;
 public class MSWordBookmarks {
 
 	
-	static final Logger LOGGER = Logger.getLogger(MSWordBookmarks.class);
+	static final Logger LOGGER = LoggerFactory.getLogger(MSWordBookmarks.class);
 	
 	/**
 	 * Методът проверява за наличието на конкретен Bookmar в MS Word document/docx

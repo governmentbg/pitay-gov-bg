@@ -1,13 +1,14 @@
-html, body{
+html, body {
 	height: 100%;
 }
 	
 body {
 	margin: 0px;
 	padding: 0px;
-	font-family: 'Questrial', sans-serif;
-	font-size: 12pt;
+	font-family: 'Arial', sans-serif;
+	font-size: 12px;
 	/*color: rgba(0,0,0,.6);*/
+	 
 }
 	
 	
@@ -34,7 +35,7 @@ ul {
 }
 	
 p {
-	line-height: 180%;
+	line-height: 1.5;
 }
 	
 a {
@@ -43,6 +44,42 @@ a {
 	
 a:hover {
 	text-decoration: none;
+}
+
+
+/*********************************************************************************/
+/* Articles                                                                      */
+/*********************************************************************************/
+
+h1.article-title {
+	font-size: 1.5em;
+	font-weight: bold;
+}
+
+.article-body {
+	display: block;
+	font-size: 1.1em;
+	line-height: 1.5;
+	/* margin-top: 1em; */
+	margin-bottom: 1em;
+}
+
+.article-body a {
+	text-decoration: none !important;
+	color: #039BE5 !important;
+}
+
+.article-body a u {
+	text-decoration: none !important;
+}
+
+.article-body a:hover {
+	color: #037FBC !important;
+	text-decoration: underline !important;
+}
+
+.article-body h1 {
+	font-size: 1.5em !important;
 }
 	
 
@@ -95,7 +132,7 @@ ul.social-contacts {
 ul.social-contacts li {
 	display: inline-block;
 	padding: 0em 0.10em;
-	font-size: 1em;
+	/* font-size: 1em; */
 }
 
 ul.social-contacts li a {
@@ -120,7 +157,7 @@ ul.social-contacts li .icon {
 	display: inline-block;
 	margin-top: 2em;
 	padding: 0.8em 2em;
-    font-size: 1em;
+    /* font-size: 1em; */
     line-height: 1.8em;
     letter-spacing: 1px;
     color: #FFF;
@@ -160,14 +197,6 @@ ul.social-contacts li .icon {
 	margin-bottom: 3em;
 }
 
-.title h2 {
-	font-size: 2.8em;
-}
-
-.title .byline {
-	font-size: 1.1em;
-	color: #6F6F6F; 
-}
 
 /*********************************************************************************/
 /* Header                                                                        */
@@ -201,45 +230,107 @@ ul.social-contacts li .icon {
     z-index: 2;
 }
 
+/*********************************************************************************/
+/* Options menu (top right)                                                      */
+/*********************************************************************************/
+
 .login {
 	position: absolute;
 	top: 10px;
 	right: 0px;
 	color: #ffffff;
     z-index: 2;
-    background-color: #64ABD1;
-    border-top-left-radius: 7px;
-    border-bottom-left-radius: 7px;
+    background-color: #0077b3; /*#64ABD1;*/
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
 }
 
-.login a {
+.login a .icon {
+    vertical-align: middle;
+}
+
+.login .menu-option {
 	display: inline-block;
-	padding: 0em 1.5em;
-    font-size: 0.90em;
-    font-weight: 600;
+	padding: 0em 2em;
+    font-weight: bold;
     line-height: 60px;
-    color: #ffffff;
-    text-decoration: none;
     text-transform: uppercase;
     outline: 0;
 }
 
-.login > :first-child {
-    border-top-left-radius: 7px;
-    border-bottom-left-radius: 7px;
+#change-language {
+	font-size: 1.333333333333em;
 }
 
-.login a:hover,
-.login a:focus,
-.login a:active {
+#menu-options-list ul {
+	font-size: 0.9em;
+}
+
+#menu-options-list ul li a {
+	font-size: 1.333333333333em;
+}
+
+.login .menu-option:first-of-type {
+	border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+.login .menu-option:hover {
+	color: #2056ac;
+    background-color: #ffffff;
+}
+
+.login .menu-option > a {
+	color: #ffffff;
+    text-decoration: none;
+    font-size: 1.6666667em;
+}
+
+.login .menu-option:hover a,
+.login .menu-option:focus a,
+.login .menu-option:active a,
+.login .menu-dropdown .menu-dropdown-content li a:hover {
+    /* color: #64ABD1; */
     color: #2056ac;
     background-color: #ffffff;
 }
 
-.login a .icon {
+.login .menu-dropdown {
+    position: relative;
     display: inline-block;
-    font-size: 20px;
-    vertical-align: middle;
+}
+
+.login .menu-dropdown .menu-dropdown-content {
+    right: 0;
+    border-radius: 0px;
+    display: none;
+    position: absolute;
+    background-color: #ffffff;
+    min-width: 160px;
+    width: max-content;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    border: 1px solid #eaeaea;
+    z-index: 1;
+    font-size: 1.6em;
+}
+
+.login .menu-dropdown .menu-dropdown-content li a {
+    margin: 0;
+    padding: 0;
+    color: #404040;
+    text-decoration: none;
+    outline: 0;
+}
+
+.login a .icon.font-caret {
+	position: relative;
+	left: -0.5em;
+	vertical-align: super;
+	font-size: 0.75em;
+}
+
+.menu-dropdown:hover .menu-dropdown-content {
+    display: block;
 }
 
 /*********************************************************************************/
@@ -248,6 +339,7 @@ ul.social-contacts li .icon {
 
 .logo-container {
 	height: 155px;
+	/* height: 10em; */
 }
 
 .logo {
@@ -264,30 +356,12 @@ ul.social-contacts li .icon {
    margin-top: 40px;
 }
 
-.logo-text h1 {
+.logo-text h1,
+.logo-text h2 {
 	margin-bottom: 0.20em !important;
     color: #ffffff;
-    font-size: 1.5em;
+    font-size: 2em;
 	font-weight: bold;
-}
-
-.logo-text h4 {
-    color: #ffffff;
-    font-size: 1.5em;
-	font-weight: bold;
-}
-
-.logo-text h3 {
-    color: #ffffff;
-}
-
-.logo-text h4 {
-    color: #ffffff;
-}
-
-.logo-text a {
-	text-decoration: none;
-	color: #ffffff;
 }
 
 @media only screen and (max-width: 992px) {
@@ -308,27 +382,29 @@ ul.social-contacts li .icon {
 
 .menu {
     background-color: #64ABD1;
+    font-size: 1em;
 }
 
 .menu .nav {
 	display: inline-block;
     margin: 0;
+	/* padding: 0em 0em; */
 	padding: 0em 2em;
 	text-align: center;
 }
 
-.menu li {
+.menu .nav li {
 	display: inline-block;
 }
 
-.menu li a {
+.menu .nav li a {
 	display: inline-block;
-	padding: 0em 1.5em;
-    font-size: 0.90em;
+	padding: 0em 1em;
+	line-height: 60px;
+    font-size: 1.25em;
     font-weight: 600;
-    line-height: 60px;
     color: #ffffff;
-    border-radius: 7px 7px 0px 0px;
+    border-radius: 0px 0px 0px 0px;
     text-decoration: none;
     text-transform: uppercase;
     transition: color .3s ease, background-color .3s ease;
@@ -346,41 +422,13 @@ ul.social-contacts li .icon {
     display: none;
 }
 
-.menu-dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-.menu-dropdown-content {
-    right: 0;
-    border-radius: 7px;
-    display: none;
-    position: absolute;
-    background-color: #ffffff;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    border: 1px solid #eaeaea;
-    z-index: 1;
-}
-
-
-.menu-dropdown-content a {
-    margin: 0;
-    padding: 0;
-    color: #404040;
-    text-decoration: none;
-    outline: 0;
-}
-
-.menu-dropdown:hover .menu-dropdown-content {
-    display: block;
-}
-
 @media screen and (max-width: 1200px) {
 
-    .menu li a {
-        padding: .5em 1em 0;
-        font-size: .8em;
+    .menu .nav li a {
+        /* font-size: 1.2em; */
+		/* line-height: 2.67em; */
+		padding: 6.4px 1em 0;
+        font-size: 1.1em;
         line-height: 40px;
     }
 }
@@ -397,12 +445,12 @@ ul.social-contacts li .icon {
     .menu .mobile-menu-handle {
         display: inline-block;
         padding: .7em 1em;
-        font-size: 1.2em;
+        font-size: 1.6em;
         color: #64ABD1;
         cursor: pointer;
         background-color: #ffffff;
-        border-top-right-radius: 7px;
-        border-bottom-right-radius: 7px;
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
     }
 
     .menu .nav {
@@ -414,8 +462,8 @@ ul.social-contacts li .icon {
         background-color: #ffffff;
         border: 1px solid #eaeaea;
         border-left: none;
-        border-top-right-radius: 7px;
-        border-bottom-right-radius: 7px;
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
         transition: right .4s ease, left .4s ease;
         box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
         z-index: 10;
@@ -425,21 +473,11 @@ ul.social-contacts li .icon {
         left: 0;
     }
 
-    .menu li a {
+    .menu .nav li a {
         padding: 1.5em 1.4em;
         line-height: normal;
         color: #64ABD1;
     }
-}
-	
-	
-
-/*********************************************************************************/
-/* Banner                                                                        */
-/*********************************************************************************/
-
-#banner {
-	padding-top: 5em;
 }
 
 /*********************************************************************************/
@@ -449,33 +487,155 @@ ul.social-contacts li .icon {
 
 .wrapper {
 	overflow: hidden;
-	padding: 0em 0em 5em 0em;
+	padding: 2em 0em 5em 0em;
 	background: #FFF;
 	line-height: normal !important;
-	font-size: 12px;
+	font-size: 1em;
 	min-height: 50%;
+	
 }
 
 @media only screen and (max-width: 992px) {
 
     .wrapper {
-        padding: 0;
+        padding-top: 1em;
+        padding-bottom: 2em;
     }
 }
 
+.ui-widget.ui-growl {
+	font-size: 1.1em;
+}
 
+a.ui-link label.ui-outputlabel { 
+    cursor: pointer;
+    font-size: 1.3em;
+	color:  #025C89;  /* #037FBC;*/
+}
+
+a.ui-link label.ui-outputlabel:hover {
+    text-decoration: underline;
+    color: #039be5;
+}
+
+.ui-widget.ui-datepicker {
+	font-size: 1.3em;
+}
+
+label {
+	font-size: 1em;
+}
+
+
+/*********************************************************************************/
+/* Three Columns in the home page												 */
+/*********************************************************************************/
+/* .containerbg{
+	background-image: url(../images/bg-introduction1.jpg);
+	 background-size: cover;
+} */
+
+.container-services {
+	font-size: 1em;
+    margin-bottom: 3em;
+    margin-top: 2em;
+   
+}
+
+.column-content { 
+	cursor:pointer;
+    text-align: left;
+	background-color: #0077b3;
+	color: #ffffff;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	-webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+	-moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+	padding: 16px;
+}
+
+.column-content:hover{
+	opacity: 0.7;
+    filter: alpha(opacity=70);
+}
+
+.column-content > div {
+	/*margin-top: 0.5em;*/
+}
+
+.column-content .title-icon {
+	margin-top: 0;
+}
+
+.column-content .title-icon div {
+	font-size: 2em;
+	font-weight: bold;
+	line-height: 180%;
+}
+
+.column-content .title-icon div.icon {
+	font-size: 3.5em;
+	    float: right;
+}
+
+.column-content .content {
+	font-size: 1.3em;
+}
+
+.column-content .content p {
+	text-align: left;	
+}
+
+.column-content .button {
+	font-size: 1.3em;
+	margin-top: 0;
+	display: none;
+}
+
+.box-blue{
+	background-color: #42A5F5;
+}
+.box-green{
+	background-color:  #26a69a; /*#66BB6A*/;
+}
+.box-orange{
+	background-color:  #ee6e73 ; /*#ee6e73 #5a727e #FFB300*/
+}
+.box-blueDark{
+	background-color: #0077b3;
+}
+.box-1{
+	background-color:  #5a727e ; /*#ee6e73 #5a727e #FFB300*/
+}
+.box-2{
+	background-color:  #FFB300 ; /*#ee6e73 #5a727e #FFB300*/
+}
+.box-white {
+	text-align: justify;
+	font-size: 1.3em;
+	background-color: #ffffff; 
+	color:#000;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	-webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+	-moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+	padding: 16px;
+	cursor:default;
+}
 /*********************************************************************************/
 /* Welcome                                                                       */
 /*********************************************************************************/
 
 .welcome-section {
-	
-	
 	margin-top: 2em;
 	margin-bottom: 2em;
     padding-top: 0em;
     padding-bottom: 0em;
-	text-align: justify;
+	
 }
 
 @media only screen and (max-width: 992px) {
@@ -556,13 +716,13 @@ ul.social-contacts li .icon {
 }
 
 .footer .info p {
-    font-size: 0.9em;
+    /* font-size: 0.9em; */
 	letter-spacing: 1px;
 	color: rgba(255, 255, 255, .8);
 }
 
 .footer .copyrights {
-    font-size: 0.9em;
+    /* font-size: 0.9em; */
     letter-spacing: 1px;
     color: rgba(255, 255, 255, .8);
 }
@@ -632,61 +792,6 @@ ul.social-contacts li .icon {
     }
 }
 
-/*********************************************************************************/
-/* Three Columns                                                                 */
-/*********************************************************************************/
-
-.container-services {
-    margin-top: 2em;
-    margin-bottom: 2em;
-    padding-top: 0em;
-    padding-bottom: 0em;
-    border-bottom: 1px solid rgba(0, 0, 0, .2);
-}
-
-.column-content {
-    padding: 20px 20px;
-    text-align: center;
-}
-
-.column-content .title {
-    margin: 0 0 3em;
-}
-
-.column-content .title .icon {
-    font-size: 30px;
-}
-
-.column-content .title h2 {
-    margin: 1em 0em;
-    font-size: 1.5em;
-    font-weight: 700;
-    font-size: 1.60em;
-}
-
-@media only screen and (max-width: 992px) {
-
-    .container-services {
-        margin-top: 0;
-    }
-
-    .column-content {
-        padding: 40px 20px 30px;
-    }
-
-    .column-content .title {
-        margin: 0 0 1em;
-    }
-
-    .column-content .title h2 {
-        margin: .5em 0;
-    }
-
-    .column-content .btn-primary {
-        margin-top: 0;
-    }
-}
-
 
 /*********************************************************************************/
 /* Paginators																	 */
@@ -751,11 +856,86 @@ ul.social-contacts li .icon {
 
 
 /*********************************************************************************/
+/* Modal dialogs		                                                         */
+/*********************************************************************************/
+
+.user-modal-dialog .modal-header,
+.user-modal-dialog .modal-content,
+.user-modal-dialog .modal-footer {
+	padding: 12px 12px;
+	width: auto;
+	background-color: white;
+}
+
+.user-modal-dialog .modal-header h4 {
+	font-size: 1.5em;
+}
+
+.user-modal-dialog .button-modal-dialog {
+	font-weight: normal;
+	padding: 0.8em 1em !important;
+}
+
+.user-modal-dialog .modal-footer-button-container {
+	overflow: hidden;
+	float: right;
+}
+
+.user-modal-dialog .modal-footer {
+	height: auto;
+	overflow: auto;
+	padding-top: 0px;
+}
+
+/*********************************************************************************/
+/* Change password dialog                                                        */
+/*********************************************************************************/
+
+#changePassModal .layout {
+	border-spacing: 0px 6px;
+}
+
+#changePassModal .input-label {
+	padding-right: 10px;
+	text-align: right;
+}
+
+#changePassModal .input-label label {
+	color: black;	
+	font-size: 1em;
+}
+
+
+/*********************************************************************************/
+/* Add certificate dialog                                                        */
+/*********************************************************************************/
+
+#regCertModal .modal-content .icon {
+	font-size: 1em;
+	vertical-align: middle;
+	margin-right: 0.5em;
+}
+
+
+/*********************************************************************************/
 /* Misc.																		 */
 /*********************************************************************************/
 a.ui-link label.ui-outputlabel {
 	cursor: pointer;
 }
+
+.panel-head-toggle {
+	font-size: 1.3em !important;
+}
+
+.line-separator {
+	/* color: rgba(100, 171, 209, 0.2); */
+	color: rgba(0, 0, 0, 0.2);
+	height: 1px;
+	border: none;
+	border-top: 1px solid;
+}
+
 
 /*********************************************************************************/
 /* Color Blind																	 */
@@ -820,26 +1000,60 @@ body.color-blind #selectLangDropdown li a:hover {
 	background-color: #333;
 }
 
-body.color-blind .menu-dropdown .menu-dropdown-content {
-	border: 1px solid white !important;
-	border-radius: 0px;
+
+body.color-blind .login .menu-option:hover a span.icon {
+	color: black;
 }
 
-body.color-blind .menu-dropdown .menu-dropdown-content li {
+body.color-blind .login .menu-option:hover a {
+	color: black;
+}
+
+body.color-blind .login .menu-dropdown-content {
 	background-color: black;
 }
 
-body.color-blind .menu-dropdown .menu-dropdown-content li:hover {
+body.color-blind .login .menu-dropdown-content li:hover {
 	background-color: #333;
 }
 
-body.color-blind .menu-dropdown .menu-dropdown-content li a {
-	color: white !important;
+body.color-blind .login .menu-dropdown-content li a {
+	background-color: transparent;
+	color: white;
 }
 
-body.color-blind .menu-dropdown .menu-dropdown-content li a:hover {
-	background-color: inherit;
+body.color-blind .login .menu-dropdown-content li a,
+body.color-blind .login .menu-dropdown-content li a span.icon {
+	color:white !important;
 }
+
+body.color-blind .menu-dropdown-content li a:hover {
+	color: white !important;
+	background-color: transparent !important;
+}
+
+
+/*********************************************************************************/
+/* Homepage large links															 */
+/*********************************************************************************/
+
+body.color-blind .column-content {
+	background-color: black;
+	opacity: 1;
+	color: white;
+	border: 1px solid;
+	transition: background-color .3s ease;
+}
+
+body.color-blind .column-content:hover {
+	background-color: #333333;
+}
+
+body.color-blind .column-content .title-icon .title-nav {
+	color: yellow;
+}
+
+
 
 body.color-blind .header-wrapper {
     background: black !important;
@@ -860,7 +1074,7 @@ body.color-blind .wrapper {
     color: white !important;
 }
 
-body.color-blind .ui-panel{
+body.color-blind .ui-panel {
 	 background: black !important;
     color: white !important;
 }
@@ -899,6 +1113,12 @@ body.color-blind .ui-panel .ui-widget-content {
     color: white !important;
 }
 
+/* fa icons */
+body.color-blind .fa,
+body.color-blind .fas {
+	color:white;
+}
+
 /* Radio button labels */
 body.color-blind .ui-radiobutton + label {
 	background: black !important;
@@ -928,12 +1148,6 @@ body.color-blind #formSectD\:idFullTextD a {
 body.color-blind #formSectD\:panelFiles a button + span {
 	background: black !important;
 	color: yellow !important;
-}
-
-/* Application title */
-body.color-blind #formApplicView h5#applicationTitle {
-	background: black !important;
-	color: white !important;
 }
 
 /* Search titles */ 
@@ -1127,4 +1341,139 @@ body.color-blind .ui-datatable tbody tr.ui-datatable-odd {
 body.color-blind .ui-datatable tbody tr.ui-datatable-even {
 	color: white !important;
 	background-color: #333 !important;
+}
+
+body.color-blind .line-separator {
+	color: rgba(255, 255, 255, 0.8);
+}
+
+/* Modal dialogs */
+body.color-blind .user-modal-dialog {
+	border: 1px solid white;
+	box-shadow: 1px 1px 4px 1px rgba(255, 255, 255, 0.6);
+}
+
+body.color-blind .user-modal-dialog .modal-header,
+body.color-blind .user-modal-dialog .modal-content,
+body.color-blind .user-modal-dialog .modal-footer {
+	background-color: black;
+}
+
+body.color-blind .user-modal-dialog .modal-header h4 {
+	color: white;
+}
+
+body.color-blind .user-modal-dialog .button-modal-dialog {
+	font-weight: normal;
+	padding: 0.8em 1em !important;
+}
+
+body.color-blind #changePassModal .input-label label {
+	color: white;	
+}
+
+body.color-blind .ui-link label,
+body.color-blind .ui-link:hover label {
+	color: yellow;
+}
+
+body.color-blind .box-blueDark {
+	background-color: black;
+}
+
+body.color-blind .form-background {
+	background-color: black;
+}
+
+body.color-blind .form-background .box-search {
+	background-color: black;
+	border: 1px solid white;
+}
+
+body.color-blind .advanced-search-toggle {
+    color: yellow;
+}
+
+body.color-blind .admins-panel {
+	background-color: black;
+}
+
+body.color-blind .ui-dialog.ui-widget {
+    border: 1px solid white;
+}
+
+body.color-blind .ui-dialog.ui-widget-content .ui-dialog-titlebar,
+body.color-blind .ui-dialog.ui-widget-content .ui-dialog-footer {
+	color: white;
+	background-color: black;
+}
+
+body.color-blind .ui-dialog.ui-widget-content .ui-dialog-titlebar-icon .ui-icon-closethick{
+    background-image: url(/PDoi/javax.faces.resource/images/ui-icons_ffffff_256x240.png.jsf?ln=primefaces-bootstrap);
+}
+
+body.color-blind .ui-dialog-content {
+	background-color: black;
+	color: white;
+}
+
+body.color-blind .ui-dialog-content .ui-tree {
+	color:white;
+	background-color:black;
+}
+
+body.color-blind .ui-tree-container .ui-tree-toggler,
+body.color-blind .ui-tree-container .ui-treenode-icon {
+	background-image: url(/PDoi/javax.faces.resource/images/ui-icons_ffffff_256x240.png.jsf?ln=primefaces-bootstrap);
+}
+
+body.color-blind .ui-dialog.ui-widget-content .ui-icon-gripsmall-diagonal-se {
+	background-image: url(/PDoi/javax.faces.resource/images/ui-icons_ffffff_256x240.png.jsf?ln=primefaces-bootstrap);
+}
+
+body.color-blind .banner, {
+	filter: grayscale(1);
+}
+
+.box-search {
+    text-align: left;
+	background-color: #ebf5fa;
+	color: #000000;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	-webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+	-moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+	padding-left: 16px;
+	padding-right: 16px;
+	padding-top:6px; 
+	padding-bottom:6px;
+}
+
+.ui-panel { 
+	-webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+	-moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+#appFilterForm .ui-panel , #formSectList .ui-panel { 
+	background-color: #f7f8f8;
+}
+
+.page-title { 
+	font-size: 2.2em;
+	font-weight: bold;
+	text-align: left;
+	color: #ffffff;
+}
+
+
+.page-title .title-icon div.icon {
+	float: left;
+	padding-right:20px; 
+}
+
+.ui-widget{
+	font-family: Arial, sans-serif;
 }

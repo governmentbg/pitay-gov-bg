@@ -50,7 +50,7 @@ public class ResponseSubjectsList extends PDoiBean {
 	@PostConstruct
 	public void initData(){
 			try {
-				rsDao =  new ResponseSubjectDao(getUserData().getUserId());
+				rsDao =  new ResponseSubjectDao(getUserData().getUserId(),getSystemData());
 			} catch (ObjectNotFoundException e) {
 				LOGGER.error("Грешка при работа със системата!!!", e);
 				JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString(Constants.beanMessages, "general.exception"));

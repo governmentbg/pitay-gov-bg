@@ -25,9 +25,7 @@
 		 
 		  
 		  <!-- THEME -->  
-		  <link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700,900|Quicksand:400,700|Questrial" rel="stylesheet" />
-	      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous"/>
-		  
+		  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous"/>
 			
    </h:head>
    
@@ -38,8 +36,9 @@
      <p:growl id="message" showDetail="false" sticky="false" life="5000"/>
          
      <!-- SESSION EXPIRED MONITOR -->
-    <p:idleMonitor timeout="#{session.maxInactiveInterval * 1000 - 125000}" onidle="$('#sessionExpModal').modal('open');" />
-     
+     <ui:remove>
+     <!-- <p:idleMonitor timeout="#{session.maxInactiveInterval * 1000 - 125000}" onidle="$('#sessionExpModal').modal('open');" /> -->
+     </ui:remove>
      
      <ui:include src="/fragments/ajaxStatus.xhtml"/> 
 	  
@@ -48,73 +47,88 @@
 		<div class="header-wrapper">
 	        <div class="header">
 	        	<h:form>
-	            <div class="login">
-	                <a jsf:action="entryPage.xhtml@clear@?faces-redirect=true" title="#{labels['mainExt.input']}"  jsf:rendered="#{userData.userId ==null or userData.userId ==-1}">
-	                    <span class="icon fas fa-sign-in-alt"></span>
-	                </a>
-	                  <!--  Trigger for dropdown for changing language -->
-	      
-		                        <a class="dropdown-button" href="#!" data-activates="selectLangDropdown" style="text-transform: uppercase;">
-		                        #{environment.language}
-		                        </a>
-	                       
-	                <div class="menu-dropdown">
-	                    <a jsf:action="#" title="#{labels['mainExt.user']}" jsf:rendered="#{userData.hasAccess(7,45)}">
-	                        <span class="icon fas fa-user"></span>
-	                    </a>
-	                    <ul class="menu-dropdown-content">
-	                        <li><a href="#" title="#{labels['mainExt.cert']}">#{labels['mainExt.cert']}</a></li>
-	                        <li><a href="api/auth/logout" >#{labels['mainExt.out']}</a></li>
-	                    </ul>
-	                </div>
-	                
-	                <a title="#{labels['menu.instructions']}" href="resources/docs/User_Guide v3.pdf" target="_blank">
-	                    <span class="icon fas fa-question-circle"></span>
-	                </a>
-	
-	                <div class="menu-dropdown">
-	                    <a href="#" title="#{labels['mainExt.optic']}">
-	                        <span class="icon fas fa-eye-slash"></span>
-	                    </a>
-	                    <ul class="menu-dropdown-content">
-	                        <li>
-	                            <a href="#" title="#{labels['mainExt.letterSizePlus']}" onclick="font(true)">
-	                                +<span class="icon fas fa-font"></span>
-	                            </a>                        
-	                            
-	                            <a href="#" title="100%" onclick="resetFont()">
-	                                100%<span class="icon fas fa-font"></span>
-	                            </a>
-	                            
-	                           	<a href="#" title="#{labels['mainExt.letterSizeMin']}" onclick="font(false)">
-	                                -<span class="icon fas fa-font"></span>
-	                            </a>
-	                        </li>
-	                        <li>
-	                            <a href="#" title="#{labels['mainExt.changeColor']}" onclick="colorBlind()">
-	                                <span class="icon fas fa-palette"></span>
-	                            </a>
-	                        </li>
-	                       
-	                    </ul>
-	                </div>
-	            </div>
-	            <!--  Dropdown for changing language -->
-                <ul id="selectLangDropdown" class="dropdown-content">
-				  <li><a href="#!" jsf:action="#{environment.changeLanguage('bg')}">BG</a></li>
-				  <li><a href="#!" jsf:action="#{environment.changeLanguage('en')}">EN</a></li>
-				</ul>
+		            <div class="login">
+		            	
+		            	<!-- Login icon -->
+		            	<div class="menu-option" jsf:rendered="#{userData.userId ==null or userData.userId ==-1}">
+			            	<a title="#{labels['mainExt.input']}" jsf:action="entryPage.xhtml@clear@?faces-redirect=true">
+			                    <span class="icon fas fa-sign-in-alt"></span>
+			                </a>
+		            	</div>
+		                
+		                <!--  Trigger for change language dropdown --> 
+		                <div class="menu-option">
+			                <a id="change-language" class="dropdown-button" href="#!" data-activates="selectLangDropdown" style="text-transform: uppercase;">
+	                        	#{environment.language}
+	                        </a>
+		                </div>
+		                
+		                <!-- User options dropdown -->   
+		                <div class="menu-option menu-dropdown" jsf:rendered="#{userData.hasAccess(7,45)}" id="menu-options-list">
+		                    <a jsf:action="#" title="#{labels['mainExt.user']}">
+		                        <span class="icon fas fa-user"></span>
+		                    </a>
+		                    <ul class="menu-dropdown-content"  style="width:200px">
+		                    	<li style="border-bottom: 1px solid rgba(230, 230, 230, 1); font-size: 1.33em;" ><span class="icon fas fa-user"> </span> #{userData != null ? userData.liceNames : ''}</li>
+		                        <li><a class="btn-flat link-cc" onclick="$('.cc-popup').webuiPopover('hide'); actionRegCertModal();">#{labels['mainExt.cert']}</a></li>
+		                        <li><a class="btn-flat link-cc" onclick="$('.cc-popup').webuiPopover('hide'); actionChangePass();">#{labels['general.chnagePass']}</a></li>
+		                        <li><a href="api/auth/logout" >#{labels['mainExt.out']}</a></li>
+		                    </ul>
+		                </div>
+		                
+		                <!-- Instructions icon -->
+		                <div class="menu-option">
+		                	<a title="#{labels['menu.instructions']}" href="resources/docs/User_Guide v41.pdf" target="_blank">
+		                    	<span class="icon fas fa-question-circle"></span>
+		                	</a>
+		                </div>
+		
+						<!-- Visual settings dropdown -->
+		                <div class="menu-option menu-dropdown">
+		                    <a href="#" title="#{labels['mainExt.optic']}">
+		                        <span class="icon fas fa-eye-slash"></span>
+		                    </a>
+		                    <ul class="menu-dropdown-content">
+		                        <li style="display: flex; justify-content: space-around;">
+	                   				<a href="#" title="#{labels['mainExt.letterSizeMin']}" onclick="font(false)">
+		                            	<span id="decrease-font" class="icon fas fa-font"></span>
+		                               	<span class="icon fas fa-caret-down font-caret"></span>
+		                            </a>
+		                            
+		                            <a href="#" title="100%" onclick="resetFont()">100%</a>
+		                            
+	  	                            <a href="#" title="#{labels['mainExt.letterSizePlus']}" onclick="font(true)">
+		                               <span id="increase-font" class="icon fas fa-font"></span>
+		                               <span class="icon fas fa-caret-up font-caret"></span>
+		                            </a>     
+		                            
+		                        </li>
+		                        <li>
+		                            <a href="#" title="#{labels['mainExt.changeColor']}" onclick="colorBlind()">
+		                                <span class="icon fas fa-palette"></span>
+		                            </a>
+		                        </li>
+		                       
+		                    </ul>
+		                </div>
+		            </div>
+		            
+		            <!--  Dropdown for changing language -->
+	                <ul id="selectLangDropdown" class="dropdown-content">
+					  <li><a href="#!" jsf:action="#{environment.changeLanguage('bg')}">BG</a></li>
+					  <li><a href="#!" jsf:action="#{environment.changeLanguage('en')}">EN</a></li>
+					</ul>
+		            
+		            <div class="container logo-container">
+						<div class="logo">
+							<img src="images/gerb.png" alt="#{labels['mainExt.gerbBG']}"/>
+							<div class="logo-text">
+								<h1>#{labels['mainExt.mins']}</h1>
+								<h2>#{labels['indexExt.title']}</h2>
+							</div>
+						</div>
+		            </div>
 	            
-	            <div class="container logo-container">
-	               
-                        <div class="logo">
-                            <img src="images/gerb.png" alt="#{labels['mainExt.gerbBG']}"/>
-                            <div class="logo-text">
-	                            <h1>#{labels['mainExt.mins']}</h1>
-	                            <h4>#{labels['indexExt.title']}</h4>
-                        	</div>
-                        </div>
-	            </div>
 	            <!-- MENU -->
 	            <ui:insert name="menu-items"></ui:insert>
 	            
@@ -143,7 +157,7 @@
 	                                #{labels['mainExt.footer']}
 	                            </p>
 	                        </div>
-	                        <p class="copyrights"> Untitled. All rights reserved. | Design by <a href="#" rel="nofollow">Index Bulgaria Ltd</a>.</p>
+	                        <p class="copyrights"><!-- Untitled. All rights reserved. | Design by <a href="#" rel="nofollow">Index Bulgaria Ltd</a>. --> &#160;</p>
 	                         <ul class="social-contacts">
 	                        <!--    <li><a href="#" target="_blank"><span class="icon icon-twitter">Twitter</span></a></li>
 	                            <li><a href="#" target="_blank"><span class="icon icon-facebook">Facebook</span></a></li>
@@ -177,27 +191,87 @@
 	   </div>
 	   
 	   <!-- CERT REG DIALOG -->
-	   <div id="regCertModal" class="modal">
+	   <div id="regCertModal" class="modal user-modal-dialog">
+		   	
+		   	<div class="modal-header">
+	      		<h4>#{labels['mainExt.certRegistr']}</h4>
+	      	</div>
+		      	
 		    <div class="modal-content">
-		      <h4>#{labels['mainExt.certRegistr']}</h4>
-		      <a onclick="addCert();" class="waves-effect waves-light btn" style="float:right;"><i class="material-icons left">add</i>#{labels['mainExt.add']}</a>
-		      <table class="highlight bordered cert_table" style="width: 100%;">
-		        <thead>
-		          <tr>
-		              <th>Issuer</th>
-		              <th>Expire Date</th>
-		              <th>Active</th>
-		              <th></th>
-		          </tr>
-		        </thead>
-		        <tbody></tbody> 
-		      </table>
-		    </div>
+		    	
+		      	<a onclick="addCert();" class="ui-button button-modal-dialog" style="float:right;">
+		      		<i class="icon fas fa-plus"></i>
+		      		<span>#{labels['mainExt.add']}</span>
+		      	</a>
+		      	<table class="highlight bordered cert_table" style="width: 100%;">
+			        <thead>
+			          <tr>
+			              <th>Issuer</th>
+			              <th>#{labels['general.expireDate']}:</th>
+			              <th>#{labels['general.active']}:</th>
+			              <th></th>
+			          </tr>
+			        </thead>
+		        	<tbody></tbody> 
+		      	</table>
+	    	</div>
+	    	
 		    <div class="modal-footer" style="width: auto;">
-		      <a class="modal-action modal-close waves-effect waves-green btn-flat">ClOSE</a>
+		    	<div class="modal-footer-button-container">
+		    		<a class="ui-button button-modal-dialog modal-close">#{labels['general.cancel']}</a>
+		    	</div>
 		    </div>
 	   </div>
-
+	   
+	   <!-- Change password modal -->
+		<div id="changePassModal" class="modal user-modal-dialog" style="width: 400px !important;">
+			<form id="changePassForm" action="api/userService/changePassword" method="post" onsubmit="changePass(event)">
+			    
+			    <div class="modal-header">
+			    	<h4>#{labels['general.chnagePass']}</h4>
+			    </div>
+			    
+			    <div class="modal-content">
+			      <div class="layout">
+			        <div class="lr">
+				      	<div class="lb input-label"><label>#{labels['general.oldPassword']}</label></div>
+				      	<div class="lb"><input id="oldPassword" name="oldPassword" type="password" class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all" oninvalid="this.setCustomValidity('Моля въведете стара парола')" oninput="this.setCustomValidity('')" required="required"/></div>
+			      	</div>
+			      	<div class="lr">
+			      		<div class="lb"></div>
+			      		<div class="lb"><span id="oldPassError" style="color: red;"></span></div>
+			      	</div>
+			      	<div class="lr">
+				      	<div class="lb input-label"><label>#{labels['general.newPassword']}</label></div>
+				      	<div class="lb"><input id="newPassword" name="newPassword" type="password" class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all" oninvalid="this.setCustomValidity('Моля въведете нова парола')" oninput="this.setCustomValidity('')" required="required"/></div>
+			      	</div>
+			      	<div class="lr">
+			      		<div class="lb"></div>
+			      		<div class="lb"><span id="newPassError" style="color: red;"></span></div>
+			      	</div>
+			      	<div class="lr">
+				      	<div class="lb input-label"><label>#{labels['general.confirmPassword']}</label></div>
+				      	<div class="lb"><input id="newPasswordConf" name="newPasswordConf" type="password" class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all" oninvalid="this.setCustomValidity('Моля потвърдете паролата')" oninput="this.setCustomValidity('')" required="required"/></div>
+			      	</div>
+			      	<input type="hidden" jsf:value="#{userData.userId}" name="userId"/>
+			      </div>
+		          
+			    </div>
+			    <div class="modal-footer">
+			    	<hr class="line-separator"/>
+			    	<div class="modal-footer-button-container">
+			      		<button type="button" onclick="$('#changePassModal').modal('close');" class="ui-button button-modal-dialog">#{labels['general.cancel']}</button>
+			      		<button type="submit" class="ui-button button-modal-dialog">#{labels['general.change']}</button>
+			      	</div>
+			    </div>
+		    </form>
+	    </div>
+	   
+	   
+	   
+	   
+	   
+	   
 	   <h:outputScript library="primefaces" name="jquery/jquery.js" target="head" />
 	   <h:outputScript library="primefaces" name="jquery/jquery-plugins.js" target="head" />
 	   <h:outputScript library="js" name="jquery.hotkeys.js"/>

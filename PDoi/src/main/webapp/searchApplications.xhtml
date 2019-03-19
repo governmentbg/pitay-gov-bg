@@ -17,176 +17,243 @@
 
 	<ui:define name="content">
 	
-		<style>			
+		<style>		
+		
+			.form-background {
+				background-color: #0077b3; 
+				padding: 2em 0;
+				background: linear-gradient(to right, rgba(0, 119, 179, 1) 0%, rgba(0, 119, 179, 1) 15%, rgba(0,119,179,0.5) 50%, rgba(0,119,179,0.2) 100%), url(./images/search.jpg);
+			    background-size: cover;
+			    background-position: bottom right;
+			}
 			
-			.ui-link {
-				  color:#039be5;				
-				}			 
+			body.color-blind .form-background {
+				background: linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 15%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0.2) 100%), url(./images/search_bw.jpg);
+			    background-size: cover;
+			    background-position: bottom right;
+			}
 			
-			.ui-link:hover {text-decoration:underline !important; color:#039be5; cursor: pointer;}
 			.ui-datagrid-content {
 				border: none;
 			}
-		</style>	
-	
+		
+			::placeholder {
+			    color: grey;
+			    opacity: 1; /* Firefox */
+			}
+			
+			:-ms-input-placeholder { /* Internet Explorer 10-11 */
+			   color: grey;
+			}
+			
+			::-ms-input-placeholder { /* Microsoft Edge */
+			   color: grey;
+			}
+			
+			.flex {
+				display: flex;
+			}
+			
+			.flex-grow {
+				flex-grow: 1;
+			}
+			
+			.div-separator {
+				padding: 0;
+			}
+			
+			@media screen and (min-width: 64.063em) {
+				.div-separator {
+				    display: none;
+				}
+			}
+			
+			.advanced-search-toggle {
+				color: #025C89; 
+				cursor: pointer;
+			}
+			
+			button.ui-datepicker-trigger {
+				margin-left: -9px;
+			}
+			
+			
+		</style>
+		
+		<h:form>
+			 <p:remoteCommand name="rc" actionListener="#{searchApplications.changePage}" immediate="true" update="@this"/> 
+		</h:form>
+		
 		<h:form id="appFilterForm">
 			<p:defaultCommand target="btnSearch"/>
 			<p:focus id="focusID" for="text" />
 			
 			<p:importConstants type="indexbg.pdoi.system.Constants" var="IBConstants" className="indexbg.pdoi.system.Constants"/>
 			<p:importConstants type="com.indexbg.system.SysConstants" var="IBConstantsSys" className="com.indexbg.system.SysConstants" />
-
+			
+			<h:inputHidden value="#{searchApplications.pageHidden}" />
+			
+			<div class="container-fluid form-background">
+				<div class="container">
+					<div class="box-search"  jsf:id="panelDataSearch">
+						<div class="ui-g">
+					
+							<!-- First column - fields -->
+							<div class="ui-g-12 ui-md-12 ui-lg-11">
+								<div class="ui-g">
+									<div class="ui-g-12 ui-md-7 flex">											
+		    							<p:inputText value="#{searchApplications.text}" placeholder="#{labels['general.text']}" id="text" class="flex-grow"/>                         
+									</div>
+								
+									<div class="ui-g-12 ui-md-5 flex">						
+											<p:inputText value="#{searchApplications.zadaljenSubText}" id="respSubj" readonly="true" placeholder="#{labels['responseSubjects.title']}" class="flex-grow"/>   
+						                	
+						                	<ibg:selectManyModal  
+															header="#{labels['responseSubjects.title']}"
+														userId="#{searchApplications.userID}"  
+														lang="#{searchApplications.currentLang}"   
+										 	            saveStateTree="true"  
+										 	            withBtnClear="false"
+										 		        codeClassif="#{IBConstants.CODE_SYSCLASS_ADM_REGISTRY}"     
+										 		        update="appFilterForm:respSubj"  
+										 		        selectedCodes="#{searchApplications.selectedSubj}" 
+										 		        selectedText="#{searchApplications.zadaljenSubText}"
+										 		        modal="true"
+										 		        id="idManyRS"
+										 		        expanded="false"
+										 		        sortByName="true"
+										 		        isSelectNode="false"
+										 		        showRadioBtn="true" />							
+									</div>
+									
+								</div>
+								
+								<div class="ui-g">
+							    	<div class="ui-g-12">
+										<span class="advanced-search-toggle" onclick="$('#advanced-search').slideToggle();">[ разширено търсене ]</span>
+									</div>
+								</div>
+								
+								<div id="advanced-search" style="display:none">
+									<div class="ui-g">
+										<div class="ui-g-12 ui-md-7 ui-lg-4 flex">											
+			    							<p:inputText id="nomer" value="#{searchApplications.nomer}" placeholder="#{labels['app.nomerZaiavlenie']}" class="flex-grow"/>                         
+										</div>
+										
+										<div class="ui-md-5 div-separator"></div>
+										
+										<div class="ui-g-12 ui-md-4 ui-lg-4">
+											<p:selectOneMenu style="display:flex;" id="idPer" height="300px" value="#{searchApplications.period}" autoWidth="false">
+					                             <f:selectItem itemLabel="-- #{labels['general.period']} --" itemValue="#{null}"/>          
+					                             <f:selectItems  value="#{systemData.getSysClassification(IBConstantsSys.CODE_CLASSIF_PERIOD_NOFUTURE, searchApplications.today, searchApplications.currentLang, searchApplications.userID)}"  
+					                                    var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
+					                             <p:ajax event="change" update="idPer dateOt dateDo"  listener="#{searchApplications.changePeriod()}"   />   
+					                        </p:selectOneMenu>
+				                        </div>
+				                        <div class="ui-g-12 ui-md-8 ui-lg-4">       
+											<p:calendar id="dateOt" pattern="dd.MM.yyyy" mask="true"  showOn="button"  placeholder="#{labels['general.dataOt']}"
+													timeZone="#{searchApplications.timeZone}" size="10" locale="bg" 
+										         	 value="#{searchApplications.dateFrom}" label="#{labels['publ.dateFrom']}"
+										          	styleClass="form-control #{searchApplications.hasMessages('appFilterForm:dateOt') ? 'cc-red ': '' }" 
+										          	style="padding-right:6px">
+										          	
+										    </p:calendar>
+										    <p:message for="dateOt" showDetail="true" showSummary="true" display="tooltip"/>
+											<p:calendar id="dateDo" pattern="dd.MM.yyyy" mask="true" showOn="button"  placeholder="#{labels['general.dataDo']}"
+												timeZone="#{searchApplications.timeZone}" size="10" locale="bg" 
+									         	value="#{searchApplications.dateTo}" label="#{labels['publ.dateTo']}"   
+									          	styleClass="form-control #{searchApplications.hasMessages('appFilterForm:dateDo') ? 'cc-red' : '' }" 
+									          	style="padding-left:6px">
+									        </p:calendar>  	
+										    <p:message for="dateDo" showDetail="true" showSummary="true" display="tooltip"/>
+										</div>
+									</div>
+									
+									<div class="ui-g">	
+										<div class="ui-g-12 ui-md-4">
+											<p:selectOneMenu value="#{searchApplications.status}" height="300px" id="status" autoWidth="false" style="display:flex;">                                     
+			                               		<f:selectItem itemLabel="-- #{labels['general.status']} --" itemValue="" />
+			                                    <f:selectItems value="#{systemData.getSysClassification(IBConstants.CODE_SYSCLASS_STATUS_APPLICATION, searchApplications.today, searchApplications.currentLang, searchApplications.userID)}" 
+			                                    			   var="evR" itemLabel="#{evR.tekst}" itemValue="#{evR.code}" />			                                    
+			                                </p:selectOneMenu>											                        
+										</div>
+										
+										<div class="ui-g-12 ui-md-8 flex">
+										
+											<p:inputText value="#{searchApplications.tematika}"  id="tematika" readonly="true" placeholder="#{labels['publ.tematika']}" class="flex-grow"/>
+										
+											<ibg:selectManyModal  
+														header="#{labels['publ.izbThemas']}"   
+														userId="#{searchApplications.userID}"  
+														lang="#{searchApplications.currentLang}"   
+										 	            saveStateTree="true"  
+										 	            withBtnClear="false"
+										 		        codeClassif="#{IBConstants.CODE_SYSCLASS_THEMAS}"     
+										 		        update="appFilterForm:tematika"  
+										 		        selectedCodes="#{searchApplications.selectedThemas}" 
+										 		        selectedText="#{searchApplications.tematika}"
+										 		        modal="true"
+										 		        id="idManyMT"
+										 		        expanded="false"
+										 		        sortByName="true"
+										 		        isSelectNode="false"
+										 		        showRadioBtn="true" />	
+						 		        </div>									                        
+										
+									</div>
+								</div>
+							</div>
+							
+							<!-- Second column - buttons -->
+							<div class="ui-g-12 ui-md-12 ui-lg-1">
+			
+								<div class="ui-g">
+									<div class="ui-g-12 ui-lg-12 ui-md-3 ui-sm-4">
+										<p:commandButton action="#{searchApplications.actionSearch()}" value="#{labels['general.search']}" icon="fa fa-search" update="appFilterForm:panelData message" id="btnSearch" >
+								       		<f:param name="param" value="#{param}" />	
+								        </p:commandButton>
+							        </div>
+							        <ui:remove>
+									<div class="ui-g-12 ui-lg-12 ui-md-3 ui-sm-4">
+										<p:commandButton action="#{searchApplications.actionClear()}" value="#{labels['general.clear']}" update="appFilterForm:panelDataSearch" id="btnClear" /> 
+									</div>
+									</ui:remove>
+								</div>
+								
+							</div>
+		
+						</div>
+					</div>
+				</div>
+			</div>
 			<div class="container">
 
 				<p:outputPanel id="panelData">	
-						
+					
 					<br />
-					
-					<p:panel  >
-						<div class="ui-g">
-							
-			
-							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right">
-								<h:outputText value="#{labels['general.text']}: " />
-							</div>
-							<div class="ui-g-12 ui-md-10 ui-lg-10">											
-    							<p:inputText value="#{searchApplications.text}" id="text" style="width:96%;"/>                         
-							</div>
-							
-							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
-								<h:outputText value="#{labels['general.period']}:"/>
-							</div>
-							<div class="ui-g-12 ui-md-2 ui-lg-2">
-								<p:selectOneMenu id="idPer" height="300px" value="#{searchApplications.period}" style="width:250px;" >
-		                             <f:selectItem value="#{null}" itemValue="#{null}"/>          
-		                             <f:selectItems  value="#{systemData.getSysClassification(IBConstantsSys.CODE_CLASSIF_PERIOD_NOFUTURE, searchApplications.today, searchApplications.currentLang, searchApplications.userID)}"  
-		                                    var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
-		                             <p:ajax event="change" update="idPer dateOt dateDo"  listener="#{searchApplications.changePeriod()}"   />   
-		                        </p:selectOneMenu>
-	                        </div>
-	                                
-	                        <div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
-								<h:outputText value="#{labels['general.dataOt']}:"/>
-							</div>
-							<div class="ui-g-12 ui-md-3 ui-lg-3">
-									 <p:calendar id="dateOt" pattern="dd.MM.yyyy" mask="true"  showOn="button" 
-											timeZone="#{searchApplications.timeZone}" size="10" locale="bg" 
-								         	style="font-size:12px;"   value="#{searchApplications.dateFrom}" label="#{labels['publ.dateFrom']}"
-								          	styleClass="form-control #{searchApplications.hasMessages('appFilterForm:dateOt') ? 'cc-red ': '' }" >
-								          	
-								      </p:calendar>
-								      <p:message for="dateOt" showDetail="true" showSummary="true" display="tooltip"/>
-							</div>
-							
-							<div class="ui-g-12 ui-md-1 ui-lg-1 cc-right" >
-										<h:outputText value="#{labels['general.dataDo']}:"/>
-							</div>
-							<div class="ui-g-12 ui-md-2 ui-lg-2">
-								<p:calendar id="dateDo" pattern="dd.MM.yyyy" mask="true" showOn="button" 
-									timeZone="#{searchApplications.timeZone}" size="10" locale="bg" 
-						         	style="font-size:12px;"  value="#{searchApplications.dateTo}" label="#{labels['publ.dateTo']}"   
-						          	styleClass="form-control #{searchApplications.hasMessages('appFilterForm:dateDo') ? 'cc-red' : '' }" >
-						          </p:calendar>  	
-							     <p:message for="dateDo" showDetail="true" showSummary="true" display="tooltip"/> 
-							</div> 
-							
-							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
-								<h:outputText value="#{labels['general.status']}: " />
-							</div>
-							<div class="ui-g-12 ui-md-2 ui-lg-2">
-								<p:selectOneMenu value="#{searchApplications.status}" height="300px" id="status" autoWidth="false" style="width:250px;">                                     
-                               		<f:selectItem itemLabel="" itemValue="" />
-                                    <f:selectItems value="#{systemData.getSysClassification(IBConstants.CODE_SYSCLASS_STATUS_APPLICATION, searchApplications.today, searchApplications.currentLang, searchApplications.userID)}" 
-                                    			   var="evR" itemLabel="#{evR.tekst}" itemValue="#{evR.code}" />			                                    
-                                </p:selectOneMenu>											                        
-							</div>
-							
-							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
-							
-								<h:outputText value="#{labels['publ.tematika']}: " />
-							
-							</div>
-							<div class="ui-g-12 ui-md-6 ui-lg-6">
-							
-								<p:inputText value="#{searchApplications.tematika}"  id="tematika" readonly="true" style="width:90%" />
-							
-								<ibg:selectManyModal  
-											header="#{labels['publ.izbThemas']}"   
-											userId="#{searchApplications.userID}"  
-											lang="#{searchApplications.currentLang}"   
-							 	            saveStateTree="true"  
-							 	            withBtnClear="false"
-							 		        codeClassif="#{IBConstants.CODE_SYSCLASS_THEMAS}"     
-							 		        update="appFilterForm:tematika"  
-							 		        selectedCodes="#{searchApplications.selectedThemas}" 
-							 		        selectedText="#{searchApplications.tematika}"
-							 		        modal="true"
-							 		        id="idManyMT"
-							 		        expanded="false"
-							 		        sortByName="true"
-							 		        isSelectNode="false"
-							 		        showRadioBtn="true" />										                        
-							</div>
-							
-							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right">
-								<h:outputText value="#{labels['responseSubjects.title']}: "/>
-							</div>
-	
-							<div class="ui-g-12 ui-md-10 ui-lg-10">							
-							<p:inputText value="#{searchApplications.zadaljenSubText}" id="respSubj" readonly="true" style="width:94%;"/>   
-		                	<ibg:selectOneModal  header="#{labels['responseSubjects.title']}" userId="#{searchApplications.userID}" lang="#{searchApplications.currentLang}" 
-					 	 			saveStateTree="true" isSelectNode="true" withBtnClear="true" codeClassif="#{IBConstants.CODE_SYSCLASS_ADM_REGISTRY}"     
-					 				update="appFilterForm:respSubj" selectedCode="#{searchApplications.responseSubj}" selectedText="#{searchApplications.zadaljenSubText}"  />	    							
-							
-							</div>
-								
-							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
-								<h:outputText value="#{labels['app.nomerZaiavlenie']}: "/>
-							</div>
-
-							<div class="ui-g-12 ui-md-2 ui-lg-10">											
-    							<p:inputText id="nomer" value="#{searchApplications.nomer}" style="width:250px"/>                         
-							</div>
-							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right">
-				 				<p:commandButton action="#{searchApplications.actionClear()}" value="#{labels['general.clear']}" update="appFilterForm:panelData" id="btnClear" /> 
-						 	</div>						 
-						    <div class="ui-g-12 ui-md-2 ui-lg-10 cc-right" >
-						        <p:commandButton action="#{searchApplications.actionSearch()}" value="#{labels['general.search']}" icon="fa fa-search" update="appFilterForm:panelData" id="btnSearch" >
-						       		<f:param name="param" value="#{param}" />	
-						        </p:commandButton>
-						    </div>
-						    		
-						</div>
-					
-					</p:panel>	
-					 
-					<br />
-					
 					
 					<ui:decorate template="/templates/panel.xhtml">
 						<ui:define name="panel-header">
 							<h:outputText value="#{labels['adminApp.title']}: #{searchApplications.appList.getRowCount()}" />
 						</ui:define>
-						<ui:define name="panel-content">
-					
-					
+						<ui:define name="panel-content">			
 			 						 	
 					 	 <p:dataGrid id="tbl" var="row" rendered="#{searchApplications.appList!=null}" columns="1" layout="grid"
 							value="#{searchApplications.appList}" lazy="true" rows="10"
 							rowIndexVar="idx" sortMode="single" reflow="true"
 							emptyMessage=""
 							paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
-							rowsPerPageTemplate="15,20,30" paginatorPosition="bottom"
+							rowsPerPageTemplate="10,20,30" paginatorPosition="bottom"
 							paginator="true" style="margin-bottom:20px; border:0px" >
 							
 							  <p:panel >
 						            <h:panelGrid columns="1" style="width:100%">
 						              
-							           <p:link  outcome="applicationView.jsf" >
-											<p:outputLabel  value="#{row[0].request150}" style="color:#039be5;font-size:large"/>
+							           <p:link outcome="applicationView.jsf" onclick="rc()">
+											<p:outputLabel  value="#{row[0].request150}" />
 												<f:param name="idObj" value="#{row[0].id}" />
-									   </p:link>
-										
+												<f:param name="baBtn" value="searchApplications"/>													
+									   </p:link>										
 						 			   
 						 			     <h:panelGroup>
 							                <h:outputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_ADM_REGISTRY, row[0].responseSubjectId, searchApplications.currentLang, searchApplications.today, searchApplications.userID)}" />
@@ -219,10 +286,10 @@
 			        </ui:decorate>
 				</p:outputPanel>
 
-			</div>
+			</div>	
 			
 		</h:form>
-
+		
 	</ui:define>
 
 </ui:composition>

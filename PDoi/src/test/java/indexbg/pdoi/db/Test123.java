@@ -7,10 +7,12 @@ import java.util.Map;
 
 import javax.persistence.Query;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.indexbg.system.db.JPA;
 
+@Ignore
 public class Test123 {
 
 	@Test

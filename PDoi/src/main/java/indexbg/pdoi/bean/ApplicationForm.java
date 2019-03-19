@@ -2,6 +2,7 @@ package indexbg.pdoi.bean;
 
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -19,6 +20,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpSession;
 
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.NodeSelectEvent;
@@ -121,6 +123,9 @@ public class ApplicationForm extends PDoiBean {
 	private List<Long> idThemes = new ArrayList<Long>();
 	private String themesText = "";
 	private AppThemesDAO themesDAO;
+	 
+	// obratno ot vanshnata stranica
+	private String viewBackBtn;
 	
 	/** Иницира първоначалните стойности на обекта
 	 * 
@@ -146,6 +151,10 @@ public class ApplicationForm extends PDoiBean {
 			
 			applic.setEmail(getUserData().getEmailUser());
 			applic.setFullNames(getUserData().getLiceNames());
+			
+			if (JSFUtils.getRequestParameter("baBtn")!=null && !JSFUtils.getRequestParameter("baBtn").isEmpty()) {
+				setViewBackBtn(JSFUtils.getRequestParameter("baBtn")+".jsf");
+			}
 			
 		} catch (ObjectNotFoundException e) {
 			userId = -1L;
@@ -186,11 +195,11 @@ public class ApplicationForm extends PDoiBean {
 				//ako zakluchvaniyata sa minali i vsichko e tochno zarezdam obekta
 				
 				if(success){
-					applic = new ApplicationDAO(userId).findById(Long.valueOf(idObj));
+					applic = new ApplicationDAO(userId, getSystemData()).findById(Long.valueOf(idObj));
 					filesList = new FilesDAO(userId).findByCodeObjAndIdObj(applic.getCodeMainObject(), applic.getId());	
 					
 					//------- load events for applic ------
-					EventDAO eventDAO = new EventDAO(userId);
+					EventDAO eventDAO = new EventDAO(userId, getSystemData());
 					eventsList = eventDAO.listFromEventsByAppId(applic.getId());
 					
 					//------- zamrazqvane na sroka --------
@@ -341,9 +350,10 @@ public class ApplicationForm extends PDoiBean {
 			if(applic.getResponseSubjectId()==null){
 				JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR,getMessageResourceString(Constants.beanMessages,"general.pleaseInsert",getMessageResourceString("labels", "application.step2")));
 				returned = false;
+			} else {
+				//търсене в users дали за избрания ЗС има администратори
+				returned = checkForModerators (applic.getResponseSubjectId());
 			}
-			
-		} else {
 			
 		}
 		
@@ -359,8 +369,6 @@ public class ApplicationForm extends PDoiBean {
 		if(checkDataSteps(keyTab)){
 			keyTab++;
 			
-			
-			//TODO 
 			if(keyTab==2){
 				//save
 				 actionSave();
@@ -400,12 +408,12 @@ public class ApplicationForm extends PDoiBean {
 		
 		List<Object[]> dataForAdmin = null; 
 		
-		try {
+		try { 
 			
-			JPA.getUtil().begin();
+			JPA.getUtil().begin();   //if(1==1) {throw new Exception();} za testove
 			
 			//prowerka dali zaduljeniqt subekt ima elektronen dokumentooborot
-			eOrg = new ResponseSubjectDao(userId).responseSubjectSEOS(applic.getResponseSubjectId());
+			eOrg = new ResponseSubjectDao(userId,getSystemData()).responseSubjectSEOS(applic.getResponseSubjectId());
 			
 			
 			//при запис на заявлението трябва да изчислиш крайната дата + 14 дни от датата на регистрация 
@@ -436,13 +444,13 @@ public class ApplicationForm extends PDoiBean {
 			applic.setStatusDate(new Date());
 			//--------------------------------
 			applic.setDocGuid("{"+java.util.UUID.randomUUID().toString().toUpperCase()+"}");
-		
-			applic = new ApplicationDAO(userId).save(applic);
+			
+			applic = new ApplicationDAO(userId, getSystemData()).save(applic);
 			
 			JPA.getUtil().flush();
 			
 			//генерираме заявлението като pdf/doc файл
-			filledFileShablon = new CreateShablons().createShablApplic(applic, getSystemData(), getUserData());
+			filledFileShablon = new CreateShablons().createShablApplic(applic,filesList, getSystemData(), getUserData());
 			filesList.add(0, filledFileShablon);
 			
 			//записваме подадените файлове
@@ -467,11 +475,11 @@ public class ApplicationForm extends PDoiBean {
 			
 			//------------ събитията които ще се подават при ново заявление ------------------------------------------------------
 			
-			EventDAO eventsDAO = new EventDAO(this.userId);	
+			EventDAO eventsDAO = new EventDAO(this.userId, getSystemData());	
 			
 			//Подаване на заявление - Constants.CODE_ZNACHENIE_TYPE_EVENT_SUBMIT_APP
 			
-			Event eventPodavane = new Event();
+			Event eventPodavane = new Event(getSystemData());
 			
 			eventPodavane.setApplicationId(applic.getId());
 			eventPodavane.setEventDate(new Date());
@@ -484,7 +492,7 @@ public class ApplicationForm extends PDoiBean {
 			
 			if(eOrg!=null){
 				//Изпратено към деловодна система
-				Event eventToSEOS = new Event();
+				Event eventToSEOS = new Event(getSystemData());
 				
 				eventToSEOS.setApplicationId(applic.getId());
 				eventToSEOS.setEventDate(new Date());
@@ -500,6 +508,8 @@ public class ApplicationForm extends PDoiBean {
 
 			JPA.getUtil().commit();	
 
+			indexApplication(applic.getId());
+
 			JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_INFO, getMessageResourceString("beanMessages", "general.succesSaveMsg"));
 			
 			startThreadMails = true;
@@ -508,11 +518,13 @@ public class ApplicationForm extends PDoiBean {
 			JPA.getUtil().rollback();
 			LOGGER.error("Грешка при запис на заявление! ", e);
 			JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString("beanMessages", "general.errDataBaseMsg"));
+			keyTab--;
 
 		} catch (Exception e) {
 			JPA.getUtil().rollback();
 			LOGGER.error("Грешка при запис на заявление!!!", e);
 			JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString("beanMessages", "general.exception"));
+			keyTab--;
 
 		} finally {
 			JPA.getUtil().closeConnection();
@@ -541,14 +553,18 @@ public class ApplicationForm extends PDoiBean {
 				
 				if(eOrg!=null){
 					mailsTo = new ArrayList<>();
-					mailsTo.add(applic.getEmail());			
-					t = new Thread(new MyRunnableMail(Constants.CODE_ZNACHENIE_SHABLON_PODAVANE_APPLIC_ZDOI_S_SOES, mailsTo, applic.getApplicationUri(), eOrg.getAdministrativeBodyName(), srok, name, null, null, null, link));	
+					mailsTo.add(applic.getEmail());	
+					link = getSystemData().getSettingsValue("linkToExternalSite") + this.applic.getId();
+					
+					t = new Thread(new MyRunnableMail(Constants.CODE_ZNACHENIE_SHABLON_PODAVANE_APPLIC_ZDOI_S_SOES, mailsTo, applic.getApplicationUri(), eOrg.getAdministrativeBodyName(), srok, name,  userId, null, link));	
 					t.start();					
 				
 				} else { //съобщение до Заявител при ЗДОИ без СЕОС				
 					mailsTo = new ArrayList<>();	
 					mailsTo.add(applic.getEmail());	
-					t = new Thread(new MyRunnableMail(Constants.CODE_ZNACHENIE_SHABLON_PODAVANE_APPLIC_ZDOI_BEZ_SOES, mailsTo, applic.getApplicationUri(), zdoi, srok, name, null, null, null, link));	
+					link = getSystemData().getSettingsValue("linkToExternalSite") + this.applic.getId();
+					
+					t = new Thread(new MyRunnableMail(Constants.CODE_ZNACHENIE_SHABLON_PODAVANE_APPLIC_ZDOI_BEZ_SOES, mailsTo, applic.getApplicationUri(), zdoi, srok, name,  userId, null, link));	
 					t.start();		
 					
 					 ArrayList<String> mailsToAdm = new ArrayList<String>();
@@ -559,7 +575,10 @@ public class ApplicationForm extends PDoiBean {
 								mailsToAdm.add(SearchUtils.asString(ea[1]));
 							}
 						}
-						t = new Thread(new MyRunnableMail(Constants.CODE_ZNACHENIE_SHABLON_PODAVANE_ADMIN_ZDOI_BEZ_SOES, mailsToAdm, applic.getApplicationUri(), zdoi, srok, null, null, null, null, link));	
+						
+						link = getSystemData().getSettingsValue("linkToInternalSite") + this.applic.getId();
+						
+						t = new Thread(new MyRunnableMail(Constants.CODE_ZNACHENIE_SHABLON_PODAVANE_ADMIN_ZDOI_BEZ_SOES, mailsToAdm, applic.getApplicationUri(), zdoi, srok, null, userId, null, link));	
 						t.start();
 					
 					}
@@ -569,8 +588,8 @@ public class ApplicationForm extends PDoiBean {
 			}
 			
 		}
-	}	
-	
+	}
+
 	/** Изтриване на последното събитие в таблицата със списъка на събития към заявление и изпраща мейли при изтриване
 	 * 
 	 */
@@ -586,7 +605,7 @@ public class ApplicationForm extends PDoiBean {
 			
 			JPA.getUtil().begin();
 			
-			new EventDAO(userId).deleteEvent(Long.valueOf(idEvent), applic.getId());
+			new EventDAO(userId, getSystemData()).deleteEvent(Long.valueOf(idEvent), applic.getId());
 			
 			JPA.getUtil().commit();		
 			
@@ -627,10 +646,71 @@ public class ApplicationForm extends PDoiBean {
 			String srok = new SimpleDateFormat("dd.MM.yyyy").format(SearchUtils.asDate(this.applic.getResponseEndTime()));
 			
 			ArrayList<String> mailsTo = new ArrayList<>();
-			mailsTo.add(applic.getEmail());			
-			Thread t = new Thread(new MyRunnableMail(Constants.CODE_ZNACHENIE_SHABLON_DELETE_EVENT_DO_APPLIC, mailsTo, applic.getApplicationUri(), null, srok, name, null, null, eventName, link));	
+			mailsTo.add(applic.getEmail());	
+			link = getSystemData().getSettingsValue("linkToExternalSite") + this.applic.getId();
+			
+			Thread t = new Thread(new MyRunnableMail(Constants.CODE_ZNACHENIE_SHABLON_DELETE_EVENT_DO_APPLIC, mailsTo, applic.getApplicationUri(), null, srok, name,  userId, eventName, link));	
 			t.start();	
 			
+		}
+		
+		try {
+			
+			this.applic = new ApplicationDAO(userId, getSystemData()).findById(this.applic.getId());			
+			
+			//------- zamrazqvane na sroka --------
+			if(applic.getResponseEndTime()!=null){
+				responseEndTime = new SimpleDateFormat("dd.MM.yyyy").format(applic.getResponseEndTime());
+			}
+			
+			showBntMoreInfo = false;
+			if(eventsList!=null && !eventsList.isEmpty()){
+				if( eventsList.get(eventsList.size()-1).getEventType() == Constants.CODE_ZNACHENIE_TYPE_EVENT_REQ_ADD_INFORMATION){
+					responseEndTime = "Очаква се предоставяне на допълнителна информация";
+					if(applic.getUserReg().equals(userId)){
+						showBntMoreInfo = true;
+					}
+				}
+			}
+			
+			EventDAO eventDAO = new EventDAO(userId, getSystemData());
+			
+			eventsList = eventDAO.listFromEventsByAppId(applic.getId());
+			
+			eventsControl = new HashMap<Long ,Object[]>();
+			List<Object[]> eControlList = eventDAO.eventsControlList();
+			for (Object[] eObj : eControlList) {
+				eventsControl.put(SearchUtils.asLong(eObj[0]), eObj);
+			}
+						
+		    // в бутона за ново събитие в заявлението да може да се покажат събитията, както следват, след записа на новото събитие
+		    List<SystemClassif> listItems = new ArrayList<>();
+		    
+		    if(this.eventsList != null){
+		    	List<Object> nextEvents = eventDAO.nextEventsForApp(this.eventsList.get(this.eventsList.size()-1).getEventType());
+				for(Object o:nextEvents){
+					listItems.add( getSystemData().decodeItemFull(Constants.CODE_SYSCLASS_TYPE_EVENT, SearchUtils.asLong(o), getCurrentLang(), new Date(), userId));
+				}
+			}		    
+		    
+		   filesResponseList = new ArrayList<>();		    
+		    
+		   setMenuButton(new DefaultMenuModel());
+		    
+		    for(SystemClassif item : listItems){
+				DefaultMenuItem ajaxAction = new DefaultMenuItem(item.getTekst());
+				ajaxAction.setCommand("eventsInt.jsf");
+				ajaxAction.setParam("eventCode", item.getCode());
+				ajaxAction.setParam("applicId", applic.getId());
+				ajaxAction.setAjax(false);
+				getMenuButton().addElement(ajaxAction);
+			}
+		    
+		} catch (DbErrorException e) {
+			LOGGER.error(e.getMessage(),e);
+			JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString(Constants.beanMessages, "general.errDataBaseMsg"));
+		} finally {
+			JPA.getUtil().closeConnection();
 		}
 		
 	}
@@ -672,29 +752,21 @@ public class ApplicationForm extends PDoiBean {
 	 */
 	public void onNodeSelect(NodeSelectEvent event) {
 		SystemClassif item = (SystemClassif) event.getTreeNode().getData();
-		applic.setResponseSubjectId(item.getCode());
 		
-		//търсене в users дали за избрания ЗС има администратори
-		
-		PublicationDAO pDao = new PublicationDAO(getUserId());
-		List<Long> userTypes=new ArrayList<Long>();
-		userTypes.add(Long.valueOf(Constants.CODE_ZNACHENIE_TIP_POTR_VATR));
-		
-		try {
-			List<Object[]> admins =  pDao.findAdminDataByOrgCode(item.getCode(), userTypes);
-			if(admins==null || admins.size()<1) {
-				JSFUtils.addMessage(null,FacesMessage.SEVERITY_ERROR, getMessageResourceString(Constants.beanMessages, "application.noAdmins"));
-			}
-		} catch (DbErrorException e) {
-			LOGGER.error(e.getMessage(),e);
-			JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString(Constants.beanMessages, "general.errDataBaseMsg"));
-		} catch (Exception e) {
-			JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString(Constants.beanMessages,"general.unexpectedResult"));
-			LOGGER.error(e.getMessage(), e);
-		} finally {
-			JPA.getUtil().closeConnection();
+		if(event.getTreeNode().isLeaf()){
+			applic.setResponseSubjectId(item.getCode());
+			//търсене в users дали за избрания ЗС има администратори
+			checkForModerators (item.getCode());
+		} else {
+			applic.setResponseSubjectId(null);
+			
+			if(event.getTreeNode().isExpanded()){
+				event.getTreeNode().setExpanded(false);
+        	} else {
+        		event.getTreeNode().setExpanded(true);
+        	}
+			event.getTreeNode().setSelected(false);
 		}
-        
     }
  
     /**  Премахва избраното значение от дървото със задължените субекти
@@ -705,6 +777,30 @@ public class ApplicationForm extends PDoiBean {
         applic.setResponseSubjectId(null);
     }
 
+    
+    private boolean checkForModerators (Long code) {
+    	
+    	List<Long> userTypes=new ArrayList<Long>();
+		userTypes.add(Long.valueOf(Constants.CODE_ZNACHENIE_TIP_POTR_VATR));
+		
+		try {
+			List<Object[]> admins =  new PublicationDAO(getUserId()).findAdminDataByOrgCode(code, userTypes);
+			if(admins==null || admins.size()<1) {
+				JSFUtils.addMessage(null,FacesMessage.SEVERITY_ERROR, getMessageResourceString(Constants.beanMessages, "application.noAdmins"));
+				return false;
+			}
+		} catch (DbErrorException e) {
+			LOGGER.error(e.getMessage(),e);
+			JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString(Constants.beanMessages, "general.errDataBaseMsg"));
+		} catch (Exception e) {
+			JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString(Constants.beanMessages,"general.unexpectedResult"));
+			LOGGER.error(e.getMessage(), e);
+		} finally {
+			JPA.getUtil().closeConnection();
+		}
+    	
+    	return true;
+    }
 	/** GET & SET
 	 * 
 	 *
@@ -757,19 +853,23 @@ public class ApplicationForm extends PDoiBean {
 			
 			UploadedFile upFile = event.getFile();
 			
-			Files fileObject = new Files();
-			fileObject.setFilename(upFile.getFileName());
-			fileObject.setContentType(upFile.getContentType());
-			fileObject.setContent(upFile.getContents());
-			fileObject.setIdObject(-1L);
-			fileObject.setCodeObject(applic.getCodeMainObject());			
-				
-			filesList.add(fileObject);
-		
+			if(!checkForUploadedFileByName(upFile.getFileName(), filesList)) {
+			
+				Files fileObject = new Files();
+				fileObject.setFilename(upFile.getFileName());
+				fileObject.setContentType(upFile.getContentType());
+				fileObject.setContent(upFile.getContents());
+				fileObject.setIdObject(-1L);
+				fileObject.setCodeObject(applic.getCodeMainObject());			
+					
+				filesList.add(fileObject);
+			}
 		} catch (Exception e) {
 			LOGGER.error("Exception: " + e.getMessage());
 		} 
 	}
+	
+	
 	
 	/**
 	 * Download selected file
@@ -808,11 +908,14 @@ public class ApplicationForm extends PDoiBean {
 		
 		if(ok){
 			try {
+				
+				String codedfilename = URLEncoder.encode(file.getFilename(), "UTF8");
+				
 				FacesContext facesContext = FacesContext.getCurrentInstance();
 			    ExternalContext externalContext = facesContext.getExternalContext();
 			    externalContext.setResponseHeader("Content-Type", "application/x-download");
 			    externalContext.setResponseHeader("Content-Length", file.getContent().length + "");
-			    externalContext.setResponseHeader("Content-Disposition", "attachment;filename=\"" + file.getFilename() + "\"");
+			    externalContext.setResponseHeader("Content-Disposition", "attachment;filename=\"" + codedfilename + "\"");
 				externalContext.getResponseOutputStream().write(file.getContent());
 				facesContext.responseComplete();
 			} catch (IOException e) {
@@ -905,6 +1008,82 @@ public class ApplicationForm extends PDoiBean {
 	}
 
 
+	/** За търсене на сходни заявления
+	 * 
+	 * 
+	 */
+	public void searchAppsRs() {
+		clearSearchParamsFilter();
+		
+		if(applic.getResponseSubjectId()!=null) {
+		Map<String, Object> params  = new HashMap<String, Object>();
+		
+		    List<Long> selectedSubj = new ArrayList<Long>();
+		    selectedSubj.add(applic.getResponseSubjectId());
+			params.put(("selectedSubj"),selectedSubj );
+			try {
+				
+				addSessionScopeAttribute("zadaljenSubText", getSystemData().decodeItem(Constants.CODE_SYSCLASS_ADM_REGISTRY, applic.getResponseSubjectId(), getCurrentLang(), new Date(), getUserId())+ "; ");
+			} catch (DbErrorException e) {
+				LOGGER.error(e.getMessage(),e);
+				JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString(Constants.beanMessages, "general.errDataBaseMsg"));
+			} catch (Exception e) {
+				JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString(Constants.beanMessages,"general.unexpectedResult"));
+				LOGGER.error(e.getMessage(), e);
+			} finally {
+				JPA.getUtil().closeConnection();
+			}
+			addSessionScopeAttribute("sappSMDAttr", params);
+		}
+		
+		
+	}
+	
+	public void searchSimilarApp() {
+		clearSearchParamsFilter();
+		
+		Map<String, Object> params  = new HashMap<String, Object>();
+				  
+		params.put(("text"),applic.getRequest() );
+		addSessionScopeAttribute("sappSMDAttr", params);
+	}
+	
+	public void searchSimilarAppRs() {
+		clearSearchParamsFilter();
+		
+		Map<String, Object> params  = new HashMap<String, Object>();
+		
+	    List<Long> selectedSubj = new ArrayList<Long>();
+	    selectedSubj.add(applic.getResponseSubjectId());
+		params.put(("selectedSubj"),selectedSubj );
+		try {
+			
+			addSessionScopeAttribute("zadaljenSubText", getSystemData().decodeItem(Constants.CODE_SYSCLASS_ADM_REGISTRY, applic.getResponseSubjectId(), getCurrentLang(), new Date(), getUserId())+ "; ");
+		} catch (DbErrorException e) {
+			LOGGER.error(e.getMessage(),e);
+			JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString(Constants.beanMessages, "general.errDataBaseMsg"));
+		} catch (Exception e) {
+			JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString(Constants.beanMessages,"general.unexpectedResult"));
+			LOGGER.error(e.getMessage(), e);
+		} finally {
+			JPA.getUtil().closeConnection();
+		}		
+		params.put(("text"),applic.getRequest() );
+		addSessionScopeAttribute("sappSMDAttr", params);	
+		
+	}
+	
+	private void clearSearchParamsFilter() {
+		
+		FacesContext context = FacesContext.getCurrentInstance();
+		HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
+		session.removeAttribute("sappSMDAttr");
+		session.removeAttribute("zadaljenSubText");
+		session.removeAttribute("period");
+		session.removeAttribute("sappPage");
+		
+	}
+	
 	public void setSubectRootNode(TreeNode subectRootNode) {
 		this.subectRootNode = subectRootNode;
 	}
@@ -1081,7 +1260,7 @@ public class ApplicationForm extends PDoiBean {
 		
 		try {
 			if(filledFileShablon==null){
-				filledFileShablon = new CreateShablons().createShablApplic(applic, getSystemData(), getUserData());
+				filledFileShablon = new CreateShablons().createShablApplic(applic,filesList, getSystemData(), getUserData());
 			} 
 			 
 //			Показва попълнения шаблон			
@@ -1250,6 +1429,14 @@ public class ApplicationForm extends PDoiBean {
 
 	public void setFilledFileShablon(Files filledFileShablon) {
 		this.filledFileShablon = filledFileShablon;
+	}
+
+	public String getViewBackBtn() {
+		return viewBackBtn;
+	}
+
+	public void setViewBackBtn(String viewBackBtn) {
+		this.viewBackBtn = viewBackBtn;
 	}
 	
 	//------------------------------------ край на тематики на заявлението --------------------------------------------
