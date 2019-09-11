@@ -30,15 +30,30 @@
 			}	
 			
 			body.color-blind .banner {
-				background: linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 15%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0.5) 100%), url(./images/video.jpg);
-			    background-attachment: fixed;
-			    background-size: contain;
-			    filter: grayscale(1);
+				background: none;
+			}
+			
+			.button-wrapper {
+				display: flex;
+				flex-wrap: nowrap;
+				justify-content: space-between;
+				align-items: center;
 			}
 			
 			.help-button {
 				margin: 1em auto;
 				padding: 0.6em 1em !important;
+				font-size: 1.25em;
+			}
+			
+			.button-icon {
+				margin-right: 0.5em; 
+				float: right;
+			}
+			
+			.button-label {
+				margin-right: 0.5em;
+				text-align: left;
 			}
 			
 			body.color-blind .help-button {
@@ -48,7 +63,6 @@
 			body.color-blind .video-button-active .icon {
 				color: black;
 			}
-			
 			
 			.video-button-active {
 				background-color: #FFB300 !important;
@@ -119,18 +133,24 @@
 						
 						<div class="ui-g-12 ui-md-3">
 							<div id="user_reg.mp4" class="ui-sm-5 ui-md-8 ui-button help-button video-button">
-								<span>#{labels['general.videoRegister']}</span>
-								<span style="margin-right: 0.5em;float: right;"><i class="icon fas fa-video"></i></span>
+								<div class="button-wrapper">
+									<span class="button-label">#{labels['general.videoRegister']}</span>
+									<span class="button-icon"><i class="icon fas fa-video"></i></span>
+								</div>
 							</div>
 							
 							<div id="podavane_zaiavlenie.mp4" class="ui-sm-5 ui-md-8 ui-button help-button video-button">
-								<span>#{labels['general.videoSubmit']}</span>
-								<span style="margin-right: 0.5em; float: right;"><i class="icon fas fa-video"></i></span>
+								<div class="button-wrapper">
+									<span class="button-label">#{labels['general.videoSubmit']}</span>
+									<span class="button-icon"><i class="icon fas fa-video"></i></span>
+								</div>
 							</div>
 							
-							<a class="ui-sm-5 ui-md-8 ui-button help-button pdf-button" href="resources/docs/User_Guide v3.pdf" target="_blank">
-								<span>Инструкция в ПДФ</span>
-								<span style="margin-right: 0.5em; float: right;"><i class="icon fas fa-file-pdf-o"></i></span>
+							<a class="ui-sm-5 ui-md-8 ui-button help-button pdf-button" href="#{systemData.getSettingsValue('user_guide_path')}" target="_blank">
+								<div class="button-wrapper">
+									<span class="button-label">#{labels['general.instructionsPdf']}</span>
+									<span class="button-icon"><i class="icon fas fa-file-pdf-o"></i></span>
+								</div>
 							</a>
 							
 						</div>

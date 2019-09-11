@@ -22,19 +22,23 @@
 		
 			<style>
 				.ui-fileupload-buttonbar {
-				    margin: 0px 0px 0px 0px !important;
-				    padding: 0px 0px 0px 0px !important;
-				    border: none;
+					margin: 0px 0px 0px 0px !important;
+					padding: 0px 0px 0px 0px !important;
+					border: none;
 				}
+				
 				.ui-fileupload {
-				    margin: 0px 0px 0px 0px !important;
-				    padding: 0px 0px 0px 0px !important;
-				    display: inline-block;
-				    border: none;
+					margin: 0px 0px 0px 0px !important;
+					padding: 0px 0px 0px 0px !important;
+					display: inline-block;
+					border: none;
 				}
-				.ui-fileupload-content {
-				    display: none;  
+				
+				.ui-fileupload-content { 
+				   border: none;
+				   padding: 0px !important;
 				}
+				.ui-fileupload-files {display:none;}
 				.ui-fileupload-buttonbar .ui-button {
 				    top: -1px;
 				}
@@ -211,12 +215,15 @@
 				  					<h:outputText value="#{labels['general.country']}: " styleClass="req"/>
 				  				</div>
 				  				<div class="ui-g-12 ui-md-3 ui-lg-3">
-				  					<p:selectOneMenu id="country" value="#{applicationForm.applic.country}"  style="width:90%" autoWidth="false">
+				  					<p:selectOneMenu id="country" value="#{applicationForm.applic.country}"  style="width:90%" autoWidth="false" filter="true" filterMatchMode="startsWith">
 							            <f:selectItem itemLabel=" " itemValue="-1" />
 							            <f:selectItems value="#{systemData.getSysClassification(IBConstants.CODE_SYSCLASS_COUNTRIES, null, applicationForm.currentLang, applicationForm.userId)}" 
 	                                    		   var="itema" itemLabel="#{itema.tekst}" itemValue="#{itema.code}"/>	
 						            	<p:ajax event="change" update="panelData" listener="#{applicationForm.actionChangeCountry}" process="@all"/>
 							        </p:selectOneMenu>
+							        
+							      
+							        
 				  				</div>
 				  				
 				  			</div>
@@ -225,7 +232,7 @@
 				  					<h:outputText value="#{labels['general.oblast']}: " styleClass="req"/>
 				  				</div>
 				  				<div class="ui-g-12 ui-md-3 ui-lg-3">
-				  					<p:selectOneMenu id="oblast" value="#{applicationForm.applic.region}" style="width:90%">
+				  					<p:selectOneMenu id="oblast" value="#{applicationForm.applic.region}" style="width:90%" filter="true" filterMatchMode="startsWith">
 				  					    <f:selectItem itemLabel=" " itemValue="" />
 							            <f:selectItems value="#{applicationForm.oblastList}" 
 	                                    		   var="itema" itemLabel="#{itema.tekst}" itemValue="#{itema.code}"/>
@@ -240,7 +247,7 @@
 				  					<h:outputText value="#{labels['general.obshtina']}: " styleClass="req"/>
 				  				</div>
 				  				<div class="ui-g-12 ui-md-3 ui-lg-3">
-				  					<p:selectOneMenu id="obshtina" value="#{applicationForm.applic.municipality}"  style="width:90%">
+				  					<p:selectOneMenu id="obshtina" value="#{applicationForm.applic.municipality}"  style="width:90%" filter="true" filterMatchMode="startsWith">
 				  						<f:selectItem itemLabel=" " itemValue="" />
 							            <f:selectItems value="#{applicationForm.obshtiniList}" 
 	                                    		   var="itema" itemLabel="#{itema.tekst}" itemValue="#{itema.code}"/>
@@ -254,7 +261,7 @@
 				  					<h:outputText value="#{labels['general.nasMiasto']}: " styleClass="req"/>
 				  				</div>
 				  				<div class="ui-g-12 ui-md-2 ui-lg-2">
-				  					<p:selectOneMenu id="nasMesto" value="#{applicationForm.applic.town}" style="width:90%">
+				  					<p:selectOneMenu id="nasMesto" value="#{applicationForm.applic.town}" style="width:90%" filter="true" filterMatchMode="contains">
 							            <f:selectItem itemLabel=" " itemValue="" />
 							             <f:selectItems value="#{applicationForm.nasMestoList}" 
 	                                    		   var="itema" itemLabel="#{itema.tekst}" itemValue="#{itema.code}"/>
@@ -294,7 +301,7 @@
 							
 							<f:facet name="actions">
 								<p:fileUpload id="filesUpload" fileUploadListener="#{applicationForm.uploadFileListener}"  label="" skinSimple="true" update="fileList" auto="true" 
-									allowTypes="#{systemData.getSettingsValue('fileExtensionsForAttaching')}"/>
+									allowTypes="#{systemData.getSettingsValue('fileExtensionsForAttaching')}" />
 								<p:tooltip for="filesUpload" value="#{labels['file.upload']}" />									
 							</f:facet>			
 						
@@ -356,11 +363,13 @@
 							<br/>
 							<div class="ui-g">
 							    <div class="ui-g-12 ui-md-10 ui-lg-11">
-									<p:inputText value="#{applicationForm.searchWordClass}"    id="textZv1"    style="width:100%;"  placeholder="#{labels['general.search']}" />   
+									<p:inputText value="#{applicationForm.searchWordClass}"    id="textZv1"    style="width:100%;"  placeholder="#{labels['general.search']}" > 
+										<p:ajax event="keyup" listener="#{applicationForm.search}" update="formApplic:zadSubektiTree" />  
+									</p:inputText>
 					            </div>
 								<div class="ui-g-12 ui-md-2 ui-lg-1">
 								 	<p:commandButton icon="fa fa-fw fa-search"  id="searchBtn" actionListener="#{applicationForm.search()}"
-			   						update="formApplic:zadSubektiTree" title="#{labels['general.search']}"/>
+			   						update="formApplic:zadSubektiTree" title="#{labels['general.search']}" rendered="false"/>
 			   						<p:defaultCommand target="searchBtn"/>
 								<span class="ui-separator"></span>
 								  	<p:commandButton icon="fa fa-fw fa-refresh"  actionListener="#{applicationForm.refreshTree()}" id="refreshBtn"
@@ -369,7 +378,7 @@
 							</div>
 							
 							
-							<p:treeTable value="#{applicationForm.subectRootNode}" var="subekt"  selectionMode="single" selection="#{applicationForm.subectSelectedNode}" id="zadSubektiTree">
+							<p:treeTable value="#{applicationForm.subectRootNode}" var="subekt"  selectionMode="single" selection="#{applicationForm.subectSelectedNode}" id="zadSubektiTree" emptyMessage="#{labels['general.norows']}">
 						        <p:ajax event="select" listener="#{applicationForm.onNodeSelect}"  update="message formApplic:linksSearch @this" />
 	        					<p:ajax event="unselect" listener="#{applicationForm.onNodeUnselect}" update="formApplic:linksSearch @this" />
 						        

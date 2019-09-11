@@ -372,13 +372,15 @@ public void uploadFileListener(FileUploadEvent event){
 			
 			UploadedFile upFile = event.getFile();
 			
-			Files fileObject = new Files();
-			fileObject.setFilename(upFile.getFileName());
-			fileObject.setContentType(upFile.getContentType());
-			fileObject.setContent(upFile.getContents());
-			fileObject.setIdObject(getIdUser());
-			fileObject.setCodeObject(this.publication.getCodeMainObject());			
-			getFilesList().add(fileObject);
+			if(!checkForUploadedFileByName(upFile.getFileName(), filesList)) {
+				Files fileObject = new Files();
+				fileObject.setFilename(upFile.getFileName());
+				fileObject.setContentType(upFile.getContentType());
+				fileObject.setContent(upFile.getContents());
+				fileObject.setIdObject(getIdUser());
+				fileObject.setCodeObject(this.publication.getCodeMainObject());			
+				getFilesList().add(fileObject);
+			}
 		
 		} catch (Exception e) {
 			LOGGER.error("Exception: " + e.getMessage(),e);

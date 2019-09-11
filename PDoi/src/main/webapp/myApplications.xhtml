@@ -9,7 +9,7 @@
 	xmlns:ibg="http://java.sun.com/jsf/composite/components">
 
 <ui:composition template="/templateExt/mainExt.xhtml">
-
+	<ui:define name="title">#{labels['menuExt.myZajav']}</ui:define>
 	
 	<ui:define name="menu-items">
 		<ui:include src="/include/menuExt.xhtml" />
@@ -27,10 +27,7 @@
 			}	
 			
 			body.color-blind .banner {
-				background: linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 15%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0.5) 100%), url(./images/background.jpg);
-			    background-attachment: fixed;
-			    background-size: contain;
-			    filter: grayscale(1);
+				background: none;
 			}	
 					 
 			.ui-datagrid-content {
@@ -104,6 +101,7 @@
 											<f:param name="idObj" value="#{row[0]}" />
 											<f:param name="baBtn" value="myApplications"/>		
 										</p:link>
+										<h:outputText value="(#{labels['general.fworg']}: #{systemData.decodeItem(IBConstants.CODE_SYSCLASS_ADM_REGISTRY, row[8], myApplications.currentLang, myApplications.today, myApplications.userID)})" style="color:#d38004" rendered="#{! empty row[8]}"/>
 									 	<h:panelGroup>
 									 	 	<h:outputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_ADM_REGISTRY, row[3], myApplications.currentLang, myApplications.today, myApplications.userID)}" />
 									 	 	|
@@ -165,6 +163,7 @@
 											<f:param name="idObj" value="#{row[0]}" />	
 											<f:param name="baBtn" value="myApplications"/>	
 										</p:link>
+										<h:outputText value="(#{labels['general.fworg']}: #{systemData.decodeItem(IBConstants.CODE_SYSCLASS_ADM_REGISTRY, row[8], myApplications.currentLang, myApplications.today, myApplications.userID)})" rendered="#{! empty row[8]}"/>
 						 				<h:panelGroup>
 						                	<h:outputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_ADM_REGISTRY, row[3], myApplications.currentLang, myApplications.today, myApplications.userID)}" />
 										 	

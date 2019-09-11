@@ -62,6 +62,7 @@ public class UnlockObjects extends PDoiBean  implements Serializable {
 	public void initData(){
 		try{
 			this.idUser=getUserData().getUserId();
+
 		} catch (ObjectNotFoundException e) {
 			JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString(Constants.beanMessages,"general.objectNotFound"), e.getMessage());
 			LOGGER.error(e.getMessage(), e);
@@ -72,14 +73,17 @@ public class UnlockObjects extends PDoiBean  implements Serializable {
 	}
     
 	public void actionSearch(){
-		
 		try {
+//			boolean adminMod = false;
 			SelectMetadata smd;
-			smd = new Locker().createFilterLocked(codeObj, regNom, null, dateFrom, dateTo, this.idUser); // getUserData().getIdRegistratura()
+			/*if(getUserData().getTypeUser()!=null && getUserData().getTypeUser().longValue() == Constants.CODE_ZNACHENIE_TYPE_USER_MODERATOR ){
+				adminMod = true;
+			 }*/
+			
+			smd = new Locker().createFilterLocked(codeObj, regNom, null, dateFrom, dateTo, null); //
 			
 			String defaultSortColumn = "A2";
 			this.lockedList= newLazyDataModel(smd, defaultSortColumn); 
-			
 			
 		} catch (DbErrorException e) {
 			LOGGER.error("Грешка при търсене на заявления! ", e);

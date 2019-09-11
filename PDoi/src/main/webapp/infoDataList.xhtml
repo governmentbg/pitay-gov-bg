@@ -22,6 +22,64 @@
 	
 	
 	<ui:define name="content">
+	
+		<style>
+			* {
+				box-sizing: border-box;
+			}
+		
+			label {
+				font-size: inherit;
+				color: inherit;
+			}
+		
+			input, textarea, .ui-selectonemenu {
+				width: 100%;
+			}
+			
+			.ui-selectonemenu {
+				padding-right: 32px;
+			}
+			
+			.ui-selectonemenu .ui-selectonemenu-trigger {
+				width: 32px;
+			}
+			
+			.ui-calendar {
+				position: relative;
+				display: inline-block;
+				width: 100%;
+			}
+			
+			.ui-calendar input.ui-state-error {
+				color: #333333;
+			}
+			
+			.ui-datepicker-trigger {
+				position: absolute;
+				right: 0;
+				margin-right: 0;
+			}
+			
+			.ibg-modal-button {
+				position:relative;	
+			}
+			
+			.ibg-modal-button .sButton {
+				position: absolute;
+				right: -2px;
+				top: 0px;
+				left: auto;
+			}
+			
+			@media screen and (max-width: 64.063em) {
+				.cc-right {
+					text-align: left;
+				}
+			}
+			
+		</style>
+	
 		<h:form id="formInfList" onkeypress="if(event.keyCode == 13 &amp;&amp; event.target.tagName!='TEXTAREA') {return false;}">
 			<p:importConstants type="indexbg.pdoi.system.Constants" var="IBConstants" className="indexbg.pdoi.system.Constants" />
 			<p:importConstants type="com.indexbg.system.SysConstants" var="IBConstantsSys" className="com.indexbg.system.SysConstants" />
@@ -42,19 +100,21 @@
 										<h:outputText value="#{labels['general.section']}:" />
 									</div>
 									<div class="ui-g-12 ui-md-10 ui-lg-10">
-										<p:inputText value="#{pubList.sectionText}"  id="idSectionText" readonly="true" style="width:83%" tabindex="1"/>
-										<ibg:selectOneModal  
-											header="#{labels['publ.izbSection']}"   
-											userId="#{pubList.idUser}"  
-											lang="#{pubList.currentLang}"   
-							 	            saveStateTree="true"  
-							 	            isSelectNode="true"  
-							 	            withBtnClear="true"
-							 	            id="idOneMS"
-							 		        codeClassif="#{IBConstants.CODE_SYSCLASS_SECTION}"     
-							 		        update="formInfList:idSectionText"  
-							 		        selectedCode="#{pubList.codeSection}" 
-							 		        selectedText="#{pubList.sectionText}"/>
+										<div class="ibg-modal-button">
+											<p:inputText value="#{pubList.sectionText}"  id="idSectionText" readonly="true" tabindex="1"/>
+											<ibg:selectOneModal  
+												header="#{labels['publ.izbSection']}"   
+												userId="#{pubList.idUser}"  
+												lang="#{pubList.currentLang}"   
+								 	            saveStateTree="true"  
+								 	            isSelectNode="true"  
+								 	            withBtnClear="true"
+								 	            id="idOneMS"
+								 		        codeClassif="#{IBConstants.CODE_SYSCLASS_SECTION}"     
+								 		        update="formInfList:idSectionText"  
+								 		        selectedCode="#{pubList.codeSection}" 
+								 		        selectedText="#{pubList.sectionText}"/>
+								 		</div>
 									</div>
 								</div>
 								<div class="ui-g">
@@ -62,32 +122,34 @@
 										<h:outputText value="#{labels['publ.tematika']}:"/>
 									</div>
 									<div class="ui-g-12 ui-md-10 ui-lg-10">
-										<p:inputText value="#{pubList.temaText}"  id="idTemaText" readonly="true" style="width:83%" tabindex="2"/>
-										<ibg:selectManyModal  
-											header="#{labels['publ.izbThemas']}"   
-											userId="#{pubList.idUser}"  
-											lang="#{pubList.currentLang}"   
-							 	            saveStateTree="true"  
-							 	            withBtnClear="false"
-							 		        codeClassif="#{IBConstants.CODE_SYSCLASS_THEMAS}"     
-							 		        update="formInfList:idTemaText"  
-							 		        selectedCodes="#{pubList.selIdThemas}" 
-							 		        selectedText="#{pubList.temaText}"
-							 		        modal="true"
-							 		        id="idManyMT"
-							 		        expanded="false"
-							 		        sortByName="true"
-							 		        isSelectNode="false"
-							 		        showRadioBtn="true" />
+										<div class="ibg-modal-button">
+											<p:inputText value="#{pubList.temaText}"  id="idTemaText" readonly="true" tabindex="2"/>
+											<ibg:selectManyModal  
+												header="#{labels['publ.izbThemas']}"   
+												userId="#{pubList.idUser}"  
+												lang="#{pubList.currentLang}"   
+								 	            saveStateTree="true"  
+								 	            withBtnClear="false"
+								 		        codeClassif="#{IBConstants.CODE_SYSCLASS_THEMAS}"     
+								 		        update="formInfList:idTemaText"  
+								 		        selectedCodes="#{pubList.selIdThemas}" 
+								 		        selectedText="#{pubList.temaText}"
+								 		        modal="true"
+								 		        id="idManyMT"
+								 		        expanded="false"
+								 		        sortByName="true"
+								 		        isSelectNode="false"
+								 		        showRadioBtn="true" />
+					 		        	</div>
 									</div>
 					
 								</div>
 								<div class="ui-g">
-									<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
+									<div class="ui-g-12 ui-lg-2 cc-right" >
 										<h:outputText value="#{labels['publ.period']}:"/>
 									</div>
-									<div class="ui-g-12 ui-md-4 ui-lg-2">
-										<p:selectOneMenu id="idPer" value="#{pubList.period}" style="width:180px;" tabindex="3">
+									<div class="ui-g-12 ui-lg-2">
+										<p:selectOneMenu id="idPer" value="#{pubList.period}" tabindex="3">
 		                                    <f:selectItem value="#{null}" itemValue="#{null}"/>          
 		                                    <f:selectItems value="#{systemData.getSysClassification(IBConstantsSys.CODE_CLASSIF_PERIOD_NOFUTURE, pubList.currentDate, pubList.currentLang, pubList.idUser)}"  
 		                                    		var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
@@ -96,10 +158,10 @@
 	                                </div>
 	                               
 	                               
-	                                <div class="ui-g-12 ui-md-1 ui-lg-1 cc-right" >
+	                                <div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
 										<h:outputText value="#{labels['general.dataOt']}:"/>
 									</div>
-									<div class="ui-g-12 ui-md-2 ui-lg-2">
+									<div class="ui-g-12 ui-md-4 ui-lg-2">
 										<p:calendar id="dateOt" pattern="dd.MM.yyyy" mask="true"  showOn="button" 
 											timeZone="#{pubList.timeZone}" size="10" locale="bg" tabindex="4"
 								         	style="font-size:12px;"   value="#{pubList.dateFrom}" label="#{labels['publ.dateFrom']}"
@@ -109,10 +171,10 @@
 								        </p:calendar>
 								        <p:message for="dateOt" showDetail="true" showSummary="true" display="tooltip"/>
 									</div>
-									<div class="ui-g-12 ui-md-1 ui-lg-1 cc-right" >
+									<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
 										<h:outputText value="#{labels['general.dataDo']}:"/>
 									</div>
-									<div class="ui-g-12 ui-md-2 ui-lg-4">
+									<div class="ui-g-12 ui-md-4 ui-lg-2">
 										<p:calendar id="dateDo" pattern="dd.MM.yyyy" mask="true" showOn="button" 
 											timeZone="#{pubList.timeZone}" size="10" locale="bg" tabindex="5"
 								         	style="font-size:12px;"  value="#{pubList.dateTo}" label="#{labels['publ.dateTo']}"   

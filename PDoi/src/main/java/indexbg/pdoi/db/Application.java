@@ -135,11 +135,53 @@ public class Application extends TrackableEntity {
 	@Column(name="app_id_for_view", precision = 10, scale = 0)	
 	private Long appIdForView;	
 	
+	@Column(name="fw_app", precision = 10, scale = 0)	
+	private Long fwApp;	 //индикатор че заявлението е препратено по компетентност
+	
 	@Override
 	public Long getCodeMainObject() {
 		return Constants.CODE_OBJECT_APPLICATION;
 	}
+	
+	public Application() {}
+	
+	public Application(Application app) {
+		this.docGuid = app.docGuid; 
+		this.applicantType = app.applicantType;
+		this.fullNames = app.fullNames;
+		this.headoffice = app.headoffice;
+		this.country = app.country;
+		this.region =app.region;
+		this.municipality = app.municipality;
+		this.town = app.town;
+		this.address = app.address;
+		this.postCode = app.postCode;
+		this.phone = app.phone;
+		this.email = app.email;
+		this.responseSubjectId = app.responseSubjectId;
+		this.request = app.request;
+		this.status = app.status;
+		this.statusDate = app.statusDate;
+		this.applicationUri = app.applicationUri;
+		this.registrationDate = app.registrationDate;
+		this.response = app.response;
+		this.responseDate = app.responseDate;
+		this.responseEndTime = app.responseEndTime;
+		this.replayInTime = app.replayInTime;
+		this.numberOfVisits = app.numberOfVisits;
+		this.usefulness = app.usefulness;
+		this.add_info = app.add_info;
+		this.namesPublication = app.namesPublication;
+		this.addressPublication = app.addressPublication;
+		this.headofficePublication = app.headofficePublication;
+		this.emailPublication = app.emailPublication;
+		this.phonePpublication = app.phonePpublication;
+		this.appIdForView = app.appIdForView;
+//		super.setUserReg(app.getUserReg());  // taka i da gi slojim sled seiva shte se podmenyat tryabva da se inicializira app_dao s id na podatelq
 
+	}
+	
+	
 	public Long getId() {
 		return id;
 	}
@@ -399,5 +441,13 @@ public class Application extends TrackableEntity {
 	
 	public String getIdentInfo() {
 		return "Рег.ном :"+applicationUri+" Подател: "+fullNames;
+	}
+
+	public Long getFwApp() {
+		return fwApp;
+	}
+
+	public void setFwApp(Long fwApp) {
+		this.fwApp = fwApp;
 	}
 }

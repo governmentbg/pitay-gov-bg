@@ -6,6 +6,8 @@ import java.util.Date;
 
 import org.junit.Test;
 
+import indexbg.pdoi.system.SystemData;
+
 public class TestResponsibleSubjectDao {
 	
 	
@@ -13,7 +15,7 @@ public class TestResponsibleSubjectDao {
 	public void testUpodateAdmRegister()  {
 			
 			try {
-				ResponseSubjectDao dao = new ResponseSubjectDao(-1L,null);		
+				ResponseSubjectDao dao = new ResponseSubjectDao(-1L,new SystemData());		
 
 				Date datBeg = new Date();
 				String s = dao.updateAdmRegisterEntries();

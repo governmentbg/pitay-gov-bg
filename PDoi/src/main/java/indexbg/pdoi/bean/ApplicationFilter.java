@@ -9,6 +9,7 @@ import javax.faces.bean.ViewScoped;
 
 import com.indexbg.system.pagination.LazyDataModelNOSQL;
 import org.primefaces.model.LazyDataModel;
+import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,7 +84,7 @@ public class ApplicationFilter extends PDoiBean {
 					smd.setSqlParameters(getSqlParameters());
 					smd.getSqlParameters().put("fromAdmin","true");
 					String defaultSortColumn = "registrationDate";
-					appList = new LazyDataModelNOSQL(smd, defaultSortColumn);
+					appList = new LazyDataModelNOSQL(smd, defaultSortColumn ,SortOrder.DESCENDING);
 				}			
 			} catch (ObjectNotFoundException e) {
 				LOGGER.error("Грешка при работа със системата!!!", e);
@@ -131,7 +132,7 @@ public class ApplicationFilter extends PDoiBean {
 	public void actionFullTextSearch() {
 		SelectMetadata smd = new SelectMetadata();
 		smd.setSqlParameters(getSqlParameters());
-		appList = new LazyDataModelNOSQL(smd, "registrationDate");
+		appList = new LazyDataModelNOSQL(smd, "registrationDate",SortOrder.DESCENDING);
 	}
 
 	private Map<String, Object> getSqlParameters() {

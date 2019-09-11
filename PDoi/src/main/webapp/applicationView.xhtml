@@ -15,7 +15,7 @@
 	<meta property="og:type" content="website" />
 	<meta property="og:title" content="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_ADM_REGISTRY, applicationView.applic.responseSubjectId, applicationView.currentLang, null, applicationView.userId)}" />
 	<meta property="og:description" content="#{applicationView.applic.request}" />
-	<meta property="og:url" content="https://demo.indexbg.bg/PDoi/applicationView.jsf?idObj=#{applicationView.applic.id}" />
+	<meta property="og:url" content="#{systemData.getSettingsValue('linkToExternalSite')}#{applicationView.applic.id}" />
 	<meta property="og:site_name" content="Pdoi" />		
 	<meta name="twitter:card" content="summary" />
 	<meta name="twitter:description" content="#{applicationView.applic.request}" />
@@ -133,8 +133,8 @@
 								<div class="ui-g-12 ui-md-12 ui-lg-12">
 									<p:panelGrid id="pnlSocial" columns="1" layout="grid" styleClass="ui-noborder">  
 									    <pe:social id="socialMedia"  
-									        shares="facebook,twitter,googleplus"   
-									        url="https://demo.indexbg.bg/PDoi/applicationView.jsf?idObj=#{applicationView.applic.id}"   
+									        shares="facebook,twitter,googleplus"									        
+									        url="#{systemData.getSettingsValue('linkToExternalSite')}#{applicationView.applic.id}"   
 									        text="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_ADM_REGISTRY, applicationView.applic.responseSubjectId, applicationView.currentLang, null, applicationView.userId)}"   
 									        theme="flat"
 									        shareIn="popup"

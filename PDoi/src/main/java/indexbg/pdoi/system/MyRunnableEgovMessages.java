@@ -50,8 +50,8 @@ public class MyRunnableEgovMessages implements Job {
 			if(objl2!=null) { linkUser =objl2.toString(); }
 			
 			
-			Query query = JPA.getUtil().getEntityManager().createNativeQuery ("select a.id id, em.msg_reg_dat date,  em.msg_reg_dat + '14 days' srok ,a.application_uri ,a.email ,a.response_subject_id ,a.applicant_type  ,a.full_names from egov_messages em, pdoi_application a where em.id = a.egov_mess_id and a.status = "
-					+ Constants.CODE_ZNACHENIE_STATUS_APP_EXPECTED_REG + " and em.msg_rn is not null and em.msg_reg_dat is not null");
+			Query query = JPA.getUtil().getEntityManager().createNativeQuery ("select a.id id, em.msg_status_dat date,  em.msg_status_dat + '14 days' srok ,a.application_uri ,a.email ,a.response_subject_id ,a.applicant_type  ,a.full_names from egov_messages em, pdoi_application a where em.id = a.egov_mess_id and a.status = "
+					+ Constants.CODE_ZNACHENIE_STATUS_APP_EXPECTED_REG + " and em.msg_rn is not null and em.msg_rn_dat is not null");
 			
 			List<Object[]> obj = (ArrayList<Object[]>) query.getResultList();
 			
@@ -72,7 +72,7 @@ public class MyRunnableEgovMessages implements Job {
 					//запис в заявлението
 					Query queryUpdate = JPA.getUtil().getEntityManager().createNativeQuery ("update pdoi_application set status =?, status_date =?, registration_date =?, response_end_time=? where id =?");
 					queryUpdate.setParameter(1, Constants.CODE_ZNACHENIE_STATUS_APP_REGISTERED ); // status
-					queryUpdate.setParameter(2, new Date() );
+					queryUpdate.setParameter(2, SearchUtils.asDate(tmp[1]) );
 					queryUpdate.setParameter(3, SearchUtils.asDate(tmp[1]) ); 
 					queryUpdate.setParameter(4, SearchUtils.asDate(tmp[2]) );// srok
 					queryUpdate.setParameter(5,  idApp); // id
@@ -85,7 +85,7 @@ public class MyRunnableEgovMessages implements Job {
 					Event eventPodavane = new Event();
 					
 					eventPodavane.setApplicationId(idApp);
-					eventPodavane.setEventDate(new Date());
+					eventPodavane.setEventDate(SearchUtils.asDate(tmp[1]));
 					eventPodavane.setEventType(Constants.CODE_ZNACHENIE_TYPE_EVENT_CONFIRM_FROM_SYSTEM);
 					eventPodavane.setStatus(Constants.CODE_ZNACHENIE_STATUS_EVENT_COMPLETED);
 					
@@ -110,7 +110,7 @@ public class MyRunnableEgovMessages implements Job {
 						
 						mailsTo = new ArrayList<>();
 						mailsTo.add(appEmail);			
-						t = new Thread(new MyRunnableMail(Constants.CODE_ZNACHENIE_SHABLON_POTV_APPLIC_ZDOI_S_SOES, mailsTo, appUri, eOrg.getAdministrativeBodyName(), srok, name,  -2L, null, linkUser+idApp));	
+						t = new Thread(new MyRunnableMail(Constants.CODE_ZNACHENIE_SHABLON_POTV_APPLIC_ZDOI_S_SOES, mailsTo, appUri, eOrg.getAdministrativeBodyName(), srok, name,  -2L, null, linkUser+idApp,fullNames));	
 						t.start();
 						
 						
@@ -122,7 +122,7 @@ public class MyRunnableEgovMessages implements Job {
 									mailsToAdm.add(SearchUtils.asString(ea[1]));
 								}
 							}
-							t = new Thread(new MyRunnableMail(Constants.CODE_ZNACHENIE_SHABLON_POTV_ADMIN_ZDOI_S_SOES, mailsToAdm, appUri, eOrg.getAdministrativeBodyName(), srok, null, -2L, null, linkAdmin+idApp));	
+							t = new Thread(new MyRunnableMail(Constants.CODE_ZNACHENIE_SHABLON_POTV_ADMIN_ZDOI_S_SOES, mailsToAdm, appUri, eOrg.getAdministrativeBodyName(), srok, null, -2L, null, linkAdmin+idApp,fullNames));	
 							t.start();
 						
 						}

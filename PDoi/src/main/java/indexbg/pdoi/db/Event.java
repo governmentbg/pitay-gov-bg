@@ -3,14 +3,19 @@ package indexbg.pdoi.db;
 import static javax.persistence.GenerationType.SEQUENCE;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ColumnResult;
 import javax.persistence.ConstructorResult;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
@@ -66,7 +71,7 @@ public class Event extends TrackableEntity {
 	@Column(name = "event_end_date", length = 7)
 	private Date eventEndDate;	
 	
-	@Column(name = "add_text", length = 5000)
+	@Column(name = "add_text")
 	private String addText;
 	
 	@Column(name="event_reason", precision = 10, scale = 0)	
@@ -87,8 +92,30 @@ public class Event extends TrackableEntity {
 	@Transient
 	private transient SystemData systemData;
 	
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name="id_event", nullable = false, referencedColumnName = "id", insertable = true, updatable = true)
+	private List<EventRespSubject> newRespSubjectIds = new ArrayList<EventRespSubject>(0);
+	
 	/** default constructor */
 	public Event() {
+		
+	}
+	
+	public Event(Event e) {
+		
+		this.eventType =e.eventType;
+		this.eventDate = e.eventDate;
+		this.status = e.status;
+		this.eventEndDate = e.eventEndDate;
+		this.addText = e.addText;
+		this.eventReason = e.eventReason;
+		this.oldRespSubjectId = e.oldRespSubjectId;
+		this.newRespSubjectId = e.newRespSubjectId;
+		this.reasonNotApproved = e.reasonNotApproved;
+		this.appIdForView = e.appIdForView;
+		
+		for(EventRespSubject rs:e.newRespSubjectIds)
+			this.newRespSubjectIds.add(new EventRespSubject(rs));
 		
 	}
 	
@@ -199,30 +226,6 @@ public class Event extends TrackableEntity {
 		this.appIdForView = appIdForView;
 	}
 
-	@Override
-	public Long getUserReg() {
-		// TODO Auto-generated method stub
-		return super.getUserReg();
-	}
-	
-	@Override
-	public Date getDateReg() {
-		// TODO Auto-generated method stub
-		return super.getDateReg();
-	}
-	
-	@Override
-	public Long getUserLastMod() {
-		// TODO Auto-generated method stub
-		return super.getUserLastMod();
-	}
-	
-	@Override
-	public Date getDateLastMod() {
-		// TODO Auto-generated method stub
-		return super.getDateLastMod();
-	}
-	
 	public SystemData getSystemData() {
 		return systemData;
 	}
@@ -233,7 +236,6 @@ public class Event extends TrackableEntity {
 
 	@Override
 	public Long getCodeMainObject() {
-		// TODO Auto-generated method stub
 		return Constants.CODE_OBJECT_EVENT;
 	}
 	
@@ -261,6 +263,14 @@ public class Event extends TrackableEntity {
 		} 		
 		
 		return dopInfo;
+	}
+
+	public List<EventRespSubject> getNewRespSubjectIds() {
+		return newRespSubjectIds;
+	}
+
+	public void setNewRespSubjectIds(List<EventRespSubject> newRespSubjectIds) {
+		this.newRespSubjectIds = newRespSubjectIds;
 	}
 	
 }

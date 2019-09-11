@@ -60,18 +60,18 @@ public class EgovMessages  implements PersistentEntity  {
 	@Column(name = "msg_type", length = 255)
 	private String msgType;
 	
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "msg_dat")
 	private Date msgDate;
 	
 	@Column(name = "msg_status", length = 255)
 	private String msgStatus;
 	
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "msg_status_dat")
 	private Date msgStatusDate;
 	
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "msg_reg_dat")
 	private Date msgRegDate;
 		

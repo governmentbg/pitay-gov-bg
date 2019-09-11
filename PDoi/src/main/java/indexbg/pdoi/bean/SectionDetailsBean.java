@@ -16,6 +16,8 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.mail.internet.MimeUtility;
+import javax.servlet.http.HttpServletRequest;
 
 import indexbg.pdoi.db.Files;
 import indexbg.pdoi.db.Publication;
@@ -174,10 +176,22 @@ public class SectionDetailsBean  extends PDoiBean{
 				}
 			}
 			
-			String codedfilename = URLEncoder.encode(file.getFilename(), "UTF8");
-			
 			FacesContext facesContext = FacesContext.getCurrentInstance();
 		    ExternalContext externalContext = facesContext.getExternalContext();
+			
+			HttpServletRequest request =(HttpServletRequest)externalContext.getRequest();
+			String agent = request.getHeader("user-agent");
+
+			
+			String codedfilename = ""; 
+			
+			if (null != agent &&  (-1 != agent.indexOf("MSIE") || (-1 != agent.indexOf("Mozilla") && -1 != agent.indexOf("rv:11")) || (-1 != agent.indexOf("Edge"))  ) ) {
+				codedfilename = URLEncoder.encode(file.getFilename(), "UTF8");
+			} else if (null != agent && -1 != agent.indexOf("Mozilla")) {
+				codedfilename = MimeUtility.encodeText(file.getFilename(), "UTF8", "B");
+			} else {
+				codedfilename = URLEncoder.encode(file.getFilename(), "UTF8");
+			}
 		    externalContext.setResponseHeader("Content-Type", "application/x-download");
 		    externalContext.setResponseHeader("Content-Length", file.getContent().length + "");
 		    externalContext.setResponseHeader("Content-Disposition", "attachment;filename=\"" + codedfilename + "\"");

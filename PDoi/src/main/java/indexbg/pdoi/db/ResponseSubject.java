@@ -239,32 +239,45 @@ public class ResponseSubject extends TrackableEntity {
 	public String getIdentInfo() {
 		return "Наименование :"+ subjectName;
 	}
+//
+//	@Override
+//	public Long getUserReg() {
+//		// TODO Auto-generated method stub
+//		return super.getUserReg();
+//	}
+//	
+//	@Override
+//	public Date getDateReg() {
+//		// TODO Auto-generated method stub
+//		return super.getDateReg();
+//	}
+//	
+//	@Override
+//	public Long getUserLastMod() {
+//		// TODO Auto-generated method stub
+//		return super.getUserLastMod();
+//	}
+//	
+//	@Override
+//	public Date getDateLastMod() {
+//		// TODO Auto-generated method stub
+//		return super.getDateLastMod();
+//	}
 
 	@Override
-	public Long getUserReg() {
-		// TODO Auto-generated method stub
-		return super.getUserReg();
-	}
-	
-	@Override
-	public Date getDateReg() {
-		// TODO Auto-generated method stub
-		return super.getDateReg();
-	}
-	
-	@Override
-	public Long getUserLastMod() {
-		// TODO Auto-generated method stub
-		return super.getUserLastMod();
-	}
-	
-	@Override
-	public Date getDateLastMod() {
-		// TODO Auto-generated method stub
-		return super.getDateLastMod();
-	}
-	
 	public String toString() {
-		return subjectName  + "  " +  nomerRegister;
+		return "ResponseSubject [id=" + id + ", eik=" + eik + ", subjectName=" + subjectName + ", region=" + region
+				+ ", municipality=" + municipality + ", town=" + town + ", address=" + address + ", phone=" + phone
+				+ ", fax=" + fax + ", email=" + email + ", addInfo=" + addInfo + ", dateFrom=" + dateFrom + ", dateTo="
+				+ dateTo + ", zipCode=" + zipCode + ", admRegister=" + admRegister + ", admLevel=" + admLevel
+				+ ", nomerRegister=" + nomerRegister + ", getUserReg()=" + getUserReg() + ", getDateReg()="
+				+ getDateReg() + ", getUserLastMod()=" + getUserLastMod() + ", getDateLastMod()=" + getDateLastMod()
+				+ "]";
 	}
+
+	
+	
+//	public String toString() {
+//		return subjectName  + "  " +  nomerRegister;
+//	}
 }

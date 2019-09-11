@@ -330,7 +330,7 @@
 							     	fileUploadListener="#{infoData.uploadFileListener}"  
 							     	invalidSizeMessage="#{labels['general.invalidFileSize']}" 
 						    		invalidFileMessage="#{labels['general.invalidFileTypeAt']}"
-							     	label="" skinSimple="true" allowTypes="/(\.|\/)(pdf|doc?x|xls?x|xml|txt|csv|html|odf)$/" 
+							     	label="" skinSimple="true" allowTypes="#{systemData.getSettingsValue('fileExtensionsForAttaching')}" 
 									update="fileList" auto="true" rendered="#{infoData.param==1}"/>
 								 <p:tooltip for="filesUploadA" value="#{labels['file.upload']}" />
 							</f:facet>
@@ -341,10 +341,11 @@
 	
 						<div class="ui-g-12 ui-md-12 ui-lg-12">	
 							
-							 <p:dataTable id="fileList" var="row" value="#{infoData.filesList}" editable="true" editMode="cell" widgetVar="cellAtt" 
+							 <p:dataTable id="fileList" var="row" value="#{infoData.filesList}" reflow="true" 
 							 			  rowIndexVar="rkv" emptyMessage="#{labels['general.norows']}" rows="10" style="margin-bottom:20px" paginator="true" 
-							 			  paginatorPosition="bottom" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">
-							      
+							 			  paginatorPosition="bottom" 
+							 			  paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">
+							      														
 							       <p:column headerText="#{labels['general.No-symbol']}" width="3%" >
 										<h:outputText value="#{rkv + 1}" />
 									</p:column>
@@ -406,7 +407,7 @@
 		<script type="text/javascript"> $('#formInfoData\\:filesUpload_label').addClass('fa fa-fw fa-paperclip');</script>
 		<script type="text/javascript"> $('#formInfoData\\:filesUploadA_label').addClass('fa fa-fw fa-paperclip');</script>
 		
-		<ui:remove><p:link d="idviewOtpHelp" value="Инструкция" href="#{'help/User_Guide_admin.doc'}" target="_blank" title="Инструкция">
+		<ui:remove><p:link id="idviewOtpHelp" value="Инструкция" href="#{'help/User_Guide_admin.doc'}" target="_blank" title="Инструкция">
 			<span class="icon fas fa-question-circle"></span>
 		</p:link></ui:remove>
 			

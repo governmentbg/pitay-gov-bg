@@ -1,6 +1,11 @@
 package indexbg.pdoi.bean;
 
-import java.util.*;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -9,29 +14,23 @@ import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 
-import com.indexbg.system.pagination.LazyDataModelNOSQL;
-
-import org.apache.xmlbeans.impl.common.SystemCache;
 import org.primefaces.PrimeFaces;
 import org.primefaces.component.datagrid.DataGrid;
-import org.primefaces.context.RequestContext;
 import org.primefaces.model.LazyDataModel;
+import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.indexbg.system.db.JPA;
-import com.indexbg.system.db.dto.SystemClassif;
 import com.indexbg.system.exceptions.ObjectNotFoundException;
-import com.indexbg.system.pagination.LazyDataModelSQL2Array;
+import com.indexbg.system.pagination.LazyDataModelNOSQL;
 import com.indexbg.system.pagination.SelectMetadata;
 import com.indexbg.system.utils.DateUtils;
 import com.indexbg.system.utils.JSFUtils;
-import com.indexbg.system.utils.SearchUtils;
 
 import indexbg.pdoi.db.dao.ApplicationDAO;
 import indexbg.pdoi.system.Constants;
 import indexbg.pdoi.system.PDoiBean;
-import indexbg.pdoi.system.SystemData;
 
 /**
  * @author idineva
@@ -98,7 +97,7 @@ public class SearchApplications extends PDoiBean {
 				try {
 					SelectMetadata smd = new SelectMetadata();
 					smd.setSqlParameters(params);
-					appList = new LazyDataModelNOSQL(smd, null);	
+					appList = new LazyDataModelNOSQL(smd, "registrationDate",SortOrder.DESCENDING);	
 					
 					dateFrom = (Date) params.get("dateFrom");
 					dateTo = (Date) params.get("dateTo");
@@ -126,6 +125,8 @@ public class SearchApplications extends PDoiBean {
 				}
 								
 				
+			} else { // по подразбиране да извади нещо
+				 actionSearch();
 			}
 	}
 	
@@ -149,47 +150,59 @@ public class SearchApplications extends PDoiBean {
 	 */
 	public void actionSearch(){
 		
+		Date dateOt = dateFrom;
+		Date dateDo = dateTo;
+				
+		boolean paramsData = true; 
 		if(dateFrom == null && dateTo ==null && status == null && (selectedSubj==null || selectedSubj.isEmpty()) && (selectedThemas == null || selectedThemas.isEmpty())
 				&& (nomer==null|| "".equals(nomer)) && (text==null|| "".equals(text)) ) {
 			
-			JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString("beanMessages","general.insertParameters"));					
-		}else {
-			try {
-				
-				SelectMetadata smd;
-	//				smd = appDao.findApplications(dateFrom, dateTo,status,responseSubj,text,nomer,selectedThemas,null,false,true,null);
-				smd = new SelectMetadata();
-				Map<String, Object> params = new HashMap();
-				smd.setSqlParameters(params);
-				
-				params.put("dateFrom", dateFrom);
-				params.put("dateTo", dateTo);
-				params.put("text", text);
-				params.put("status",status);
-				params.put("tematika",tematika);
-				params.put("selectedThemas",selectedThemas);
-				params.put("responseSubj",responseSubj);
-				params.put("selectedSubj",selectedSubj);
-				params.put("nomer",nomer);
-									
+			//JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString("beanMessages","general.insertParameters"));	
+			
+			dateDo = new Date();
+			dateOt = Date.from(ZonedDateTime.now().minusMonths(2).toInstant());
+			
+			paramsData = false;
+		}  
+		
+		try {
+			
+			SelectMetadata smd;
+//				smd = appDao.findApplications(dateFrom, dateTo,status,responseSubj,text,nomer,selectedThemas,null,false,true,null);
+			smd = new SelectMetadata();
+			Map<String, Object> params = new HashMap<String, Object>();
+			smd.setSqlParameters(params);
+			
+			params.put("dateFrom", dateOt);
+			params.put("dateTo", dateDo);
+			params.put("text", text);
+			params.put("status",status);
+			params.put("tematika",tematika);
+			params.put("selectedThemas",selectedThemas);
+			params.put("responseSubj",responseSubj);
+			params.put("selectedSubj",selectedSubj);
+			params.put("nomer",nomer);
+			
+//			String defaultSortColumn = "A7";//A7 ,A0
+			appList = new LazyDataModelNOSQL(smd, "registrationDate",SortOrder.DESCENDING);
+			
+			if(paramsData) {
 				addSessionScopeAttribute("sappSMDAttr", params);
 				addSessionScopeAttribute("zadaljenSubText", zadaljenSubText);
 				addSessionScopeAttribute("period", period);
-				
-	//			String defaultSortColumn = "A7";//A7 ,A0
-				appList = new LazyDataModelNOSQL(smd, null);
-				
-	//		} catch (DbErrorException e) {
-	//			LOGGER.error("Грешка при търсене на заявления! ", e);
-	//			JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString("beanMessages", "general.errDataBaseMsg"));
-			} catch (Exception e) {
-				LOGGER.error("Грешка при работа със системата!!!", e);	
-				JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString("beanMessages","general.exception"));					
-			
-			}finally {
-				JPA.getUtil().closeConnection();
 			}
+			
+//		} catch (DbErrorException e) {
+//			LOGGER.error("Грешка при търсене на заявления! ", e);
+//			JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString("beanMessages", "general.errDataBaseMsg"));
+		} catch (Exception e) {
+			LOGGER.error("Грешка при работа със системата!!!", e);	
+			JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString("beanMessages","general.exception"));					
+		
+		}finally {
+			JPA.getUtil().closeConnection();
 		}
+		
 	}
 	
 	/**Метод за смяна на датите при избор на период за търсене.
@@ -234,6 +247,8 @@ public class SearchApplications extends PDoiBean {
 		session.removeAttribute("period");
 		session.removeAttribute("sappPage");
 		
+		DataGrid d = (DataGrid) FacesContext.getCurrentInstance().getViewRoot().findComponent("appFilterForm:tbl");
+		d.setFirst(0);		
 		
 	}
 	

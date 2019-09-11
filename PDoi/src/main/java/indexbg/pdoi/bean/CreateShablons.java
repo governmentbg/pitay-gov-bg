@@ -41,13 +41,16 @@ public class CreateShablons {
 	 * @throws DbErrorException
 	 */
 	public Files getShablon(UserData ud) throws ObjectNotFoundException, DbErrorException  { 
+		
 		Files shabl = null;
+		
 		try {
 			
 			List<Files> shabloni = new FilesDAO(ud.getUserId()).findByCodeObjAndIdObj(Constants.CODE_OBJECT_APPLICATION, Long.valueOf(-1));
 		
 			if (shabloni == null || shabloni.isEmpty()){
 				throw new ObjectNotFoundException("Липсва шаблон за този вид документ !!!");				
+			
 			} else {
 				shabl =  shabloni.get(0);
 			}			
@@ -75,7 +78,8 @@ public class CreateShablons {
 		
 		Files filledFileShablon = null;
 		
-		try{
+		try {
+			
 			byte [] bytearray = null;
 			
 			//1. Взема шаблона от базата
@@ -119,10 +123,9 @@ public class CreateShablons {
 				filledFileShablon.setIdObject(applic.getId());
 				filledFileShablon.setContent(bytearray);	
 				
-//					if (filledFileShablon != null){
-//						delSaveFilledShablon(filledFileShablon, applic.getId(), ud, Constants.CODE_OBJECT_APPLICATION);
-//					}
-				
+//				if (filledFileShablon != null){
+//					delSaveFilledShablon(filledFileShablon, applic.getId(), ud, Constants.CODE_OBJECT_APPLICATION);
+//				}
 				
 			}
 		
@@ -156,14 +159,13 @@ public class CreateShablons {
 		
 		JPA.getUtil().begin();
 		
-		try{
+		try {
 			
 			// Iztriva old filled shablon 
 			List<Files> fil = null;
 			fil = new FilesDAO(ud.getUserId()).findByCodeObjAndIdObj(codeObj, idObj);
 
-			// Iztriva old shablon 
-				
+			// Iztriva old shablon 				
 			if (fil != null && fil.size() > 0){
 				
 				// TODO towa otdolu e komentirano, t.k. pri flush w v AbstractDAO zavisva !!!
@@ -295,6 +297,135 @@ public class CreateShablons {
 		} 
 		
 		return pattern;			
-	}	
+	}
+	
+	/** Взима шаблона на крайното решение от базата
+	 * 
+	 * @param ud
+	 * @return
+	 * @throws ObjectNotFoundException
+	 * @throws DbErrorException
+	 */
+	public Files getShablonEndSolution(UserData ud) throws ObjectNotFoundException, DbErrorException  { 
+		
+		Files shabl = null;
+		
+		try {
+			
+			List<Files> shabloni = new FilesDAO(ud.getUserId()).findByCodeObjAndIdObj(Constants.CODE_OBJECT_EVENT, Long.valueOf(-2));
+		
+			if (shabloni == null || shabloni.isEmpty()){				
+				throw new ObjectNotFoundException("Липсва шаблон за този вид документ !!!");				
+			
+			} else {				
+				shabl =  shabloni.get(0);
+			}			
+			
+		 } catch (DbErrorException e) {
+			LOGGER.error("Грешка четене  от базата!!!", e);
+			throw new DbErrorException("Грешка четене  от базата!!!");
+		 } 		
+		
+		return shabl;
+		
+	}
+	
+	/** Попълва празния шаблон с данни от крайното решение
+	 * 
+	 * @param uri
+	 * @param zdoi
+	 * @param dateEndSol
+	 * @param sd
+	 * @param ud
+	 * @return
+	 * @throws DbErrorException
+	 * @throws ObjectNotFoundException
+	 * @throws Exception
+	 */
+	public Files createShablEndSolution(String uri, Long zdoi, Date dateEndSol, SystemData sd, UserData ud) throws  DbErrorException, ObjectNotFoundException, Exception {
+		
+		Files filledFileShablon = null;
+		
+		try {
+			
+			byte [] bytearray = null;
+			
+			//1. Взема шаблона от базата
+			Files shabl = getShablonEndSolution(ud);
+			shabl = new FilesDAO(ud.getUserId()).findById(shabl.getId());
+			
+			if (shabl == null){
+				return null;
+			}
+			
+			// 2. Зарежда лиценза за работа с MS Word documents.
+			new MSWordBookmarks().setLicense();
+			
+			// 3. Създава празен документ от шаблона 
+			com.aspose.words.Document docEmptyShablon = new com.aspose.words.Document(new ByteArrayInputStream(shabl.getContent()));
+			
+			// 4. Създава попълнен документ от шаблона
+			com.aspose.words.Document docFilledShablon = null;
+			
+			String fileName = "end_solution_ZDOI";
+			SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+			
+			fileName =  fileName + "_" + sdf.format(dateEndSol)+".pdf";
+			
+			docFilledShablon = fillEndSolutionShablon(uri, zdoi, dateEndSol, docEmptyShablon, sd, ud);
+			
+			ByteArrayOutputStream dstStream = new ByteArrayOutputStream();
+			
+			docFilledShablon.save(dstStream, SaveFormat.PDF);
+			bytearray = dstStream.toByteArray();
+			
+			if (bytearray !=null){ 
+				
+				filledFileShablon = new Files();
+				filledFileShablon.setFilename(fileName);
+				filledFileShablon.setContent(bytearray);					
+			}
+		
+		} catch (DbErrorException e) {
+			LOGGER.error("Грешка при извличане на шаблон от базата!!!", e);
+			throw new DbErrorException("Грешка при попълването на шаблона с данни!!!");
+		} catch (ObjectNotFoundException e) {
+			LOGGER.error("Липсва шаблон за този вид документ!!!", e);
+			throw new ObjectNotFoundException("Липсва шаблон за този вид документ!!!");
+		} catch (Exception e) {
+			LOGGER.error("Грешка при попълването на шаблона с данни!!!", e);
+			throw new DbErrorException("Грешка при попълването на шаблона с данни!!!");
+		}	
+
+		return filledFileShablon;
+	
+	}
+	
+	
+	/** Слага на букмарките данните, които се взимат от крайното решение
+	 * 
+	 * @param uri
+	 * @param zdoi
+	 * @param dateEndSol
+	 * @param pattern
+	 * @param sd
+	 * @param ud
+	 * @return
+	 * @throws DbErrorException
+	 * @throws ObjectNotFoundException
+	 * @throws Exception
+	 */
+	private com.aspose.words.Document fillEndSolutionShablon(String uri, Long zdoi, Date dateEndSol, com.aspose.words.Document pattern, SystemData sd, UserData ud) throws ObjectNotFoundException, Exception {
+					
+		pattern.getRange().getBookmarks().get("uri").setText(uri);
+		
+		pattern.getRange().getBookmarks().get("zdoi").setText(sd.decodeItem(Constants.CODE_SYSCLASS_ADM_REGISTRY, zdoi, 1L, new Date(), ud.getUserId()).toUpperCase());
+		
+		SimpleDateFormat sdfDate = new SimpleDateFormat("dd.MM.yyyy");
+		
+		pattern.getRange().getBookmarks().get("dateEndSol").setText(sdfDate.format(dateEndSol).toString() + " г.");
+		
+		return pattern;			
+	}
 	
 }

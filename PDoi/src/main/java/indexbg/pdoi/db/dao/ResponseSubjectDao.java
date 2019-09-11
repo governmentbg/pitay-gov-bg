@@ -281,7 +281,7 @@ public class ResponseSubjectDao extends TrackableDAO<ResponseSubject> {
 			
 			
 		} catch (Exception e) {
-			throw new DbErrorException("Грешка при извикаване на запис за задължен субек по номер от адм. регистър", e);
+			throw new DbErrorException("Грешка при търсене на запис за задължен субек по номер от адм. регистър: НОМ="+nomRegister, e);
 		}
 		
 	}
@@ -372,9 +372,8 @@ public class ResponseSubjectDao extends TrackableDAO<ResponseSubject> {
 			
 			ArrayList<ResponseSubject> records = getSubjectsfromAdmRegister(new Date());
 			
-			
 			for (ResponseSubject tek: records) {
-				System.out.println(tek.getSubjectName());
+			
 				ResponseSubject subject = findByNomReg(tek.getNomerRegister());
 				if (subject != null) {
 					mergeResSubject(subject, tek);
@@ -446,6 +445,31 @@ public class ResponseSubjectDao extends TrackableDAO<ResponseSubject> {
 			q.setParameter(1, idRS);
 			
 			if(q.getResultList()==null || q.getResultList().isEmpty()){
+				return false;
+			} else {
+				return true;
+			}
+	
+			
+		} catch (HibernateException e) {
+			throw new DbErrorException(	"Грешка при търсене на EgovOrganisations", e);
+		}
+		
+		
+	}
+	
+	
+	public boolean isResponseSubjectsSEOS(List<Long> idsRS) throws DbErrorException{
+		
+		try{
+			
+			Query q = JPA.getUtil().getEntityManager().createNativeQuery("select 1 from pdoi_response_subject rs join egov_organisations eo on rs.eik = eo.eik where rs.id in (?1)");
+			q.setParameter(1, idsRS);
+			
+			@SuppressWarnings("unchecked")
+			List<Object> rez = q.getResultList();
+		
+			if(rez==null || rez.isEmpty()){
 				return false;
 			} else {
 				return true;

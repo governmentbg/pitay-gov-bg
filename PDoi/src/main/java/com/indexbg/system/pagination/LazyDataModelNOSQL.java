@@ -29,16 +29,16 @@ public class LazyDataModelNOSQL extends LazyDataModel<Object[]> implements Seria
 	private final SelectMetadata searchMetaData;
 	private final String defaultSortColumn;
 
-	public LazyDataModelNOSQL(SelectMetadata smd, String defaultSortColumn) {
+	public LazyDataModelNOSQL(SelectMetadata smd, String defaultSortColumn, SortOrder order) {
 		this.searchMetaData = smd;
 		this.defaultSortColumn  = defaultSortColumn;
 		//calculate and set rowcount
-		load(0,-1,defaultSortColumn, SortOrder.ASCENDING, Collections.emptyMap()).size();
+		load(0,-1,defaultSortColumn, order, Collections.emptyMap()).size();
 	}
 
 	@Override
 	public List<Object[]> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
-		SortMeta sortMeta = new SortMeta(null, sortField, sortOrder, null);
+		SortMeta sortMeta = new SortMeta(null, sortField==null?defaultSortColumn:sortField, sortField==null?SortOrder.DESCENDING:sortOrder, null);
 		return load(first,pageSize, Arrays.asList(sortMeta),filters);
 
 	}
@@ -133,7 +133,6 @@ public class LazyDataModelNOSQL extends LazyDataModel<Object[]> implements Seria
 			if (stringVal!=null && !stringVal.isEmpty()&& stringVal.equalsIgnoreCase("true")){
 				bool.must(qb.range().onField("responseDate").ignoreFieldBridge().above("1966-01-01").createQuery()).not();
 			}
-			//TODO dobavi ostanalite fields
 			if(bool.isEmpty()) return Collections.emptyList();
 			query = bool.createQuery();
 
@@ -143,7 +142,6 @@ public class LazyDataModelNOSQL extends LazyDataModel<Object[]> implements Seria
 					fullTextEntityManager.createFullTextQuery(query, ApplicationTree.class);
 
 			List<SortField> sortedFields = new ArrayList<SortField>();
-			//TODO use the multisortmeta
 			for (SortMeta currentSort:multiSortMeta
 			) {
 

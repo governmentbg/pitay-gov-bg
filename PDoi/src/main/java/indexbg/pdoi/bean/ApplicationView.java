@@ -75,7 +75,7 @@ public class ApplicationView extends PDoiBean  {
 
 			if(idObj!=null && !idObj.isEmpty()){
 				applic = appDAO.findById(Long.valueOf(idObj));
-				filesList = filesDAO.findByCodeObjAndIdObj(applic.getCodeMainObject(), applic.getId(), true);
+				filesList = filesDAO.findByCodeObjAndIdObjAndRel(applic.getCodeMainObject(), applic.getId(), true);
 				
 				//------- load events for applic ------
 				List<Event> eventsList = eventDAO.listFromEventsByAppId(applic.getId(), Constants.CODE_ZNACHENIE_TYPE_EVENT_PROVID_ADD_INFORMATION);
@@ -88,14 +88,14 @@ public class ApplicationView extends PDoiBean  {
 						sbEvents.append(" <br /> ");
 						sbEvents.append(event.getAddText());
 						sbEvents.append(" <br /> ");
-						filesList.addAll(filesList.size(), filesDAO.findByCodeObjAndIdObj(Constants.CODE_OBJECT_EVENT, event.getId(), true));
+						filesList.addAll(filesList.size(), filesDAO.findByCodeObjAndIdObjAndRel(Constants.CODE_OBJECT_EVENT, event.getId(), true));
 					}
 				}
 				applic.setAdd_info(sbEvents.toString());
 				List<Event> tmpEventReshen = new EventDAO(userId, getSystemData()).listFromEventsByAppId(applic.getId(), Constants.CODE_ZNACHENIE_TYPE_EVENT_FINAL_SOLUTION);
 				if(tmpEventReshen != null && tmpEventReshen.size() > 0) {
 					eventReshenie = tmpEventReshen.get(0);
-					filesListReshenie = filesDAO.findByCodeObjAndIdObj(eventReshenie.getCodeMainObject(), eventReshenie.getId(), true);
+					filesListReshenie = filesDAO.findByCodeObjAndIdObjAndRel(eventReshenie.getCodeMainObject(), eventReshenie.getId(), true);
 					
 					existFinalSolution = true;
 				}

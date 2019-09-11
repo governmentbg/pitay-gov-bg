@@ -78,7 +78,7 @@
 		                
 		                <!-- Instructions icon -->
 		                <div class="menu-option">
-		                	<a title="#{labels['menu.instructions']}" href="resources/docs/User_Guide v41.pdf" target="_blank">
+		                	<a title="#{labels['menu.instructions']}" href="help.jsf">
 		                    	<span class="icon fas fa-question-circle"></span>
 		                	</a>
 		                </div>
@@ -148,37 +148,40 @@
 	  	
 	  	<!-- FOOTER -->
 		<div class="footer">
-	        <div class="footer-content">
-	            <div class="container-fluid">
-	                <div class="ui-g">
-	                    <div class="ui-md-12">
-	                        <div class="info">
-	                            <p>
-	                                #{labels['mainExt.footer']}
-	                            </p>
-	                        </div>
-	                        <p class="copyrights"><!-- Untitled. All rights reserved. | Design by <a href="#" rel="nofollow">Index Bulgaria Ltd</a>. --> &#160;</p>
-	                         <ul class="social-contacts">
-	                        <!--    <li><a href="#" target="_blank"><span class="icon icon-twitter">Twitter</span></a></li>
-	                            <li><a href="#" target="_blank"><span class="icon icon-facebook">Facebook</span></a></li>
-	                            <li><a href="#" target="_blank"><span class="icon icon-tumblr">Google+</span></a></li>-->
-	                        </ul> 
-	                    </div>
-	                </div>
-	            </div>
-	            <div class="img-left-wrap">
-	                <img src="images/eu.png" alt="EU" class="left"/>
-	            </div>
-	            <div class="img-right-wrap">
-	                <img src="images/op.png" alt="OP" class="right"/>
-	            </div>
-	        </div>
+			<div class="footer-content">
+				<div class="container-fluid">
+					<div class="ui-g">
+						<div class="ui-md-12">
+							<div class="info">
+								<p>#{labels['mainExt.footer']}</p>
+							</div>
+							<ui:remove>
+								<p class="copyrights">
+									<!-- Untitled. All rights reserved. | Design by <a href="#" rel="nofollow">Index Bulgaria Ltd</a>. -->
+									&#160;
+								</p>
+								<ul class="social-contacts">
+									<!--    <li><a href="#" target="_blank"><span class="icon icon-twitter">Twitter</span></a></li>
+		                            <li><a href="#" target="_blank"><span class="icon icon-facebook">Facebook</span></a></li>
+		                            <li><a href="#" target="_blank"><span class="icon icon-tumblr">Google+</span></a></li>-->
+								</ul>
+							</ui:remove>
+						</div>
+					</div>
+				</div>
+
+				<div class="logos-container">
+					<div style="margin-right: 20px; margin-bottom: 20px;">
+						<img src="images/eu_white.png" alt="EU" class="left" />
+					</div>
+					<div class="img-right-wrap">
+						<img src="images/op_white.png" alt="OP" class="right" />
+					</div>
+				</div>
+
+			</div>
 		</div>
-	 
-		
-	  
-	    
-	    
+   
 	   <!-- SESSION EXPIRED DIALOG -->
 	   <div id="sessionExpModal" class="modal" style="width: 400px !important;">
 		    <div class="modal-content">

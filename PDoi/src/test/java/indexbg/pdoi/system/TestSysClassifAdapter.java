@@ -10,6 +10,8 @@ public class TestSysClassifAdapter {
 	public static void main(String[] args) {
 		
 		
+		
+		
 		try {
 			List<SystemClassif> classif = new PDoiClassifAdapter(new SystemData()).createEKATTE(111L, 1L, -1L);
 			SysClassifUtils.doSortClassifPrev(classif);

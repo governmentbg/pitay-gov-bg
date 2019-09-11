@@ -11,19 +11,23 @@
 	  
 	  		<style>
 				.ui-fileupload-buttonbar {
-				    margin: 0px 0px 0px 0px !important;
-				    padding: 0px 0px 0px 0px !important;
-				    border: none;
+					margin: 0px 0px 0px 0px !important;
+					padding: 0px 0px 0px 0px !important;
+					border: none;
 				}
+				
 				.ui-fileupload {
-				    margin: 0px 0px 0px 0px !important;
-				    padding: 0px 0px 0px 0px !important;
-				    display: inline-block;
-				    border: none;
+					margin: 0px 0px 0px 0px !important;
+					padding: 0px 0px 0px 0px !important;
+					display: inline-block;
+					border: none;
 				}
-				.ui-fileupload-content {
-				    display: none;  
+				
+				.ui-fileupload-content { 
+				   border: none;
+				   padding: 0px !important;
 				}
+				.ui-fileupload-files {display:none;}
 				.ui-fileupload-buttonbar .ui-button {
 				    top: -1px;
 				}
@@ -472,7 +476,7 @@
 						 </p:dialog> 
 						
 					</p:tab>
-					<p:tab title="#{labels['general.answer']}">
+					<p:tab title="#{labels['general.answer']}" rendered="#{applicationForm.tabAnswareRendered}">
 						<p:outputPanel id="panelDes" >
 						
 						<p:panel header="#{labels['events.endSolution']}: " style="margin-bottom:10px">

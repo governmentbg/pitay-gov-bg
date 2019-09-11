@@ -52,25 +52,29 @@
 		  
 		  <!-- Отключване на Инф. обекти -->
 		  <li jsf:rendered="#{userData.hasAccess(7,46)}">
-		  	<a jsf:action="unlockObjects.xhtml@clear@?faces-redirect=true">
+		  	<a jsf:action="unlockObjects.xhtml@clear@?faces-redirect=true" title="#{labels['menu.unlockObj']}">
 		  		<f:actionListener type="indexbg.pdoi.system.Locker"/>
-		  		#{labels['menu.unlockObj']}
+		  		
+		  		<span class="fa fa-unlock-alt icon1" style="font-size:18pt !important;"></span>
+		  		<span class="text1">#{labels['menu.unlockObj']}</span>
 		  	</a>
 		  </li>
 		  	
 		  <!-- Статус на съобщенията -->
 		  <li jsf:rendered="#{userData.hasAccess(7,44)}">
-		  	<a jsf:action="packagesFilter.xhtml@clear@?faces-redirect=true">
+		  	<a jsf:action="packagesFilter.xhtml@clear@?faces-redirect=true" title="#{labels['menu.packageFilter']}">
 		  		<f:actionListener type="indexbg.pdoi.system.Locker"/>
-		  		#{labels['menu.packageFilter']}
+		  		<span class="fa fa-gear icon2" style="font-size:18pt !important;"></span>
+		  		<span class="text2">#{labels['menu.packageFilter']}</span>
 		  	</a>
 		  	</li>
 		  	
 		  <!-- Филтър изпратени имейли -->
 		  <li jsf:rendered="#{userData.hasAccess(7,47)}">
-		  	<a jsf:action="packagesFilter.xhtml@clear@?faces-redirect=true">
+		  	<a jsf:action="mailFilter.xhtml@clear@?faces-redirect=true" title="#{labels['menu.sendmail']}">
 		  		<f:actionListener type="indexbg.pdoi.system.Locker"/>
-		  		#{labels['menu.packageFilter']}
+		  		<span class="fa fa-envelope icon3" style="font-size:18pt !important;"></span>
+		  		<span class="text3">#{labels['menu.sendmail']}</span>
 		  	</a>
 		  	</li>
 			

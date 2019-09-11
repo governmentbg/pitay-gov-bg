@@ -216,7 +216,7 @@ public class EgovMessagesDAO extends AbstractDAO<EgovMessages> {
 	 */
 	@SuppressWarnings("unchecked")
 	//String sender, String recepient, 
-	public SelectMetadata createFilterMsgSQL(String msgType, String docStatus, Long sentStatus, Long inOut, Date dateOt, Date dateDo) {
+	public SelectMetadata createFilterMsgSQL(String msgType, String docStatus, Long sentStatus, Long inOut, Date dateOt, Date dateDo,String senderText,String receiverText, String docRN  ) {
 		
 		
 //		Dialect dialect = ((SessionFactoryImpl) HibernateUtil.currentSession()
@@ -229,7 +229,7 @@ public class EgovMessagesDAO extends AbstractDAO<EgovMessages> {
 		dateDo = DateUtils.endDate(dateDo);	
 		
 		
-		StringBuilder selectClause = new StringBuilder("SELECT " )
+		StringBuilder selectClause = new StringBuilder("SELECT DISTINCT" )
 				.append("	EGOV_MESSAGES.ID 	A00ID, ")
 				.append("	MSG_TYPE			A00MSGTYPE, " ) 
 				.append("  	nom3.DESCRIPTION    A01MSGTYPETEXT,  " )	
@@ -243,7 +243,8 @@ public class EgovMessagesDAO extends AbstractDAO<EgovMessages> {
 				.append( "  	DOC_SUBJECT 		A09SUBJECT, " )
 				.append( " 	nom2.DESCRIPTION 	A10STATDOC,	 " )
 				.append("  	nom1.DESCRIPTION    A11STATIZPR,  " )						    
-				.append("  	COMM_ERRROR  		A12ERR" )
+				.append("  	COMM_ERRROR  		A12ERR, " )
+				.append("  	PRICHINA  		A13PRICHINA" )
 				.append(" FROM " )
 				.append(" 	EGOV_MESSAGES 	join EGOV_NOMENKLATURI nom1 on EGOV_MESSAGES.COMM_STATUS = nom1.STATUS " )
 				.append( "                  	join EGOV_NOMENKLATURI nom2 on EGOV_MESSAGES.MSG_STATUS = nom2.STATUS_TEKST ")
@@ -252,13 +253,17 @@ public class EgovMessagesDAO extends AbstractDAO<EgovMessages> {
 		StringBuilder whereClause=new  StringBuilder("");
 		ArrayList<String> uslovia = new ArrayList<String>();
 		
-//		if (sender != null){
-//			uslovia.add("SENDER_GUID = '" + sender +"'");
-//		}
-//		
-//		if (recepient != null){
-//			uslovia.add("RECIPIENT_GUID = '" + recepient +"'");
-//		}
+		if ( senderText!= null && !senderText.isEmpty()){
+			uslovia.add(" UPPER(SENDER_NAME) LIKE '%" + senderText.toUpperCase() +"%'");
+		}
+		
+		if (receiverText!= null && !receiverText.isEmpty()){
+			uslovia.add(" UPPER(RECIPIENT_NAME) LIKE '%" + receiverText.toUpperCase() +"%'");
+		}
+		
+		if (docRN!= null && !docRN.isEmpty()){
+			uslovia.add("DOC_RN LIKE '%" + docRN +"%'");
+		}
 		
 		if (msgType != null){
 			uslovia.add("MSG_TYPE = '" + msgType +"'");

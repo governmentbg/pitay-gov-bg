@@ -15,11 +15,14 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.mail.internet.MimeUtility;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.primefaces.event.FileUploadEvent;
@@ -54,6 +57,7 @@ import indexbg.pdoi.db.dao.EventDAO;
 import indexbg.pdoi.db.dao.FilesDAO;
 import indexbg.pdoi.db.dao.PublicationDAO;
 import indexbg.pdoi.db.dao.ResponseSubjectDao;
+import indexbg.pdoi.db.dao.SubscriptionDAO;
 import indexbg.pdoi.system.Constants;
 import indexbg.pdoi.system.Locker;
 import indexbg.pdoi.system.MyRunnableMail;
@@ -127,12 +131,17 @@ public class ApplicationForm extends PDoiBean {
 	// obratno ot vanshnata stranica
 	private String viewBackBtn;
 	
+	
+	private boolean tabAnswareRendered;
+	
 	/** Иницира първоначалните стойности на обекта
 	 * 
 	 */
 	@PostConstruct
 	public void initData(){
 		LOGGER.debug("PostConstruct!!!!");
+		
+		tabAnswareRendered = false;
 		
 		applic = new Application();
 		applic.setApplicantType(Constants.CODE_ZNACHENIE_TYPE_APPLICANT_FIZ_LICE);
@@ -196,7 +205,7 @@ public class ApplicationForm extends PDoiBean {
 				
 				if(success){
 					applic = new ApplicationDAO(userId, getSystemData()).findById(Long.valueOf(idObj));
-					filesList = new FilesDAO(userId).findByCodeObjAndIdObj(applic.getCodeMainObject(), applic.getId());	
+					filesList = new FilesDAO(userId).findByCodeObjAndIdObjAndRel(applic.getCodeMainObject(), applic.getId());	
 					
 					//------- load events for applic ------
 					EventDAO eventDAO = new EventDAO(userId, getSystemData());
@@ -218,7 +227,8 @@ public class ApplicationForm extends PDoiBean {
 						
 						for (Event tmpEvent : eventsList) {					
 							if (tmpEvent.getEventType().longValue() == Constants.CODE_ZNACHENIE_TYPE_EVENT_FINAL_SOLUTION) {							
-								filesResponseList = new FilesDAO(userId).findByCodeObjAndIdObj(tmpEvent.getCodeMainObject(), tmpEvent.getId());						
+								filesResponseList = new FilesDAO(userId).findByCodeObjAndIdObjAndRel(tmpEvent.getCodeMainObject(), tmpEvent.getId());		
+								tabAnswareRendered = true;
 							}
 						}
 					}
@@ -227,7 +237,20 @@ public class ApplicationForm extends PDoiBean {
 					List<SystemClassif> listItems = new ArrayList<>();
 					
 					if(eventsList!=null && !eventsList.isEmpty()){
-						List<Object> nextEvents = eventDAO.nextEventsForApp(eventsList.get(eventsList.size()-1).getEventType());
+						
+						Long currEventType = eventsList.get(eventsList.size()-1).getEventType(); 
+//						//19.2.2019 sled testvane i pregled e poiskano
+//						//ako e preprateno kam drug zadaljen subekt i toi e bez ceos shte tryabva da izvlichame sabitiqta za "подаване на заяв без сеос"
+//						if(eventsList.get(eventsList.size()-1).getEventType().longValue() == Constants.CODE_ZNACHENIE_TYPE_EVENT_FORW_APPLICATION) {
+//							
+//							EgovOrganisations eOrg = new ResponseSubjectDao(userId,getSystemData()).responseSubjectSEOS(applic.getResponseSubjectId());
+//							if(eOrg==null) {
+//								//kogato namq ceos organizaciqta izkarvame sabitiqta kakto sled подаване на заяв без сеос
+//								currEventType = Long.valueOf(Constants.CODE_ZNACHENIE_TYPE_EVENT_SUBMIT_APP); 
+//							}
+//						}
+						
+						List<Object> nextEvents = eventDAO.nextEventsForApp(currEventType);
 						
 						if(eventsList!=null){
 							for(Object o:nextEvents){
@@ -280,6 +303,32 @@ public class ApplicationForm extends PDoiBean {
 		
 	}	
 	
+	@PreDestroy
+	public void destroyData(){
+		
+		LOGGER.debug("PreDestroy!");
+		if(adminMod){
+			
+			try {
+				JPA.getUtil().begin();
+				
+				Locker locker_ = new Locker();
+				// 1. unlock all objects of current user
+				locker_.unlockObjects(userId); 
+				
+				JPA.getUtil().commit();	
+			} catch (DbErrorException e) {
+				LOGGER.error(e.getMessage(),e);
+				JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString(Constants.beanMessages, "general.errDataBaseMsg"));
+			} catch (Exception e) {
+				JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_ERROR, getMessageResourceString(Constants.beanMessages,"general.unexpectedResult"));
+				LOGGER.error(e.getMessage(), e);
+			} finally {
+				JPA.getUtil().closeConnection();
+			}
+		}
+	}
+	
 	/** Промяна на типа на заявлението само при подаване
 	 * 
 	 */
@@ -307,6 +356,18 @@ public class ApplicationForm extends PDoiBean {
 			if(applic.getFullNames()==null || applic.getFullNames().trim().isEmpty()){
 				JSFUtils.addMessage("formApplic:fullNames",FacesMessage.SEVERITY_ERROR,getMessageResourceString(Constants.beanMessages,"general.pleaseInsert",getMessageResourceString("labels", "general.names")));
 				returned = false;
+			} else {
+				String[] names = applic.getFullNames().split(" ");
+				List<String> namesClear = new ArrayList<String>();
+				for(String m:names) {
+					if(m!=null && !m.trim().isEmpty()) {
+						namesClear.add(m);
+					}
+				}
+				if(namesClear.size()<3) {
+					JSFUtils.addMessage("formApplic:fullNames",FacesMessage.SEVERITY_ERROR,getMessageResourceString(Constants.beanMessages,"general.pleaseInsert",getMessageResourceString("labels", "general.imePrezimeFamilia")));
+					returned = false;
+				}
 			}
 			
 			if(applic.getApplicantType().equals(Constants.CODE_ZNACHENIE_TYPE_APPLICANT_URID_LICE)){
@@ -556,7 +617,7 @@ public class ApplicationForm extends PDoiBean {
 					mailsTo.add(applic.getEmail());	
 					link = getSystemData().getSettingsValue("linkToExternalSite") + this.applic.getId();
 					
-					t = new Thread(new MyRunnableMail(Constants.CODE_ZNACHENIE_SHABLON_PODAVANE_APPLIC_ZDOI_S_SOES, mailsTo, applic.getApplicationUri(), eOrg.getAdministrativeBodyName(), srok, name,  userId, null, link));	
+					t = new Thread(new MyRunnableMail(Constants.CODE_ZNACHENIE_SHABLON_PODAVANE_APPLIC_ZDOI_S_SOES, mailsTo, applic.getApplicationUri(), eOrg.getAdministrativeBodyName(), srok, name,  userId, null, link,applic.getFullNames()));	
 					t.start();					
 				
 				} else { //съобщение до Заявител при ЗДОИ без СЕОС				
@@ -564,7 +625,7 @@ public class ApplicationForm extends PDoiBean {
 					mailsTo.add(applic.getEmail());	
 					link = getSystemData().getSettingsValue("linkToExternalSite") + this.applic.getId();
 					
-					t = new Thread(new MyRunnableMail(Constants.CODE_ZNACHENIE_SHABLON_PODAVANE_APPLIC_ZDOI_BEZ_SOES, mailsTo, applic.getApplicationUri(), zdoi, srok, name,  userId, null, link));	
+					t = new Thread(new MyRunnableMail(Constants.CODE_ZNACHENIE_SHABLON_PODAVANE_APPLIC_ZDOI_BEZ_SOES, mailsTo, applic.getApplicationUri(), zdoi, srok, name,  userId, null, link,applic.getFullNames()));	
 					t.start();		
 					
 					 ArrayList<String> mailsToAdm = new ArrayList<String>();
@@ -578,7 +639,7 @@ public class ApplicationForm extends PDoiBean {
 						
 						link = getSystemData().getSettingsValue("linkToInternalSite") + this.applic.getId();
 						
-						t = new Thread(new MyRunnableMail(Constants.CODE_ZNACHENIE_SHABLON_PODAVANE_ADMIN_ZDOI_BEZ_SOES, mailsToAdm, applic.getApplicationUri(), zdoi, srok, null, userId, null, link));	
+						t = new Thread(new MyRunnableMail(Constants.CODE_ZNACHENIE_SHABLON_PODAVANE_ADMIN_ZDOI_BEZ_SOES, mailsToAdm, applic.getApplicationUri(), zdoi, srok, null, userId, null, link,applic.getFullNames()));	
 						t.start();
 					
 					}
@@ -601,11 +662,14 @@ public class ApplicationForm extends PDoiBean {
 		boolean sentmail = false;
 		String eventName="";
 				
+		ArrayList<String> mailsToAbonament = null;
 		try {
 			
 			JPA.getUtil().begin();
 			
-			new EventDAO(userId, getSystemData()).deleteEvent(Long.valueOf(idEvent), applic.getId());
+			mailsToAbonament = (ArrayList<String>) new SubscriptionDAO(userId).findMailsSubscrUsersByIdApp(applic.getId());
+			
+			Date responseEndTime = new EventDAO(userId, getSystemData()).deleteEvent(Long.valueOf(idEvent), applic.getId());
 			
 			JPA.getUtil().commit();		
 			
@@ -615,6 +679,9 @@ public class ApplicationForm extends PDoiBean {
 				eventName = getSystemData().decodeItem(Constants.CODE_SYSCLASS_TYPE_EVENT,Long.valueOf(codeEvent), getCurrentLang(), new Date(), userId);
 			}
 			
+			if(responseEndTime!=null) { 
+				applic.setResponseEndTime(responseEndTime);
+			}
 			sentmail = true;
 			
 			JSFUtils.addGlobalMessage(FacesMessage.SEVERITY_INFO, getMessageResourceString("beanMessages", "general.succesSaveMsg"));
@@ -643,20 +710,29 @@ public class ApplicationForm extends PDoiBean {
 				name = applic.getFullNames();										
 			}
 			
-			String srok = new SimpleDateFormat("dd.MM.yyyy").format(SearchUtils.asDate(this.applic.getResponseEndTime()));
+			String srok = new SimpleDateFormat("dd.MM.yyyy").format(SearchUtils.asDate(applic.getResponseEndTime()));
 			
 			ArrayList<String> mailsTo = new ArrayList<>();
 			mailsTo.add(applic.getEmail());	
-			link = getSystemData().getSettingsValue("linkToExternalSite") + this.applic.getId();
+			link = getSystemData().getSettingsValue("linkToExternalSite") + applic.getId();
 			
-			Thread t = new Thread(new MyRunnableMail(Constants.CODE_ZNACHENIE_SHABLON_DELETE_EVENT_DO_APPLIC, mailsTo, applic.getApplicationUri(), null, srok, name,  userId, eventName, link));	
+			Thread t = new Thread(new MyRunnableMail(Constants.CODE_ZNACHENIE_SHABLON_DELETE_EVENT_DO_APPLIC, mailsTo, applic.getApplicationUri(), null, srok, name,  userId, eventName, link,applic.getFullNames()));	
 			t.start();	
+			
+			
+			//съобщения до Абонамент
+			if(mailsToAbonament != null && !mailsToAbonament.isEmpty()) {
+				link = getSystemData().getSettingsValue("linkToExternalSite") + applic.getId();
+				
+				t = new Thread(new MyRunnableMail(Constants.CODE_ZNACHENIE_SHABLON_DELETE_EVENT_SUBSCRIBED, mailsToAbonament, applic.getApplicationUri(), null, srok, null,  userId, eventName, link,applic.getFullNames()));	
+				t.start();
+			}
 			
 		}
 		
 		try {
 			
-			this.applic = new ApplicationDAO(userId, getSystemData()).findById(this.applic.getId());			
+			//this.applic = new ApplicationDAO(userId, getSystemData()).findById(applic.getId());	 //	20.2.2019 komentirano zashtoto responseEndTime go zarejdame po gore i nqma nujda da se izvlicha pak 	
 			
 			//------- zamrazqvane na sroka --------
 			if(applic.getResponseEndTime()!=null){
@@ -719,8 +795,12 @@ public class ApplicationForm extends PDoiBean {
 	 * 
 	 * @throws DbErrorException
 	 */
-	public void search() throws DbErrorException{
-		
+	public void search() {
+
+//		if(searchWordClass==null || searchWordClass.length()<3) {
+//			return;
+//		}
+//		
 		LOGGER.info("Searching for classif with: " + getSearchWordClass());
 		try {
 			
@@ -909,10 +989,26 @@ public class ApplicationForm extends PDoiBean {
 		if(ok){
 			try {
 				
-				String codedfilename = URLEncoder.encode(file.getFilename(), "UTF8");
-				
 				FacesContext facesContext = FacesContext.getCurrentInstance();
 			    ExternalContext externalContext = facesContext.getExternalContext();
+				
+				HttpServletRequest request =(HttpServletRequest)externalContext.getRequest();
+				String agent = request.getHeader("user-agent");
+
+				
+				String codedfilename = ""; 
+				
+				if (null != agent &&  (-1 != agent.indexOf("MSIE") || (-1 != agent.indexOf("Mozilla") && -1 != agent.indexOf("rv:11")) || (-1 != agent.indexOf("Edge"))  ) ) {
+					codedfilename = URLEncoder.encode(file.getFilename(), "UTF8");
+				} else if (null != agent && -1 != agent.indexOf("Mozilla")) {
+					codedfilename = MimeUtility.encodeText(file.getFilename(), "UTF8", "B");
+				} else {
+					codedfilename = URLEncoder.encode(file.getFilename(), "UTF8");
+				}
+				
+				
+				
+				
 			    externalContext.setResponseHeader("Content-Type", "application/x-download");
 			    externalContext.setResponseHeader("Content-Length", file.getContent().length + "");
 			    externalContext.setResponseHeader("Content-Disposition", "attachment;filename=\"" + codedfilename + "\"");
@@ -1266,9 +1362,25 @@ public class ApplicationForm extends PDoiBean {
 //			Показва попълнения шаблон			
 			FacesContext facesContext = FacesContext.getCurrentInstance();
 		    ExternalContext externalContext = facesContext.getExternalContext();
+			
+			HttpServletRequest request =(HttpServletRequest)externalContext.getRequest();
+			String agent = request.getHeader("user-agent");
+
+			
+			String codedfilename = ""; 
+			
+			if (null != agent &&  (-1 != agent.indexOf("MSIE") || (-1 != agent.indexOf("Mozilla") && -1 != agent.indexOf("rv:11")) || (-1 != agent.indexOf("Edge"))  ) ) {
+				codedfilename = URLEncoder.encode(filledFileShablon.getFilename(), "UTF8");
+			} else if (null != agent && -1 != agent.indexOf("Mozilla")) {
+				codedfilename = MimeUtility.encodeText(filledFileShablon.getFilename(), "UTF8", "B");
+			} else {
+				codedfilename = URLEncoder.encode(filledFileShablon.getFilename(), "UTF8");
+			}
+		    
+		    
 		    externalContext.setResponseHeader("Content-Type", "application/x-download");
 		    externalContext.setResponseHeader("Content-Length", filledFileShablon.getContent().length + "");
-		    externalContext.setResponseHeader("Content-Disposition", "attachment;filename=\"" + filledFileShablon.getFilename() + "\"");
+		    externalContext.setResponseHeader("Content-Disposition", "attachment;filename=\"" + codedfilename+ "\"");
 			externalContext.getResponseOutputStream().write(filledFileShablon.getContent());
 			facesContext.responseComplete();
 			 
@@ -1437,6 +1549,14 @@ public class ApplicationForm extends PDoiBean {
 
 	public void setViewBackBtn(String viewBackBtn) {
 		this.viewBackBtn = viewBackBtn;
+	}
+
+	public boolean isTabAnswareRendered() {
+		return tabAnswareRendered;
+	}
+
+	public void setTabAnswareRendered(boolean tabAnswareRendered) {
+		this.tabAnswareRendered = tabAnswareRendered;
 	}
 	
 	//------------------------------------ край на тематики на заявлението --------------------------------------------

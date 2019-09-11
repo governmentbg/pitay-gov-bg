@@ -18,6 +18,7 @@ import com.indexbg.system.pagination.SelectMetadata;
 import com.indexbg.system.utils.DialectConstructor;
 
 import indexbg.pdoi.db.Publication;
+import indexbg.pdoi.system.Constants;
 
 /**
  * @author ivanc
@@ -77,7 +78,7 @@ public class PublicationDAO extends TrackableDAO<Publication> {
 			if (null!=dateFrom && null==dateTo){
 				whereStr.add("pub.DATE_FROM >="+DialectConstructor.convertDateOnlyToSQLString(vendorN, dateFrom));
 			}else if(null==dateFrom && null!=dateTo){
-				whereStr.add("pub.DATE_FROM <="+DialectConstructor.convertDateOnlyToSQLString(vendorN, dateTo));
+				whereStr.add("pub.DATE_TO <="+DialectConstructor.convertDateOnlyToSQLString(vendorN, dateTo));
 			}
 			
 		}	
@@ -259,14 +260,15 @@ public class PublicationDAO extends TrackableDAO<Publication> {
 				"ADM_USERS au "+
 				"LEFT OUTER JOIN PDOI_RESPONSE_SUBJECT rs ON (au.ORG_CODE = rs.ID) "+ 
 				"WHERE "+ 
-				"au.ORG_CODE = ? "+
+				" au.STATUS = ? "+
+				" and au.ORG_CODE = ? "+
 				"AND au.USER_TYPE IN ("+userType.toString().trim().substring(1, userType.toString().trim().length()-1)+") "+
 				"ORDER BY au.NAMES ";
 			
 			try{
 				Query query = createNativeQuery(sqlSel); 
-
-				query.setParameter(1, orgCode);
+				query.setParameter(1, Constants.CODE_ZNACHENIE_STATUS_POTREB_ACTIVEN);
+				query.setParameter(2, orgCode);
 			
 				
 				return query.getResultList();
@@ -291,12 +293,12 @@ public class PublicationDAO extends TrackableDAO<Publication> {
 		sb.append("SELECT au.names, au.email, au.phone ");
 		sb.append("FROM adm_users au ");
 		sb.append("JOIN adm_user_roles aur ON ");
-		sb.append("aur.user_id = au.user_id AND aur.code_classif = ? and aur.code_role = ? ");
+		sb.append("aur.user_id = au.user_id AND aur.code_classif = ? and aur.code_role = ? and au.status =?");
 		sb.append("UNION ");
 		sb.append("SELECT au2.names, au2.email, au2.phone ");
 		sb.append("FROM adm_users au2 ");
 		sb.append("JOIN adm_user_group aug on au2.user_id = aug.user_id ");
-		sb.append("JOIN adm_group_roles agr on agr.group_id = aug.group_id AND agr.code_classif = ? and agr.code_role = ?");
+		sb.append("JOIN adm_group_roles agr on agr.group_id = aug.group_id AND agr.code_classif = ? and agr.code_role = ? and au2.status =?");
 		
 		
 		
@@ -304,8 +306,10 @@ public class PublicationDAO extends TrackableDAO<Publication> {
 			Query query = createNativeQuery(sb.toString()); 
 			query.setParameter(1, classifCode);
 			query.setParameter(2, roleCode);
-			query.setParameter(3, classifCode);
-			query.setParameter(4, roleCode);
+			query.setParameter(3, Constants.CODE_ZNACHENIE_STATUS_POTREB_ACTIVEN);
+			query.setParameter(4, classifCode);
+			query.setParameter(5, roleCode);
+			query.setParameter(6, Constants.CODE_ZNACHENIE_STATUS_POTREB_ACTIVEN);
 			
 			return (List<Object[]>) query.getResultList();
 		

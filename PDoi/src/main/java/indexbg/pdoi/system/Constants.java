@@ -9,6 +9,8 @@ public class Constants extends SysConstants {
 		
 		
 		// Кодове на обекти
+		/**  ПОТРЕБИТЕЛ */
+		public static final Long CODE_OBJECT_USER =  8L;
 		
 		/**	ЗАЯВЛЕНИЕ  */
 		public static final Long CODE_OBJECT_APPLICATION = 13L;
@@ -89,7 +91,11 @@ public class Constants extends SysConstants {
 		    Кода е фиктивен(няма го в класификацията) но за да разпознаваме кой е модератор кой адми ни трябва*/
 		public static final long CODE_ZNACHENIE_TYPE_USER_MODERATOR = -1; 
 		
-	
+		
+		//Системна класификация Статус потребител  - 9
+		public static final long CODE_ZNACHENIE_STATUS_POTREB_ACTIVEN = 2;
+		
+		
 		
 		//Системна класификация 10008 - Тематика
 		
@@ -223,5 +229,22 @@ public class Constants extends SysConstants {
 		public static final long CODE_ZNACHENIE_SHABLON_KRAINO_RESHENIE_DO_APPLIC = 12;
 		/** код на значение шаблон Техническа грешка - при изтриване на събитие */
 		public static final long CODE_ZNACHENIE_SHABLON_DELETE_EVENT_DO_APPLIC = 13;
+		/** код на значение шаблон Абонамент за заявление до абониран при препращане  */
+		public static final long CODE_ZNACHENIE_SHABLON_PREPRASHTANE_SUBSCRIBED = 14;
+		/** код на значение шаблон Абонамент за заявление до абониран при Искане на допълнителна информация */
+		public static final long CODE_ZNACHENIE_SHABLON_ISKANE_DOP_INFO_SUBSCRIBED = 15;
+		/** код на значение шаблон Абонамент за заявление до абониран при Удължаване на срока - отнасяне до трето лице до заявител */
+		public static final long CODE_ZNACHENIE_SHABLON_UDALJAVANE_SROK_TRETO_LICE_SUBSCRIBED = 16;
+		/** код на значение шаблон Абонамент за заявление до абониран при Удължаване на срока - голямо количество информация до заявител */
+		public static final long CODE_ZNACHENIE_SHABLON_UDALJAVANE_SROK_GOL_KOLICH_INFO_SUBSCRIBED = 17;
+		/** код на значение шаблон Абонамент за заявление до абониран при Крайно решение */
+		public static final long CODE_ZNACHENIE_SHABLON_KRAINO_RESHENIE_SUBSCRIBED = 18;
+		/** код на значение шаблон Абонамент за заявление до абониран при Потвърждение от деловодна система при ЗДОИ със СОЕС */
+		public static final long CODE_ZNACHENIE_SHABLON_POTV_SUBSCRIBED_ZDOI_S_SOES = 19;
+		/** код на значение шаблон Абонамент за заявление до абониран при Техническа грешка - при изтриване на събитие */
+		public static final long CODE_ZNACHENIE_SHABLON_DELETE_EVENT_SUBSCRIBED = 20;
+		
+		
+		
 		
 }

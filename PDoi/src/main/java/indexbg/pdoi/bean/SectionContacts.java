@@ -131,7 +131,11 @@ public class SectionContacts  extends PDoiBean{
 	/**Метод за търсене на определена административна структура по наименование
 	 * @throws DbErrorException
 	 */
-	public void search() throws DbErrorException{
+	public void search() {
+		
+//		if(searchWordClass==null || searchWordClass.length()<3) {
+//			return;
+//		}
 		
 		LOGGER.info("Searching for classif with: " + getSearchWordClass());
 		try {

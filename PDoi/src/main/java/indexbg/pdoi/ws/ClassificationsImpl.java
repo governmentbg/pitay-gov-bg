@@ -59,7 +59,7 @@ public class ClassificationsImpl implements Classifications {
 			
 			List<SystemClassif> classif = null;
 			if (request.getRequestArgument().equals("10025")) {
-				classif = new PDoiClassifAdapter(new SystemData()).createAdmRegisterNiva(Constants.CODE_SYSCLASS_ADM_REGISTRY, lang, -1L);				
+				classif = new PDoiClassifAdapter(new SystemData()).createAdmRegisterNivaPDoi(Constants.CODE_SYSCLASS_ADM_REGISTRY, lang, -1L);				
 				nomen.setCode(10025);
 				nomen.setName("Административен регистър");
 				nomen.setSysname("PDoi");

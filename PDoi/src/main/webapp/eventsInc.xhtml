@@ -10,19 +10,24 @@
 	
 		<style>
 			.ui-fileupload-buttonbar {
-			    margin: 0px 0px 0px 0px !important;
-			    padding: 0px 0px 0px 0px !important;
-			    border: none;
+				margin: 0px 0px 0px 0px !important;
+				padding: 0px 0px 0px 0px !important;
+				border: none;
 			}
+			
 			.ui-fileupload {
-			    margin: 0px 0px 0px 0px !important;
-			    padding: 0px 0px 0px 0px !important;
-			    display: inline-block;
-			    border: none;
+				margin: 0px 0px 0px 0px !important;
+				padding: 0px 0px 0px 0px !important;
+				display: inline-block;
+				border: none;
 			}
-			.ui-fileupload-content {
-			    display: none;  
+			
+			.ui-fileupload-content { 
+			   border: none;
+			   padding: 0px !important;
 			}
+			.ui-fileupload-files {display:none;}
+			
 			.ui-fileupload-buttonbar .ui-button {
 			    top: -1px;
 			}
@@ -60,7 +65,14 @@
 
 					<p:toolbar rendered="#{isView != 1}">
 						<f:facet name="left">							
-							<p:commandButton id="bntSaveUp" update="formEvents:panelData message" action="#{events.actionSave}" icon="fa fa-save" value="#{labels['general.save']}"/>							
+							<p:commandButton id="bntSaveUp" update="formEvents:panelData message" action="#{events.actionSave}" icon="fa fa-save" value="#{labels['general.save']}" rendered="#{!events.showAttr.containsKey(events.newRespSubject)}"/>
+							<p:commandButton id="bntSaveUpFw" update="formEvents:panelData message" action="#{events.actionFWApp}" icon="fa fa-save" value="#{labels['general.fw']}" rendered="#{events.showAttr.containsKey(events.newRespSubject)}"/>
+						</f:facet>
+					</p:toolbar>
+					
+					<p:toolbar rendered="#{isInt == 1 and events.event.eventType.equals(IBConstants.CODE_ZNACHENIE_TYPE_EVENT_FINAL_SOLUTION)}">
+						<f:facet name="left">							
+							<p:commandButton value="#{labels['general.print']}" icon="fa fa-print" ajax="false" action="#{events.generateFile}" />				           
 						</f:facet>
 					</p:toolbar>
 					
@@ -193,12 +205,34 @@
 									<h:outputText value="#{labels['events.newZadSub']}: " styleClass="#{(isView != 1)?'txt req':'txt '}"/>
 								</div>
 	
-								<div class="ui-g-12 ui-md-10 ui-lg-10">							
-								<p:inputText value="#{events.zadaljenSubText}" id="zadSubTxt" readonly="true" style="width:94%;" rendered="#{isView != 1}"/>   
+								<div class="ui-g-12 ui-md-10 ui-lg-10">					
+								<p:inputText value="#{events.zadaljenSubText}" id="zadSubTxt" readonly="true" style="width:94%;" rendered="#{isView != 1}"/> 
+								<h:outputText value="#{events.zadaljenSubText}" rendered="#{isView == 1}"/>
+								<ui:remove> <!-- 24.04.2019 mnojestveno preprashtane -->
+								<!--   
 			                	<ibg:selectOneModal header="#{labels['events.newZadSub']}" userId="#{events.userId}" lang="#{events.currentLang}"
 						 	 			saveStateTree="true" isSelectNode="true" withBtnClear="true" codeClassif="#{IBConstants.CODE_SYSCLASS_ADM_REGISTRY}"     
 						 				update="formEvents:zadSubTxt" selectedCode="#{events.zadaljenSub}" selectedText="#{events.zadaljenSubText}" rendered="#{isView != 1}" />
-						 		<h:outputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_ADM_REGISTRY, events.event.newRespSubjectId, events.currentLang, events.today, events.userId)}" rendered="#{isView == 1}"/>	    							
+						 		<h:outputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_ADM_REGISTRY, events.event.newRespSubjectId, events.currentLang, events.today, events.userId)}" rendered="#{isView == 1}"/>	
+						 		 -->
+						 		 </ui:remove>
+						 		<ibg:selectManyModal  
+											header="#{labels['events.newZadSub']}"   
+											userId="#{events.userId}"  
+											lang="#{events.currentLang}"   
+							 	            saveStateTree="true"  
+							 	            withBtnClear="false"
+							 		        codeClassif="#{IBConstants.CODE_SYSCLASS_ADM_REGISTRY}"     
+							 		        update="formEvents:zadSubTxt"  
+							 		        selectedCodes="#{events.zadaljenSubs}" 
+							 		        selectedText="#{events.zadaljenSubText}"
+							 		        modal="true"
+							 		        id="idManyMSub"
+							 		        expanded="false"
+							 		        sortByName="true"
+							 		        isSelectNode="false"
+							 		        showRadioBtn="true"   rendered="#{isView != 1}"/>
+						 		    							
 								</div>
 							</div>
 						</h:panelGroup>
@@ -206,7 +240,7 @@
 					</p:panel>
 							
 					<h:panelGroup rendered="#{events.showAttr.containsKey(events.addText)}">
-						<p:panel header="#{labels['general.dopInfo']}" style="margin-bottom:10px">
+						<p:panel header="#{events.event.eventType.equals(IBConstants.CODE_ZNACHENIE_TYPE_EVENT_FINAL_SOLUTION) ?labels['appView.reshenie'] : labels['general.dopInfo']}" style="margin-bottom:10px">
 
 							<div class="ui-g">							
 
@@ -298,7 +332,9 @@
 						
 					<p:toolbar rendered="#{isView != 1}">
 						<f:facet name="left">
-							<p:commandButton id="bntSaveDown" update="formEvents:panelData message" action="#{events.actionSave}" icon="fa fa-save" value="#{labels['general.save']}" />
+							<p:commandButton id="bntSaveDown" update="formEvents:panelData message" action="#{events.actionSave}" icon="fa fa-save" value="#{labels['general.save']}" rendered="#{!events.showAttr.containsKey(events.newRespSubject)}"/>
+							<p:commandButton id="bntSaveDownFw" update="formEvents:panelData message" action="#{events.actionFWApp}" icon="fa fa-save" value="#{labels['general.fw']}" rendered="#{events.showAttr.containsKey(events.newRespSubject)}"/>
+							
 						</f:facet>
 						
 						<ui:remove>
@@ -312,9 +348,19 @@
 				</p:outputPanel>
 
 			</div>
-			
+		
 			<script type="text/javascript"> $('#formEvents\\:filesUpload_label').addClass('fa fa-fw fa-paperclip');</script>
-
+			
+				
+			<p:dialog width="500px" modal="true" header="#{labels['general.alert']}" widgetVar="msgRsPanel" dynamic="true" id="msgRsPanelDialog" closable="false">
+				<h:outputText value="#{events.msgRs}" escape="false"/>
+				
+				<br/>
+				<p:commandButton value="#{labels['general.close']}" update="formEvents:zadSubTxt" action="#{events.actionColseModalMsgRs}" process="@this"/>
+				
+			</p:dialog>
+			
+			
 		</h:form>
 	
 </html>

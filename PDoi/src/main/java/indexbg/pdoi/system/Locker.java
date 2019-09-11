@@ -230,12 +230,12 @@ public class Locker extends PDoiBean implements ActionListener {
 	}
 	
 	public SelectMetadata createFilterLocked(Long codeObject, String uri, Long idUserLock, Date dateFrom ,Date dateTo, Long idLoginUser) throws DbErrorException, UnexpectedResultException ,InvalidParameterException{
-		  
+		
 		 if (codeObject == null)
 			throw new InvalidParameterException("Няма указан код на обект !");
-		 if (idLoginUser == null)
-				throw new InvalidParameterException("Няма id на администратора/модератор !");
-	     
+		 /*if (idLoginUser == null)
+				throw new InvalidParameterException("Няма id на администратора/модератор !");*/
+		 
 		 String vendorN = JPA.getUtil().getDbVendorName();
 		 
 		 ArrayList<String> uslovia = new ArrayList<String>();
@@ -249,7 +249,6 @@ public class Locker extends PDoiBean implements ActionListener {
 //			 uslovia.add("l.ID_USER  = :idLoginUser");
 			 params.put("idLoginUser", idLoginUser);
 		 }
-		 
 		 
          String sql="";
          String fromStr="";
@@ -268,7 +267,8 @@ public class Locker extends PDoiBean implements ActionListener {
         	
      		sql = " SELECT a.ID A1, a.APPLICATION_URI A2, a.REGISTRATION_DATE A3, "+ selAnot + ", l.DAT_LOCK A5, u.NAMES A6, u.USERNAME A7 ";
         			
-     		fromStr = " FROM PDOI_APPLICATION a, LOCK_OBJECTS l JOIN ADM_USERS u ON l.ID_USER IN (SELECT ui.USER_ID FROM ADM_USERS ui WHERE ui.ORG_CODE=u.ORG_CODE AND u.USER_ID = :idLoginUser) ";
+//     		fromStr = " FROM PDOI_APPLICATION a, LOCK_OBJECTS l JOIN ADM_USERS u ON l.ID_USER IN (SELECT ui.USER_ID FROM ADM_USERS ui WHERE ui.ORG_CODE=u.ORG_CODE AND u.USER_ID = :idLoginUser) "; // Да се показват само заключените от групата на администратора-модератор. Отменено по искане на Даниела
+     		fromStr = " FROM PDOI_APPLICATION a, LOCK_OBJECTS l JOIN ADM_USERS u ON l.ID_USER = u.USER_ID ";
         	
      		if (uri != null && uri.trim().length() > 0){
              	uslovia.add("a.APPLICATION_URI = :uri");

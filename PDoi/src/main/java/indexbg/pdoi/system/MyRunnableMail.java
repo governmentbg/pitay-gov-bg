@@ -42,13 +42,16 @@ public class MyRunnableMail implements Runnable {
 	
 	private Long idUser;
 	
+	
+	private String namePodatel; // imenata na podatelq za da ne se promenqt shablonite tova pole shte se polzva pri zapis v tablicata s izprateni imeili
+	
 	public MyRunnableMail(long codeShablon, ArrayList<String> mail, Long idUser){
 		 this.mail = mail;
 		 this.codeShablon = codeShablon;
 		 this.idUser = idUser;
 	}
 	
-	public MyRunnableMail(long codeShablon, ArrayList<String> mail, String uri, String zdoi, String srok, String nameLice,  Long idUser, String eventName, String link){
+	public MyRunnableMail(long codeShablon, ArrayList<String> mail, String uri, String zdoi, String srok, String nameLice,  Long idUser, String eventName, String link, String namePodatel){
 		 this.mail = mail;
 		 this.codeShablon = codeShablon;
 		 this.idUser = idUser;
@@ -58,6 +61,7 @@ public class MyRunnableMail implements Runnable {
 		 this.nameLice = nameLice;
 		 this.eventName = eventName;
 		 this.link = link;
+		 this.namePodatel = namePodatel;
 	}
 	
 	 
@@ -138,9 +142,8 @@ public class MyRunnableMail implements Runnable {
 				if(mailtxt.length()>0) mailtxt+=";";
 				mailtxt+=s;
 			}
-			Mail mail=new Mail( idUser,  zdoi,  mailtxt,  nameLice,  subject,  cont, new Date(),  error,  uri);
-			System.out.println("idUser "+  this.idUser + " zdoi "+  zdoi+" mailtxt "+ mailtxt+"  nameLice "+nameLice+" subject  "
-			+ subject+" cont "+cont+"  date"+ new Date()+" error "+   error+"uri"+ uri);
+			Mail mail=new Mail( idUser,  zdoi,  mailtxt,  namePodatel,  subject,  cont, new Date(),  error,  uri);
+			//System.out.println("idUser "+  this.idUser + " zdoi "+  zdoi+" mailtxt "+ mailtxt+"  nameLice "+nameLice+" subject  "+ subject+" cont "+cont+"  date"+ new Date()+" error "+   error+"uri"+ uri);
 			
 			try {
 				
@@ -180,5 +183,13 @@ public class MyRunnableMail implements Runnable {
 
 	public void setLink(String link) {
 		this.link = link;
+	}
+
+	public String getNamePodatel() {
+		return namePodatel;
+	}
+
+	public void setNamePodatel(String namePodatel) {
+		this.namePodatel = namePodatel;
 	}
 }

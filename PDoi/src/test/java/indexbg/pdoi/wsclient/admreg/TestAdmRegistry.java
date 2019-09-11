@@ -1,7 +1,10 @@
 package indexbg.pdoi.wsclient.admreg;
 
+import static org.junit.Assert.*;
+
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -14,6 +17,10 @@ import javax.xml.ws.Service;
 import javax.xml.ws.soap.AddressingFeature;
 
 import org.junit.Test;
+
+import indexbg.pdoi.db.ResponseSubject;
+import indexbg.pdoi.db.dao.ResponseSubjectDao;
+import indexbg.pdoi.system.SystemData;
 
 /**
  * @author krasi
@@ -137,6 +144,50 @@ public static XMLGregorianCalendar toXMLGregorianCalendarNoTime(Date date) {
 
 	return xmlCalendar;
 	
+}
+//@Test
+//public void testFindByNomReg() throws Exception {
+//	try {
+//		ResponseSubjectDao respSubDAO = new ResponseSubjectDao(null,new SystemData());
+//		respSubDAO.findByNomReg("0000001501");
+//		assertTrue(true);
+//	} catch (Exception e) {
+//		// TODO Auto-generated catch block
+//		e.printStackTrace();
+//		fail();
+//	}
+//	
+//}
+//
+//@Test
+//public void testGetSubjectsfromAdmRegister() throws Exception {
+//	try {
+//		ResponseSubjectDao respSubDAO = new ResponseSubjectDao(-1l,new SystemData());
+//		ArrayList<ResponseSubject> records = respSubDAO.getSubjectsfromAdmRegister(new Date());
+//		assertTrue(true);
+//		for (ResponseSubject responseSubject : records) {
+//			if (responseSubject.getNomerRegister().contentEquals("0000001586")) {
+//				System.out.println(responseSubject);
+//			}
+//		}
+//	} catch (Exception e) {
+//		// TODO Auto-generated catch block
+//		e.printStackTrace();
+//		fail();
+//	}
+//}
+
+@Test
+public void testUdateAdmRegister() throws Exception {
+	try {
+		ResponseSubjectDao respSubDAO = new ResponseSubjectDao(-1l,new SystemData());
+		String comment = respSubDAO.updateAdmRegisterEntries();
+		assertTrue(true);
+	} catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+		fail();
+	}
 }
 
 }

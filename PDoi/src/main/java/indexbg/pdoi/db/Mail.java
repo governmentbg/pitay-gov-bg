@@ -23,7 +23,7 @@ public class Mail implements PersistentEntity  {
 	 */
 	private static final long serialVersionUID = -6207905144179576288L;
 
-	@SequenceGenerator(name = "Mail", sequenceName = "seq_mail", allocationSize = 1)
+	@SequenceGenerator(name = "Mail", sequenceName = "seq_job_mail", allocationSize = 1)
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Mail")
 	@Column(name = "id", nullable=false, precision = 10, scale = 0)

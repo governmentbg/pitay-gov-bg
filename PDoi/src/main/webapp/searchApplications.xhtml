@@ -9,7 +9,7 @@
 	xmlns:ibg="http://java.sun.com/jsf/composite/components">
 
 <ui:composition template="/templateExt/mainExt.xhtml">
-
+	<ui:define name="title">#{labels['general.search']}</ui:define>
 	
 	<ui:define name="menu-items">
 		<ui:include src="/include/menuExt.xhtml" />
@@ -28,9 +28,7 @@
 			}
 			
 			body.color-blind .form-background {
-				background: linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 15%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0.2) 100%), url(./images/search_bw.jpg);
-			    background-size: cover;
-			    background-position: bottom right;
+				background: none;
 			}
 			
 			.ui-datagrid-content {
@@ -60,6 +58,11 @@
 			
 			.div-separator {
 				padding: 0;
+			}
+			
+			.clear-button {
+				display: inline-block;
+				margin-left: 2em;
 			}
 			
 			@media screen and (min-width: 64.063em) {
@@ -130,7 +133,12 @@
 								
 								<div class="ui-g">
 							    	<div class="ui-g-12">
-										<span class="advanced-search-toggle" onclick="$('#advanced-search').slideToggle();">[ разширено търсене ]</span>
+										<span class="advanced-search-toggle" onclick="$('#advanced-search').slideToggle();">#{labels['general.extendedSearch']}</span>
+										<div class="clear-button">
+											<p:commandLink action="#{searchApplications.actionClear()}" update="appFilterForm:panelDataSearch appFilterForm:panelData" id="btnClear">
+												<h:outputText value="#{labels['general.clear']}" /><i class="fas fa-trash-alt" style="margin-left: 6px;"></i>
+											</p:commandLink>
+										</div>
 									</div>
 								</div>
 								
@@ -143,7 +151,7 @@
 										<div class="ui-md-5 div-separator"></div>
 										
 										<div class="ui-g-12 ui-md-4 ui-lg-4">
-											<p:selectOneMenu style="display:flex;" id="idPer" height="300px" value="#{searchApplications.period}" autoWidth="false">
+											<p:selectOneMenu style="display:flex;" id="idPer" height="300px" value="#{searchApplications.period}" autoWidth="false"  filter="true" filterMatchMode="startsWith">
 					                             <f:selectItem itemLabel="-- #{labels['general.period']} --" itemValue="#{null}"/>          
 					                             <f:selectItems  value="#{systemData.getSysClassification(IBConstantsSys.CODE_CLASSIF_PERIOD_NOFUTURE, searchApplications.today, searchApplications.currentLang, searchApplications.userID)}"  
 					                                    var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
@@ -171,7 +179,7 @@
 									
 									<div class="ui-g">	
 										<div class="ui-g-12 ui-md-4">
-											<p:selectOneMenu value="#{searchApplications.status}" height="300px" id="status" autoWidth="false" style="display:flex;">                                     
+											<p:selectOneMenu value="#{searchApplications.status}" height="300px" id="status" autoWidth="false" style="display:flex;"  filter="true" filterMatchMode="startsWith">                                     
 			                               		<f:selectItem itemLabel="-- #{labels['general.status']} --" itemValue="" />
 			                                    <f:selectItems value="#{systemData.getSysClassification(IBConstants.CODE_SYSCLASS_STATUS_APPLICATION, searchApplications.today, searchApplications.currentLang, searchApplications.userID)}" 
 			                                    			   var="evR" itemLabel="#{evR.tekst}" itemValue="#{evR.code}" />			                                    
@@ -213,11 +221,6 @@
 								       		<f:param name="param" value="#{param}" />	
 								        </p:commandButton>
 							        </div>
-							        <ui:remove>
-									<div class="ui-g-12 ui-lg-12 ui-md-3 ui-sm-4">
-										<p:commandButton action="#{searchApplications.actionClear()}" value="#{labels['general.clear']}" update="appFilterForm:panelDataSearch" id="btnClear" /> 
-									</div>
-									</ui:remove>
 								</div>
 								
 							</div>
@@ -254,7 +257,7 @@
 												<f:param name="idObj" value="#{row[0].id}" />
 												<f:param name="baBtn" value="searchApplications"/>													
 									   </p:link>										
-						 			   
+						 			   <h:outputText value="(#{labels['general.fworg']}: #{systemData.decodeItem(IBConstants.CODE_SYSCLASS_ADM_REGISTRY, row[0].fwApp, searchApplications.currentLang, searchApplications.today, searchApplications.userID)})" rendered="#{! empty row[0].fwApp}"/>
 						 			     <h:panelGroup>
 							                <h:outputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_ADM_REGISTRY, row[0].responseSubjectId, searchApplications.currentLang, searchApplications.today, searchApplications.userID)}" />
 							 	             	
@@ -275,7 +278,7 @@
 										    |
 										    <h:outputText value="#{labels['general.status']}: " />
 										   <h:outputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_STATUS_APPLICATION, row[0].status, searchApplications.currentLang, searchApplications.today, searchApplications.userID)}" />
-											<h:outputText value="   #{row[1]}"/>
+											
 						                </h:panelGroup>
 						            </h:panelGrid>
 						      </p:panel>

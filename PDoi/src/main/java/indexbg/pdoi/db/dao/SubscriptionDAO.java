@@ -87,4 +87,36 @@ public class SubscriptionDAO extends TrackableDAO<Subscription> {
 		
 	}
 	
+	/** Намира мейлите на абониралите се потребители за дадено заявление
+	 * 
+	 * @param idApp
+	 * @return
+	 * @throws DbErrorException
+	 */
+	@SuppressWarnings("unchecked")
+	public List<String> findMailsSubscrUsersByIdApp(Long idApp) throws DbErrorException{
+		
+		Query query = createNativeQuery("select email from adm_users u join pdoi_subscription s on u.user_id = s.user_id where s.application_id =?1 "); 
+		query.setParameter(1, idApp);
+		
+		List<String> rez = query.getResultList();
+		
+		return rez;
+	}
+	
+	
+	public void insertSubscrFW(Long oldAppId ,Long newAppId) throws DbErrorException {
+		try {
+			Query query = createNativeQuery("insert into pdoi_subscription select nextval('seq_subscription') ,? as application_id ,user_id,date_from,user_reg,date_reg, user_last_mod ,date_last_mod from pdoi_subscription where application_id = ?");
+			query.setParameter(1, newAppId);
+			query.setParameter(2, oldAppId);
+		
+			
+			query.executeUpdate();
+
+		} catch (Exception e) {
+			throw new DbErrorException("Възникна грешка при затис в таблица pdoi_subscription!!!", e);
+		}
+	}
+	
 }

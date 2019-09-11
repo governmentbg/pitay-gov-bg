@@ -22,6 +22,63 @@
 
 	<ui:define name="content">
 	
+		<style>
+			* {
+				box-sizing: border-box;
+			}
+		
+			label {
+				font-size: inherit;
+				color: inherit;
+			}
+		
+			input, textarea, .ui-selectonemenu {
+				width: 100%;
+			}
+			
+			.ui-selectonemenu {
+				padding-right: 32px;
+			}
+			
+			.ui-selectonemenu .ui-selectonemenu-trigger {
+				width: 32px;
+			}
+			
+			.ui-calendar {
+				position: relative;
+				display: inline-block;
+				width: 100%;
+			}
+			
+			.ui-calendar input.ui-state-error {
+				color: #333333;
+			}
+			
+			.ui-datepicker-trigger {
+				position: absolute;
+				right: 0;
+				margin-right: 0;
+			}
+			
+			.ibg-modal-button {
+				position:relative;	
+			}
+			
+			.ibg-modal-button .sButton {
+				position: absolute;
+				right: -2px;
+				top: 0px;
+				left: auto;
+			}
+			
+			@media screen and (max-width: 64.063em) {
+				.cc-right {
+					text-align: left;
+				}
+			}
+			
+		</style>
+	
 		<h:form id="packageFilterForm">
 			<p:importConstants type="indexbg.pdoi.system.Constants" var="IBConstants" className="indexbg.pdoi.system.Constants"/>
 			<p:importConstants type="com.indexbg.system.SysConstants" var="IBConstantsSys" className="com.indexbg.system.SysConstants" />
@@ -30,18 +87,15 @@
 
 				<p:outputPanel id="panelData">
 				
-					<br />
-
-										
-					<br />
+					<br/><br/>
 					
 					<p:panel  >
 						<div class="ui-g">
-							<div class="ui-g-7 ui-md-3 ui-lg-1 cc-right" >
+							<div class="ui-g-12 ui-md-2 ui-lg-1 cc-right" >
 								<h:outputText value="#{labels['general.period']}:"/>
 							</div>
-							<div class="ui-g-7 ui-md-3 ui-lg-3">
-								<p:selectOneMenu id="idPer" value="#{packageFilter.period}" style="width:250px;">
+							<div class="ui-g-12 ui-md-10 ui-lg-4">
+								<p:selectOneMenu id="idPer" value="#{packageFilter.period}">
 		                             <f:selectItem value="#{null}" itemValue="#{null}"/>          
 		                             <f:selectItems value="#{systemData.getSysClassification(IBConstantsSys.CODE_CLASSIF_PERIOD_NOFUTURE, packageFilter.today, packageFilter.currentLang, packageFilter.userId)}"  
 		                                    var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
@@ -49,10 +103,10 @@
 		                        </p:selectOneMenu>
 	                        </div>
 	                                
-	                        <div class="ui-g-7 ui-md-2 ui-lg-2 cc-right" >
-									 <h:outputText value="#{labels['general.dataOt']}:"/>
+	                        <div class="ui-g-12 ui-md-2 ui-lg-1 cc-right" >
+								 <h:outputText value="#{labels['general.dataOt']}:"/>
 							</div>
-							<div class="ui-g-7 ui-md-3 ui-lg-2">
+							<div class="ui-g-12 ui-md-4 ui-lg-2">
 									 <p:calendar id="dateOt" pattern="dd.MM.yyyy" mask="true"  showOn="button" 
 											timeZone="#{packageFilter.timeZone}" size="10" locale="bg" 
 								         	style="font-size:12px;"   value="#{packageFilter.dateFrom}" label="#{labels['publ.dateFrom']}"
@@ -61,23 +115,27 @@
 								      </p:calendar>
 								      <p:message for="dateOt" showDetail="true" showSummary="true" display="tooltip"/>
 							</div>
-							<div class="ui-g-7 ui-md-2 ui-lg-1 cc-right" >
-										<h:outputText value="#{labels['general.dataDo']}:"/>
+							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
+								<h:outputText value="#{labels['general.dataDo']}:"/>
 							</div>
-							<div class="ui-g-7 ui-md-3 ui-lg-3">
-										<p:calendar id="dateDo" pattern="dd.MM.yyyy" mask="true" showOn="button" 
-											timeZone="#{pubList.timeZone}" size="10" locale="bg" 
-								         	style="font-size:12px;"  value="#{packageFilter.dateTo}" label="#{labels['publ.dateTo']}"   
-								          	styleClass="form-control #{packageFilter.hasMessages('packageFilterForm:dateDo') ? 'cc-red' : '' }" >
-								          	
-									     </p:calendar>  	
-									     <p:message for="dateDo" showDetail="true" showSummary="true" display="tooltip"/> 
+							<div class="ui-g-12 ui-md-4 ui-lg-2">
+								<p:calendar id="dateDo" pattern="dd.MM.yyyy" mask="true" showOn="button" 
+									timeZone="#{pubList.timeZone}" size="10" locale="bg" 
+						         	style="font-size:12px;"  value="#{packageFilter.dateTo}" label="#{labels['publ.dateTo']}"   
+						          	styleClass="form-control #{packageFilter.hasMessages('packageFilterForm:dateDo') ? 'cc-red' : '' }" >
+						          	
+							     </p:calendar>  	
+							     <p:message for="dateDo" showDetail="true" showSummary="true" display="tooltip"/> 
 							</div> 
+						</div>
+						
+						<div class="ui-g">
+							
 							<div class="ui-g-12 ui-md-2 ui-lg-1 cc-right" >
 								<h:outputText value="#{labels['packageFilter.typeMessage']}: " />
 							</div>
 							<div class="ui-g-12 ui-md-4 ui-lg-4">
-								<p:selectOneMenu value="#{packageFilter.typeMessage}" id="typeMessage" autoWidth="false" style="width:250px;">
+								<p:selectOneMenu value="#{packageFilter.typeMessage}" id="typeMessage" autoWidth="false">
                                     <f:selectItem value="#{null}" itemValue="#{null}"/>  
                                 	<f:selectItem itemValue="1" itemLabel="Входящо" />
 								    <f:selectItem itemValue="2" itemLabel="Изходящо" />	                                    
@@ -88,7 +146,7 @@
 								<h:outputText value="#{labels['packageFilter.formMessage']}: " />
 							</div>
 							<div class="ui-g-12 ui-md-4 ui-lg-6">
-								<p:selectOneMenu value="#{packageFilter.formMessage}" id="formMessage" autoWidth="false" style="width:330px;">
+								<p:selectOneMenu value="#{packageFilter.formMessage}" id="formMessage" autoWidth="false">
                                     <f:selectItem value="#{null}" itemValue="#{null}"/>  
 	                                 <f:selectItems value="#{packageFilter.msgFormList}" />		                                    
                                 </p:selectOneMenu>											                        
@@ -98,7 +156,7 @@
 								<h:outputText value="#{labels['packageFilter.statusMessage']}: " />
 							</div>
 							<div class="ui-g-12 ui-md-4 ui-lg-4">
-								<p:selectOneMenu value="#{packageFilter.statusMessage}" id="statusMessage" autoWidth="false" style="width:250px;">
+								<p:selectOneMenu value="#{packageFilter.statusMessage}" id="statusMessage" autoWidth="false">
                                     <f:selectItem value="#{null}" itemValue="#{null}"/>  
 	                                <f:selectItems value="#{packageFilter.msgStatusList}" />		                                    
                                 </p:selectOneMenu>											                        
@@ -108,52 +166,53 @@
 								<h:outputText value="#{labels['packageFilter.statusSending']}: " />
 							</div>
 							<div class="ui-g-12 ui-md-4 ui-lg-6">
-								<p:selectOneMenu value="#{packageFilter.statusSending}" id="statusSending" autoWidth="false" style="width:330px;">
+								<p:selectOneMenu value="#{packageFilter.statusSending}" id="statusSending" autoWidth="false">
                                     <f:selectItem value="#{null}" itemValue="#{null}"/>  
 	                                <f:selectItems value="#{packageFilter.msgCommStatusList}" />		                                    
                                 </p:selectOneMenu>											                        
 							</div>
 
 							<div class="ui-g-12 ui-md-2 ui-lg-1 cc-right">
-									<h:outputText value="#{labels['packageFilter.sender']}: "/>
-								</div>
+								<h:outputText value="#{labels['packageFilter.sender']}: "/>
+							</div>
 	
-								<div class="ui-g-12 ui-md-4 ui-lg-4">							
-								<p:inputText value="#{packageFilter.senderText}" id="sender" readonly="true" style="width:250px;"/>   
-			                	<ibg:selectOneModal header="#{labels['packageFilter.sender']}" userId="#{packageFilter.userId}" lang="#{packageFilter.currentLang}"
+							<div class="ui-g-12 ui-md-4 ui-lg-4">							
+								<p:inputText value="#{packageFilter.senderText}" id="sender" readonly="false"/>   
+			                	<ui:remove><ibg:selectOneModal header="#{labels['packageFilter.sender']}" userId="#{packageFilter.userId}" lang="#{packageFilter.currentLang}"
 						 	 			saveStateTree="true" isSelectNode="true" withBtnClear="true" codeClassif="#{IBConstants.CODE_SYSCLASS_ADM_REGISTRY}"     
-						 				update="packageFilterForm:sender" selectedCode="#{packageFilter.senderCode}" selectedText="#{packageFilter.senderText}"  />	    							
-								</div>
+						 				update="packageFilterForm:sender" selectedCode="#{packageFilter.senderCode}" selectedText="#{packageFilter.senderText}"  />	</ui:remove>    							
+							</div> 
 								
-								<div class="ui-g-12 ui-md-2 ui-lg-1 cc-right" >
-								<h:outputText value="#{labels['packageFilter.docGUID']}: "/>
+							<div class="ui-g-12 ui-md-2 ui-lg-1 cc-right" >
+								<h:outputText value="#{labels['app.nomerZaiavlenie']}: "/>
 							</div>
 
 							<div class="ui-g-12 ui-md-4 ui-lg-6">											
-    							<p:inputText id="docGUID" value="#{packageFilter.docGUID}" style="width:350px;"/>                         
+    							<p:inputText id="docGUID" value="#{packageFilter.docRN}"/>                         
 							</div>
 
 							<div class="ui-g-12 ui-md-2 ui-lg-1 cc-right">
-									<h:outputText value="#{labels['packageFilter.receiver']}: "/>
-								</div>
+								<h:outputText value="#{labels['packageFilter.receiver']}: "/>
+							</div>
 	
-								<div class="ui-g-24 ui-md-8 ui-lg-8">							
-								<p:inputText value="#{packageFilter.receiverText}" id="receiver" readonly="true" style="width:250px;"/>   
-			                	<ibg:selectOneModal header="#{labels['packageFilter.receiver']}" userId="#{packageFilter.userId}" lang="#{packageFilter.currentLang}"
+							<div class="ui-g-12 ui-md-4 ui-lg-4">							
+								<p:inputText value="#{packageFilter.receiverText}" id="receiver" readonly="false"/>   
+			                	 <ui:remove> <ibg:selectOneModal header="#{labels['packageFilter.receiver']}" userId="#{packageFilter.userId}" lang="#{packageFilter.currentLang}"
 						 	 			saveStateTree="true" isSelectNode="true" withBtnClear="true" codeClassif="#{IBConstants.CODE_SYSCLASS_ADM_REGISTRY}"     
-						 				update="packageFilterForm:receiver" selectedCode="#{packageFilter.receiverCode}" selectedText="#{packageFilter.receiverText}"  />	    							
-								</div>
+						 				update="packageFilterForm:receiver" selectedCode="#{packageFilter.receiverCode}" selectedText="#{packageFilter.receiverText}"  /></ui:remove>	    							
+							</div> 
+						</div>  
 						
-							
+						<div class="ui-g">
 									
 							<div class="ui-g-12 ui-md-6 ui-lg-6" >
-				 					<p:commandButton action="#{packageFilter.actionClear()}" 
+			 					<p:commandButton action="#{packageFilter.actionClear()}" 
 						 		 	value="#{labels['general.clear']}" update="packageFilterForm:panelData" id="btnClear" /> 
 						 	</div>
 	
 						    <div class="ui-g-12 ui-md-6 ui-lg-6 cc-right" >
-						        	<p:commandButton action="#{packageFilter.actionSearch()}" 
-						         			 value="#{labels['general.search']}" update="packageFilterForm:panelData" id="btnSearch" />
+					        	<p:commandButton action="#{packageFilter.actionSearch()}" 
+				         			 value="#{labels['general.search']}" update="packageFilterForm:panelData" id="btnSearch" />
 						    </div>
 						</div>
 					</p:panel>	
@@ -172,14 +231,12 @@
 						
 			
 						
-							<p:column style="width:5px;text-align: center">
-								<f:facet name="header">
-					                 No
-					            </f:facet>
-								<h:outputText value="#{idx + 1}" />
+							<p:column style="width:25px;text-align: center">
+								<f:facet name="header"></f:facet>
+								<p:rowToggler/>
 							</p:column>
 
-							<p:column width="25" sortBy="#{row.A02MSGDAT}">
+							<p:column width="90" sortBy="#{row.A02MSGDAT}">
 								<f:facet name="header">
 									 <h:outputText value="#{labels['general.date']}"  />
 									  
@@ -188,8 +245,18 @@
 								     <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
 								</h:outputText>
 							</p:column>
+
+							<p:column width="110" sortBy="#{row.A05IZHRN}">
+								<f:facet name="header">
+									 <h:outputText value="#{labels['app.nomerZaiavlenie']}"  />
+									  
+								</f:facet>
+								<h:outputText value="#{row[6]}" />
+							</p:column>
+
+
 			
-							<p:column width="100" sortBy="#{row.A10STATDOC}">
+							<p:column width="110" sortBy="#{row.A10STATDOC}">
 								<f:facet name="header">
 									<h:outputText value="#{labels['packageFilter.statusMessage']}" />
 								</f:facet>
@@ -198,14 +265,14 @@
 							
 							
 		
-							<p:column width="100" sortBy="#{row.A03SENDER}">
+							<p:column width="*" sortBy="#{row.A03SENDER}">
 								<f:facet name="header">
 									<h:outputText value="#{labels['packageFilter.sender']}" />
 								</f:facet>
 								<h:outputText value="#{row[4]}" />
 							</p:column>
 							
-							<p:column width="100" sortBy="#{row.A04RECEP}">
+							<p:column width="*" sortBy="#{row.A04RECEP}">
 								<f:facet name="header">
 									<h:outputText value="#{labels['packageFilter.receiver']}" />
 								</f:facet>
@@ -213,13 +280,31 @@
 							</p:column>
 							
 							
-							<p:column width="100" sortBy="#{row.A11STATIZPR}">
+							<p:column width="110" sortBy="#{row.A11STATIZPR}">
 								<f:facet name="header">
 									<h:outputText value="#{labels['packageFilter.statusSending']}" />
 								</f:facet>
 								<h:outputText value="#{row[12]}" />
 							</p:column>
 							
+							<p:rowExpansion>
+								
+								<br/>
+								<h:outputText value="#{row[10]}" escape="false"/>
+								<br/><br/>
+								<div jsf:rendered="#{!empty row[13]}">
+									<hr/>
+									<br/>
+									<h:outputText value="#{row[13]}" escape="false"/>
+									<br/>
+								</div>
+								<div jsf:rendered="#{!empty row[14]}">
+									<hr/>
+									<br/>
+									<h:outputText value="#{row[14]}" escape="false"/>
+									<br/>
+								</div>
+							</p:rowExpansion>
 						</p:dataTable>
 
 			         </p:panel>

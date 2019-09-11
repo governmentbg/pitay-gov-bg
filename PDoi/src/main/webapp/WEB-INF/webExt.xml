@@ -37,6 +37,11 @@
     <url-pattern>*.jsf</url-pattern>
   </servlet-mapping>
   
+   <!-- SESSION PROP -->
+  <listener>
+ 		<listener-class>indexbg.pdoi.system.MyHttpSessionListener</listener-class>
+  </listener>
+  
     <!-- AUTH FILTER -->
     <!-- за вътрешното -->
     <!-- login.jsf,noAccess.jsf,WSSystemDataService,indexExt.jsf,Classifications,APIZaqvlenie,applicationView.jsf,main.css --> 
@@ -64,14 +69,14 @@
   <context-param>
     <description>Auth server url</description>
     <param-name>authServerAddress</param-name>
-    <!--  MS Test server  
+    <!--  MS Test server  -->
      <param-value>https://172.23.117.72:8443/AAServer/api/</param-value>
-     -->
-     <!-- MS Production -->
-       <param-value>http://172.23.117.145:8080/AAServer/api/</param-value>
-      
+     
+     <!-- MS Production 
+       <param-value>http://172.23.117.144:8080/AAServer/api/</param-value>
+      --> 
      <!-- Indexbg  -->
-     <!-- <param-value>http://10.29.1.165:8080/AAServer/api/</param-value> -->
+     <!-- <param-value>http://10.29.1.165:8080/AAServer/api/</param-value> --> 
   </context-param>
   <context-param>
     <description>System client id</description>

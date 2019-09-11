@@ -4,11 +4,13 @@ import java.util.Date;
 import java.util.Map;
 
 import javax.faces.application.Application;
+import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.PostConstructApplicationEvent;
 import javax.faces.event.PreDestroyApplicationEvent;
 import javax.faces.event.SystemEvent;
 import javax.faces.event.SystemEventListener;
+import javax.servlet.ServletContext;
 
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
@@ -26,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import com.indexbg.ocr.quartz.OCRJob;
 import com.indexbg.system.BaseSystemData;
+import com.indexbg.system.SystemDataSynchronizer;
 import com.indexbg.system.db.JPA;
 import com.indexbg.system.quartz.BaseJobListener;
 import com.indexbg.system.utils.JSFUtils;
@@ -89,6 +92,19 @@ public class MySystemListener implements SystemEventListener {
 		} catch (Exception e) {
 			LOGGER.error("Error - myApplicationDestroy !!!!", e);
 		}
+		
+		try {
+			ServletContext servletContext = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
+	
+			LOGGER.debug("Trying to STOP SystemDataSynchronizer ...");
+			SystemDataSynchronizer synchronizer = (SystemDataSynchronizer) servletContext.getAttribute("systemDataSynchronizer");
+			servletContext.removeAttribute("systemDataSynchronizer");
+			if (synchronizer != null) {
+				synchronizer.stopIt();
+			}
+		} catch (Exception e) {
+			LOGGER.error("Error - STOP SystemDataSynchronizer !!!!", e);
+		}
 
 		LOGGER.info("myApplicationDestroy - END");
 	}
@@ -125,6 +141,17 @@ public class MySystemListener implements SystemEventListener {
 			LOGGER.error("Error - myApplicationInit !!!!", e);
 		}
 
+		try {
+			ServletContext servletContext = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
+			BaseSystemData systemData = (BaseSystemData) JSFUtils.getManagedBean("systemData");
+	
+			LOGGER.debug("Trying to START SystemDataSynchronizer ...");
+			SystemDataSynchronizer synchronizer = new PDoiSystemDataSynchronizer(systemData, null);
+			servletContext.setAttribute("systemDataSynchronizer", synchronizer);
+		} catch (Exception e) {
+			LOGGER.error("Error - START SystemDataSynchronizer !!!!", e);
+		}
+			
 		LOGGER.info("myApplicationInit - END");
 	}
 	

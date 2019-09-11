@@ -54,7 +54,9 @@ public class MailFilter extends PDoiBean{
 	private String uri;
 	
 	private String selMailError;
-
+	
+	private boolean withErrors;
+	
 	public MailFilter() {
 		
 	}
@@ -116,8 +118,7 @@ public class MailFilter extends PDoiBean{
 	 */
 	public void actionSearch(){
 		try {		  
-			
-			SelectMetadata smd= mDao.createFilterMsgSQL(  uri,  email,  zdoiCode,  dateFrom,  dateTo);
+			SelectMetadata smd= mDao.createFilterMsgSQL(  uri,  email,  zdoiText,  dateFrom,  dateTo ,withErrors);
 			mailList = new LazyDataModelSQL2Array(smd, "A7_DATE_MAIL");  
 						
 		} catch (DbErrorException e) {
@@ -135,7 +136,7 @@ public class MailFilter extends PDoiBean{
 
 
 	/*==================================================================================================
-	 *  																									SETTERS && GETTERS 
+	 *  				                    SETTERS && GETTERS 
 	 *  ==================================================================================================*/
 	
 	public MailerDAO getmDao() {
@@ -246,6 +247,14 @@ public class MailFilter extends PDoiBean{
 
 	public Date getToday(){
 		return new Date();
+	}
+
+	public boolean isWithErrors() {
+		return withErrors;
+	}
+
+	public void setWithErrors(boolean withErrors) {
+		this.withErrors = withErrors;
 	}
 
 }

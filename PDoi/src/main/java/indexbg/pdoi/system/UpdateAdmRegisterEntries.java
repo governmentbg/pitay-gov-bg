@@ -26,7 +26,7 @@ public class UpdateAdmRegisterEntries implements Job {
 		
 		
 		try {
-			ResponseSubjectDao respSubDAO = new ResponseSubjectDao(null,null);
+			ResponseSubjectDao respSubDAO = new ResponseSubjectDao(-1l,new SystemData());
 			String comment = respSubDAO.updateAdmRegisterEntries();
 			
 			jobResult.setComment(comment);

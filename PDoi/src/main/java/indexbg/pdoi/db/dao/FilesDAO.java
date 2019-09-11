@@ -138,6 +138,33 @@ public class FilesDAO extends TrackableDAO<Files> {
 	/** Извлича от БД на конкретни атрибути на прикачените файлове 
 	 * @param codeObj - код на обекта, към който е прикачен файла
 	 * @param idObj - ид. на обекта, към който е прикачен файла
+	 * @return
+	 * @throws DbErrorException
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Files> findByCodeObjAndIdObjAndRel(Long codeObj, Long idObj) throws DbErrorException { //TODO
+
+		try {
+
+			Query query = createNativeQuery("select f.id, f.id_object, f.code_object, f.filename, f.description, f.visible_on_site, f.content_type from files f  where f.code_object = ?1 and f.id_object = ?2 "+
+										  	" UNION "+
+											"select f.id, f.id_object, f.code_object, f.filename, f.description, f.visible_on_site, f.content_type from files f join pdoi_files_relation fr on f.id = fr.id_file  where fr.code_object = ?3 and fr.id_object = ?4", "filterByCodeObjAndId");
+
+			query.setParameter(1, codeObj);
+			query.setParameter(2, idObj);
+			query.setParameter(3, codeObj);
+			query.setParameter(4, idObj);
+			return query.getResultList();
+
+		} catch (Exception e) {
+			throw new DbErrorException("Възникна грешка при зареждане на файлове по код на обекта и ид на обекта", e);
+		}
+
+	}
+	
+	/** Извлича от БД на конкретни атрибути на прикачените файлове 
+	 * @param codeObj - код на обекта, към който е прикачен файла
+	 * @param idObj - ид. на обекта, към който е прикачен файла
 	 * @param visibleOnSite - статус на видимост на прикачения файл
 	 * @return
 	 * @throws DbErrorException
@@ -161,6 +188,113 @@ public class FilesDAO extends TrackableDAO<Files> {
 		}
 
 	}
+	
+	/** Извлича от БД на конкретни атрибути на прикачените файлове 
+	 * @param codeObj - код на обекта, към който е прикачен файла
+	 * @param idObj - ид. на обекта, към който е прикачен файла
+	 * @param visibleOnSite - статус на видимост на прикачения файл
+	 * @return
+	 * @throws DbErrorException
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Files> findByCodeObjAndIdObjAndRel(Long codeObj, Long idObj, boolean visibleOnSite) throws DbErrorException { //TODO
+
+		try {
+
+			Query query = createNativeQuery("select f.id, f.id_object, f.code_object, f.filename, f.description, f.visible_on_site, f.content_type from files f  where f.code_object = ?1 and f.id_object = ?2 and f.visible_on_site = ?3"+
+				  	" UNION "+
+					"select f.id, f.id_object, f.code_object, f.filename, f.description, f.visible_on_site, f.content_type from files f join pdoi_files_relation fr on f.id = fr.id_file  where fr.code_object = ?4 and fr.id_object = ?5 and f.visible_on_site = ?6", "filterByCodeObjAndId");
+
+			query.setParameter(1, codeObj);
+			query.setParameter(2, idObj);
+			query.setParameter(3, visibleOnSite);
+			query.setParameter(4, codeObj);
+			query.setParameter(5, idObj);
+			query.setParameter(6, visibleOnSite);
+			
+			return query.getResultList();
+
+		} catch (Exception e) {
+			throw new DbErrorException("Възникна грешка при зареждане на файлове по код на обекта и ид на обекта", e);
+		}
+
+	}
+	
+	/** Извлича от БД  прикачените файлове 
+	 * @param ids - списък на ид. на файловете
+	 * @return
+	 * @throws DbErrorException
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Files> findByIdsFull(List<Long> ids) throws DbErrorException {
+
+		try {
+
+			Query query = createQuery(" from Files  where id in (?1) "); 
+
+			query.setParameter(1, ids);
+			
+
+			return query.getResultList();
+
+		} catch (Exception e) {
+			throw new DbErrorException("Възникна грешка при зареждане на файлове по код на обекта и ид на обекта", e);
+		}
+
+	}
+	
+	/** Извлича от БД  прикачените файлове 
+	 * @param ids - списък на ид. на файловете
+	 * @return
+	 * @throws DbErrorException
+	 */
+	public Files findByIdFull(Long ids) throws DbErrorException {
+
+		try {
+
+			Query query = createQuery(" from Files  where id =?1  and visibleOnSite =?2"); 
+
+			query.setParameter(1, ids);
+			query.setParameter(2, true);
+			
+			return (Files) query.getSingleResult();
+
+		} catch (Exception e) {
+			throw new DbErrorException("Възникна грешка при зареждане на файлове по ид на обекта", e);
+		}
+
+	}
+	
+	
+	
+	/** Извлича от БД идентификатор на прикачените файлове 
+	 * @param codeObj - код на обекта, към който е прикачен файла
+	 * @param idObj - ид. на обекта, към който е прикачен файла
+	 * @return
+	 * @throws DbErrorException
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Object> findIdFilesByCodeObjAndIdObjAndRel(Long codeObj, Long idObj) throws DbErrorException {
+
+		try {
+
+			Query query = createNativeQuery("select f.id  from files f where f.code_object = ?1 and f.id_object = ?2"
+										+ "  UNION "
+										+ "  select fr.id_file from pdoi_files_relation fr where fr.code_object = ?3 and fr.id_object = ?4 "); 
+
+			query.setParameter(1, codeObj);
+			query.setParameter(2, idObj);
+			query.setParameter(3, codeObj);
+			query.setParameter(4, idObj);
+
+			return query.getResultList();
+
+		} catch (Exception e) {
+			throw new DbErrorException("Възникна грешка при зареждане на файлове по код на обекта и ид на обекта", e);
+		}
+
+	}
+	
 	
 	/** Актуализира конкретни атрибути на прикачените файлове  
 	 * @param description
@@ -206,5 +340,20 @@ public class FilesDAO extends TrackableDAO<Files> {
 				throw new DbErrorException(e.getMessage());
 			}
 
+	}
+	
+	
+	public void insertFileRelation(Long codeObject ,Long idObject ,Long idFile) throws DbErrorException {
+		try {
+			Query query = createNativeQuery("insert into pdoi_files_relation (id,code_object,id_object,id_file) values (nextval('seq_file_relation') ,?,?,?)");
+			query.setParameter(1, codeObject);
+			query.setParameter(2, idObject);
+			query.setParameter(3, idFile);
+			
+			query.executeUpdate();
+
+		} catch (Exception e) {
+			throw new DbErrorException("Възникна грешка при затис в таблица fileRelation!!!", e);
+		}
 	}
 }

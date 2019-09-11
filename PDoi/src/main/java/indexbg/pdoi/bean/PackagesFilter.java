@@ -63,7 +63,7 @@ public class PackagesFilter extends PDoiBean{
 	private List<SelectItem> msgCommStatusList = new ArrayList<SelectItem>(); 
 	private Long statusSending;
 	
-	private String docGUID;
+	private String docRN;
 	
 	//podatel
 	private String senderText;	
@@ -149,7 +149,7 @@ public class PackagesFilter extends PDoiBean{
 		statusMessage = "";
 		statusSending=null;
 		
-		docGUID="";
+		setDocRN("");
 		
 		senderText="";
 		senderCode=null;
@@ -164,7 +164,7 @@ public class PackagesFilter extends PDoiBean{
 	public void actionSearch(){
 		try {		  
 			
-			SelectMetadata smd= dao.createFilterMsgSQL(formMessage, statusMessage, statusSending, typeMessage, dateFrom, dateTo);
+			SelectMetadata smd= dao.createFilterMsgSQL(formMessage, statusMessage, statusSending, typeMessage, dateFrom, dateTo, senderText, receiverText,docRN );
 			messList = new LazyDataModelSQL2Array(smd, "A02MSGDAT");  
 						
 		} catch (DbErrorException e) {
@@ -256,12 +256,12 @@ public class PackagesFilter extends PDoiBean{
 		this.statusSending = statusSending;
 	}
 
-	public String getDocGUID() {
-		return docGUID;
+	public String getDocRN() {
+		return docRN;
 	}
 
-	public void setDocGUID(String docGUID) {
-		this.docGUID = docGUID;
+	public void setDocRN(String docRN) {
+		this.docRN = docRN;
 	}
 
 	public String getSenderText() {

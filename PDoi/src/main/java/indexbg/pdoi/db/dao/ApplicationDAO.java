@@ -23,6 +23,7 @@ import com.indexbg.system.utils.SearchUtils;
 import com.indexbg.system.utils.StringUtils;
 
 import indexbg.pdoi.db.Application;
+import indexbg.pdoi.db.Event;
 import indexbg.pdoi.system.Constants;
 import indexbg.pdoi.system.SystemData;
 
@@ -46,7 +47,7 @@ public class ApplicationDAO extends TrackableDAO<Application> {
 	 * @param id
 	 * @throws DbErrorException
 	 */
-	public void updateResponseFromEvent(Long responseSubject, Long userLastMod, Date dateLastMod, Long id) throws DbErrorException {
+	public void updateResponseFromEventCeos(Long responseSubject, Long userLastMod, Date dateLastMod, Long id) throws DbErrorException {
 		
 		try {
 
@@ -73,7 +74,50 @@ public class ApplicationDAO extends TrackableDAO<Application> {
 							+ " на дата: " + new SimpleDateFormat("dd.MM.yyyy").format(new Date()) + " към заявление с ид = " + id); // какво се променя
 			
 			getEntityManager().persist(j);			
+			
+		} catch (Exception e) {
+			throw new DbErrorException("Възникна грешка при ъпдейтване на задълженото лице на заявлението от събитието!!!", e);
+		}
+		
+	}
+	
+	/** Ъпдейтва определени полета на заявлението спрямо подадените параметри
+	 * 
+	 * @param responseSubject
+	 * @param userLastMod
+	 * @param dateLastMod
+	 * @param id
+	 * @throws DbErrorException
+	 */
+	public void updateResponseFromEventBezCeos(Long responseSubject, Long userLastMod, Date dateLastMod, Long id, Date responseEndTime) throws DbErrorException {
+		
+		try {
 
+			Query query = createNativeQuery("update pdoi_application set response_subject_id = ?, user_last_mod = ?, date_last_mod = ?, status = ?, status_date = ? ,response_end_time = ? where id = ?"); 
+			
+			query.setParameter(1, responseSubject);			
+			query.setParameter(2, userLastMod);
+			query.setParameter(3, dateLastMod);
+			query.setParameter(4, Constants.CODE_ZNACHENIE_STATUS_APP_REGISTERED);
+			query.setParameter(5, new Date());
+			query.setParameter(6, responseEndTime);
+			query.setParameter(7, id);
+			query.executeUpdate();
+			
+			SystemJournal j = new SystemJournal();
+			
+			j.setCodeObject(Constants.CODE_OBJECT_APPLICATION); // на заявлението
+			j.setIdObject(id); // ид на заявление
+			j.setCodeAction(SysConstants.CODE_DEIN_KOREKCIA); // кода на корекция - CODE_DEIN_KOREKCIA
+			j.setDateAction(new Date()); // датата на промяната
+			j.setIdUser(getUserId()); // ид на потребител
+			j.setIdentObject("Променя се задълженият субект на: " + sd.decodeItem(Constants.CODE_SYSCLASS_ADM_REGISTRY, responseSubject, Constants.CODE_DEFAULT_LANG, new Date(), getUserId()) 
+							+ " и статуса на: " + sd.decodeItem(Constants.CODE_SYSCLASS_STATUS_APPLICATION, Constants.CODE_ZNACHENIE_STATUS_APP_REGISTERED, Constants.CODE_DEFAULT_LANG, new Date(), getUserId()) 
+							+ " на дата: " + new SimpleDateFormat("dd.MM.yyyy").format(new Date())
+							+ " и срок: " + new SimpleDateFormat("dd.MM.yyyy").format(responseEndTime)+" към заявление с ид = " + id); // какво се променя
+			
+			getEntityManager().persist(j);			
+			
 		} catch (Exception e) {
 			throw new DbErrorException("Възникна грешка при ъпдейтване на задълженото лице на заявлението от събитието!!!", e);
 		}
@@ -240,8 +284,10 @@ public class ApplicationDAO extends TrackableDAO<Application> {
 				+ " CASE  WHEN a.number_of_visits is null THEN 0 else a.number_of_visits end AS A6, "
 				+ " a.date_reg as A7 ");
 				if (null!=userIDlock)
-					sql.append(", l.more as A8");
-
+					sql.append(", l.more as A8 ");
+				
+				sql.append(" , a.fw_app as A9 ");
+				
 		String from = " FROM pdoi_application a ";
 				if (null!=userIDlock)
 					from+= " left outer join LOCK_OBJECTS l on a.id = l.ID_OBJECT and  l.TIP_OBJECT = "+Constants.CODE_OBJECT_APPLICATION+" and l.ID_USER <> "+userIDlock;
@@ -347,7 +393,8 @@ public class ApplicationDAO extends TrackableDAO<Application> {
 				+ " CASE WHEN LENGTH(a.request)>200 THEN  SUBSTR(a.request,1,200) || '...' ELSE request END as A4,"
 				+ " a.status as A5,"
 				+ " CASE  WHEN a.number_of_visits is null THEN 0 else a.number_of_visits end AS A6, "
-				+ " a.date_reg as A7 ");
+				+ " a.date_reg as A7, "
+				+ " a.fw_app as A8");
 		String from = " FROM pdoi_application a join pdoi_subscription s on(a.id = s.application_id)";
 		List<String> whereStr = new ArrayList<String>();
 		
@@ -380,7 +427,7 @@ public class ApplicationDAO extends TrackableDAO<Application> {
 	}
 		
 	/** По Ури на заявление връща обекта
-	 * 
+	 *  (ако е било препратено по компетентност ще върне първото)
 	 * @param uri
 	 * @return
 	 * @throws DbErrorException
@@ -390,7 +437,7 @@ public class ApplicationDAO extends TrackableDAO<Application> {
 		
 		try {
 
-			Query query = JPA.getUtil().getEntityManager().createQuery("FROM Application а WHERE а.applicationUri = :urii");
+			Query query = JPA.getUtil().getEntityManager().createQuery("FROM Application а WHERE а.applicationUri = :urii order by id");
 
 			query.setParameter("urii", uri);
 

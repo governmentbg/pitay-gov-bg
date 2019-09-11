@@ -85,7 +85,9 @@ public class EventDAO extends TrackableDAO<Event> {
 	 * @param idApp
 	 * @throws DbErrorException
 	 */
-	public void deleteEvent (Long idEvent, Long idApp) throws DbErrorException {
+	public Date deleteEvent (Long idEvent, Long idApp) throws DbErrorException {
+		
+		Date responseEndTime = null;
 		
 		try {
 			
@@ -94,7 +96,7 @@ public class EventDAO extends TrackableDAO<Event> {
 			
 			if (tmpEvent.getEventType().equals(Constants.CODE_ZNACHENIE_TYPE_EVENT_EXTEND_TERM)) {
 				
-				Date responseEndTime = null;
+				
 				
 				if (tmpEvent.getEventReason().equals(Constants.CODE_ZNACHENIE_REASON_EXTENSION_REQ_THIRD_PART)) {
 					//responseEndTime - 14 дни от response_end_time на заявлението	
@@ -187,6 +189,8 @@ public class EventDAO extends TrackableDAO<Event> {
 		} catch (Exception e) {
 			throw new DbErrorException("Възникна грешка при изтриване на събитие", e);
 		}
+		
+		return responseEndTime;
 		
 	}
 	

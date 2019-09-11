@@ -35,11 +35,11 @@
 					
 					<p:panel  >
 						<div class="ui-g">
-							<div class="ui-g-12 ui-md-2 ui-lg-2  cc-right" >
+							<div class="ui-g-12 ui-md-2 ui-lg-1  cc-right" >
 								<h:outputText value="#{labels['general.period']}:" />
 							</div>
-							<div class="ui-g-12 ui-md-2 ui-lg-2">
-								<p:selectOneMenu id="idPer" value="#{mailFilter.period}" style="width:220px;">
+							<div class="ui-g-12 ui-md-3 ui-lg-3">
+								<p:selectOneMenu id="idPer" value="#{mailFilter.period}" style="width:92%;">
 		                             <f:selectItem value="#{null}" itemValue="#{null}"/>          
 		                             <f:selectItems value="#{systemData.getSysClassification(IBConstantsSys.CODE_CLASSIF_PERIOD_NOFUTURE, mailFilter.today, mailFilter.currentLang, mailFilter.userID)}"  
 		                                    var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
@@ -47,7 +47,7 @@
 		                        </p:selectOneMenu>
 	                        </div>
 	                                
-	                        <div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
+	                        <div class="ui-g-12 ui-md-2 ui-lg-1 cc-right" >
 									 <h:outputText value="#{labels['general.dataOt']}:"/>
 							</div>
 							<div class="ui-g-12 ui-md-2 ui-lg-2">
@@ -59,10 +59,10 @@
 								      </p:calendar>
 								      <p:message for="dateOt" showDetail="true" showSummary="true" display="tooltip"/>
 							</div>
-							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
+							<div class="ui-g-12 ui-md-1 ui-lg-1 cc-right" >
 										<h:outputText value="#{labels['general.dataDo']}:"/>
 							</div>
-							<div class="ui-g-12 ui-md-2 ui-lg-2">
+							<div class="ui-g-12 ui-md-2 ui-lg-4">
 										<p:calendar id="dateDo" pattern="dd.MM.yyyy" mask="true" showOn="button" 
 											timeZone="#{pubList.timeZone}" size="10" locale="bg" 
 								         	style="font-size:12px;"  value="#{mailFilter.dateTo}" label="#{labels['publ.dateTo']}"   
@@ -72,38 +72,42 @@
 									     <p:message for="dateDo" showDetail="true" showSummary="true" display="tooltip"/> 
 							</div> 
 
-							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right" >
-								<h:outputText value="#{labels['general.uri']}: " />
+							<div class="ui-g-12 ui-md-2 ui-lg-1 cc-right" >
+								<h:outputText value="#{labels['app.nomerZaiavlenie']}: " />
 							</div>
-							<div class="ui-g-12 ui-md-4 ui-lg-4">
-								<p:inputText value="#{mailFilter.uri}" id="uri" style="width:250px;"/>  											                        
+							<div class="ui-g-12 ui-md-3 ui-lg-3">
+								<p:inputText value="#{mailFilter.uri}" id="uri" style="width:98%;"/>  											                        
 							</div>
-							<div class="ui-g-12 ui-md-1 ui-lg-1 cc-right" >
+							<div class="ui-g-12 ui-md-2 ui-lg-1 cc-right" >
 								<h:outputText value="#{labels['general.email']}: " />
 							</div>
-							<div class="ui-g-12 ui-md-5 ui-lg-5">
-								<p:inputText value="#{mailFilter.email}" id="email" style="width:300px;" />   										                        
+							<div class="ui-g-12 ui-md-5 ui-lg-7">
+								<p:inputText value="#{mailFilter.email}" id="email" style="width:250px;" />   										                        
 							</div>
 							
-							<div class="ui-g-12 ui-md-2 ui-lg-2 cc-right">
+							<div class="ui-g-12 ui-md-2 ui-lg-1 cc-right">
 									<h:outputText value="#{labels['responseSubjects.title']}: "/>
 								</div>
 	
-								<div class="ui-g-12 ui-md-10 ui-lg-10">							
-								<p:inputText value="#{mailFilter.zdoiText}" id="receiver" readonly="true" style="width:85%;"/>   
+								<div class="ui-g-12 ui-md-10 ui-lg-11">							
+								<p:inputText value="#{mailFilter.zdoiText}" id="receiver" readonly="true" style="width:95%;"/>   
 			                	<ibg:selectOneModal header="#{labels['responseSubjects.title']}" userId="#{mailFilter.userID}" lang="#{mailFilter.currentLang}"
 						 	 			saveStateTree="true" isSelectNode="true" withBtnClear="true" codeClassif="#{IBConstants.CODE_SYSCLASS_ADM_REGISTRY}"     
 						 				update="mailFilterForm:receiver" selectedCode="#{mailFilter.zdoiCode}" selectedText="#{mailFilter.zdoiText}"  />	    							
 								</div>
 						
+							<div class="ui-g-12 ui-md-2 ui-lg-1"> 	</div>
+							<div class="ui-g-12 ui-md-10 ui-lg-11 " >
+								<p:selectBooleanCheckbox id="onlyerrors" value="#{mailFilter.withErrors}"/> <p:outputLabel for="onlyerrors" value="#{labels['general.error']}"/>
+							</div>
 							
 									
-							<div class="ui-g-12 ui-md-6 ui-lg-6" >
+							<div class="ui-g-6 ui-md-6 ui-lg-6" >
 				 					<p:commandButton action="#{mailFilter.actionClear()}" 
 						 		 	value="#{labels['general.clear']}" update="mailFilterForm:panelData" id="btnClear" /> 
 						 	</div>
 	
-						    <div class="ui-g-12 ui-md-6 ui-lg-6 cc-right" >
+						    <div class="ui-g-6 ui-md-6 ui-lg-6 cc-right" >
 						        	<p:commandButton action="#{mailFilter.actionSearch()}" 
 						         			 value="#{labels['general.search']}" update="mailFilterForm:panelData" id="btnSearch" />
 						    </div>
@@ -124,56 +128,72 @@
 						
 			
 						
-							<p:column style="width:5px;text-align: center">
-								<f:facet name="header">
-					                 No
-					            </f:facet>
-								<h:outputText value="#{idx + 1}" />
+							<p:column style="width:25px;text-align: center">
+								<f:facet name="header"> </f:facet>
+								<p:rowToggler/>
 							</p:column>
-
-							<p:column width="25" sortBy="#{row.A7_DATE_MAIL}">
+							
+							<p:column width="100" sortBy="#{row.A9_URI}">
+								<f:facet name="header">
+									<h:outputText value="#{labels['app.nomerZaiavlenie']}" />
+								</f:facet>
+								<h:outputText value="#{row[8]}" />
+							</p:column>
+							
+							<p:column width="80" sortBy="#{row.A7_DATE_MAIL}">
 								<f:facet name="header">
 									 <h:outputText value="#{labels['general.date']}"  />
 									  
 								</f:facet>
 								<h:outputText value="#{row[6]}" >
-								     <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+								     <f:convertDateTime type="date" pattern="dd.MM.yyyy" timeZone="#{mailFilter.timeZone}"/>
 								</h:outputText>
 							</p:column>
 			
-							<p:column width="100" sortBy="#{row.A2_ZDOI}">
+							<p:column width="*" sortBy="#{row.A2_ZDOI}">
 								<f:facet name="header">
 									<h:outputText value="#{labels['responseSubjects.title']}" />
 								</f:facet>
-								<h:outputText value="#{systemData.decodeItem(IBConstants.CODE_SYSCLASS_ADM_REGISTRY, row[1], mailFilter.currentLang, null, mailFilter.userID)}" />
+								<h:outputText value="#{row[1]}" /> 
+								<ui:remove>
+								<!--  systemData.decodeItem(IBConstants.CODE_SYSCLASS_ADM_REGISTRY, , mailFilter.currentLang, null, mailFilter.userID)  -->
+								</ui:remove>
 							</p:column>
 							
 							
 		
-							<p:column width="100" sortBy="#{row.A4_NAME_LICE}">
+							<p:column width="*" sortBy="#{row.A4_NAME_LICE}">
 								<f:facet name="header">
 									<h:outputText value="#{labels['general.names']}" />
 								</f:facet>
 								<h:outputText value="#{row[3]}" />
 							</p:column>
-							
-							<p:column width="100" sortBy="#{row.A9_URI}">
+							<p:column width="170" sortBy="#{row.A3_EMAIL}">
 								<f:facet name="header">
-									<h:outputText value="#{labels['general.uri']}" />
+									<h:outputText value="#{labels['general.email']}" />
 								</f:facet>
-								<h:outputText value="#{row[8]}" />
+								<h:outputText value="#{row[2]}" />
 							</p:column>
+							
+							
 
-							<p:column style="width:32px;text-align: center">
+							<p:column  style="width:50px;text-align: center">
 							<f:facet name="header">
-									<h:outputText value="#{labels['general.error']}" />
-								</f:facet>
-					           <p:commandButton update=":mailFilterForm:mailDetail" oncomplete="PF('mailDialog').show()" icon="fa fa-search" title="View" 
-					           rendered="#{row[9] ne null}" >
-					                <f:setPropertyActionListener value="#{row[9]}" target="#{mailFilter.selMailError}" />
+								<h:outputText value="#{labels['general.error']}" />
+							</f:facet>
+					           <p:commandButton update=":mailFilterForm:mailDetail" oncomplete="PF('mailDialog').show()" icon="fa fa-warning" title="#{labels['general.error']}"  style="color:red"
+					           		rendered="#{row[7] ne null}" >
+					                <f:setPropertyActionListener value="#{row[7]}" target="#{mailFilter.selMailError}" />
 					           </p:commandButton>
 							</p:column>
 							
+							
+							<p:rowExpansion>
+								
+								<hr/>
+								<h:outputText value="#{row[5]}" escape="false"/>
+								<br/>
+							</p:rowExpansion>
 						</p:dataTable>
 
 			         </p:panel>
@@ -184,9 +204,9 @@
 			<!-- The information for the error -->
 			<p:dialog header="#{labels['general.error']}" widgetVar="mailDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
 	        <p:outputPanel id="mailDetail" style="text-align:center;">
-	            <p:panelGrid  columns="1" columnClasses="value">
+	            
 	                <h:outputText value="#{mailFilter.selMailError}" />
-	            </p:panelGrid>
+	            
 	        </p:outputPanel>
 	    	</p:dialog>
 			
